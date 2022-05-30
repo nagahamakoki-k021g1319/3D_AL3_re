@@ -4,6 +4,10 @@
 #include "TextureManager.h"
 #include "Vector3.h"
 #include <cassert>
+#include "affin.h"
+#include "math.h"
+
+
 
 GameScene::GameScene() {}
 
@@ -41,87 +45,28 @@ void GameScene::Initialize() {
 	//ライン描画が参照するとビュープロジェクションを指定する(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 
-	vector4 = Vector4(255, 0, 13, 1);
+	//拡大
+	worldTransform_.matWorld_.m[0][0] = 1.0f;
+	worldTransform_.matWorld_.m[1][1] = 1.0f;
+	worldTransform_.matWorld_.m[2][2] = 1.0f;
+	worldTransform_.matWorld_.m[3][3] = 1.0f;
+	worldTransform_.matWorld_ *= scale(5.0f, 5.0f, 5.0f);
 
-	//平行移動
-	/*for (int i = 0; i < 4; i++) {
-	    boxMoved[i][0] = move[0][0] * box[i][0] + move[0][1] * box[i][1] + move[0][2] * box[i][2];
-	    boxMoved[i][1] = move[1][0] * box[i][0] + move[1][1] * box[i][1] + move[1][2] * box[i][2];
-	    boxMoved[i][2] = move[2][0] * box[i][0] + move[2][1] * box[i][1] + move[2][2] * box[i][2];
-	}*/
-
-	vector3Box[0].x =
-	  move[0].x * vector3[0].x + move[0].y * vector3[0].y + move[0].z * vector3[0].z;
+	//行列の転送
+	worldTransform_.TransferMatrix();
 
 	
-	//拡大処理
-	vector3aBox[0].x =
-	  Scale[0].x * vector3a[0].x + Scale[0].y * vector3a[0].y + Scale[0].z * vector3a[0].z;
+	////Z軸回転
+	//worldTransform_.matWorld_.m[0][0] = cos(π/ 4) - sin(π / 4);
+	//worldTransform_.matWorld_.m[1][1] = sin(π / 4) + cos(π / 4);
+	//worldTransform_.matWorld_.m[2][2] = 1.0f;
+	//worldTransform_.matWorld_.m[3][3] = 1.0f;
+	//worldTransform_.matWorld_ *= rotationZ(0.0f, 0.0f, π/4);
 
-	for (int i = 0; i < 8; i++) {
-		vector3aBox[i].x = Scale[0].x * vector3a[i].x + Scale[0].y * vector3a[i].y +
-		                   Scale[0].z * vector3a[i].z + 0*0;
-		vector3aBox[i].y = Scale[1].x * vector3a[i].x + Scale[1].y * vector3a[i].y + 
-			               Scale[1].z * vector3a[i].z + 0*0;
-		vector3aBox[i].z = Scale[2].x * vector3a[i].x + Scale[2].y * vector3a[i].y + 
-						   Scale[2].z * vector3a[i].z + 0*0;
-		
-	}
-
-	//X軸回転処理
-	vector3bXBox[0].x =
-	  rotateX[0].x * vector3b[0].x + rotateX[0].y * vector3b[0].y + rotateX[0].z * vector3b[0].z;
-
-	for (int i = 0; i < 8; i++) {
-		vector3bXBox[i].x = rotateX[0].x * vector3b[i].x + rotateX[0].y * vector3b[i].y +
-		                   rotateX[0].z * vector3b[i].z + 0 * 0;
-		vector3bXBox[i].y = rotateX[1].x * vector3b[i].x + rotateX[1].y * vector3b[i].y +
-		                   rotateX[1].z * vector3b[i].z + 0 * 0;
-		vector3bXBox[i].z = rotateX[2].x * vector3b[i].x + rotateX[2].y * vector3b[i].y +
-		                   rotateX[2].z * vector3b[i].z + 0 * 0;
-	}
-
-	// Y軸回転処理
-	vector3bYBox[0].x =
-	  rotateY[0].x * vector3b[0].x + rotateY[0].y * vector3b[0].y + rotateY[0].z * vector3b[0].z;
-
-	for (int i = 0; i < 8; i++) {
-		vector3bYBox[i].x = rotateY[0].x * vector3b[i].x + rotateY[0].y * vector3b[i].y +
-		                   rotateY[0].z * vector3b[i].z + 0 * 0;
-		vector3bYBox[i].y = rotateY[1].x * vector3b[i].x + rotateY[1].y * vector3b[i].y +
-		                   rotateY[1].z * vector3b[i].z + 0 * 0;
-		vector3bYBox[i].z = rotateY[2].x * vector3b[i].x + rotateY[2].y * vector3b[i].y +
-		                   rotateY[2].z * vector3b[i].z + 0 * 0;
-	}
-	
-	// Z軸回転処理
-	vector3bZBox[0].x =
-	  rotateZ[0].x * vector3b[0].x + rotateZ[0].y * vector3b[0].y + rotateZ[0].z * vector3b[0].z;
-
-	for (int i = 0; i < 8; i++) {
-		vector3bZBox[i].x = rotateZ[0].x * vector3b[i].x + rotateZ[0].y * vector3b[i].y +
-		                   rotateZ[0].z * vector3b[i].z + 0 * 0;
-		vector3bZBox[i].y = rotateZ[1].x * vector3b[i].x + rotateZ[1].y * vector3b[i].y +
-		                   rotateZ[1].z * vector3b[i].z + 0 * 0;
-		vector3bZBox[i].z = rotateZ[2].x * vector3b[i].x + rotateZ[2].y * vector3b[i].y +
-		                   rotateZ[2].z * vector3b[i].z + 0 * 0;
-	}
+	////行列の転送
+	//worldTransform_.TransferMatrix();
 
 
-	//平行移動処理
-	vector3cBox[0].x = parallelMove[0].x * vector3c[0].x + parallelMove[0].y * vector3c[0].y +
-	                   parallelMove[0].z * vector3c[0].z+1 * parallelMove[0].w;
-
-	for (int i = 0; i < 8; i++) {
-		vector3cBox[i].x = parallelMove[0].x * vector3c[i].x + parallelMove[0].y * vector3c[i].y +
-		                   parallelMove[0].z * vector3c[i].z + 1 * parallelMove[0].w;
-		vector3cBox[i].y = parallelMove[1].x * vector3c[i].x + parallelMove[1].y * vector3c[i].y +
-		                   parallelMove[1].z * vector3c[i].z + 1 * parallelMove[1].w;
-		vector3cBox[i].z = parallelMove[2].x * vector3c[i].x + parallelMove[2].y * vector3c[i].y +
-		                   parallelMove[2].z * vector3c[i].z + 1 * parallelMove[2].w;
-		
-		
-	}
 
 
 }
@@ -130,40 +75,7 @@ void GameScene::Update() { debugCamera_->Update(); }
 
 void GameScene::Draw() {
 
-	//初期ボックス
-	for (int i = 0; i < 12; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(
-		  vector3[eqgeList[i][0]], vector3[eqgeList[i][1]], 
-			Vector4(0xff,0xff,0xff,0xff));
-	}
-	//拡大ボックス
-	for (int i = 0; i < 12; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(
-		  vector3aBox[eqgeList[i][0]], vector3aBox[eqgeList[i][1]],
-		  Vector4(0x00, 0xff, 0xaa, 0xff));
-	}
-	//平行移動したボックス
-	for (int i = 0; i < 12; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(
-		  vector3cBox[eqgeList[i][0]], vector3cBox[eqgeList[i][1]],
-		  Vector4(0xff, 0xff, 0xff, 0xff));
-	}
-	//回転したボックス
-	for (int i = 0; i < 12; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(
-		  vector3bXBox[eqgeList[i][0]], vector3bXBox[eqgeList[i][1]], vector4);
-	}
-	//回転したボックス
-	for (int i = 0; i < 12; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(
-		  vector3bYBox[eqgeList[i][0]], vector3bYBox[eqgeList[i][1]], vector4);
-	}
-	//回転したボックス
-	for (int i = 0; i < 12; i++) {
-		PrimitiveDrawer::GetInstance()->DrawLine3d(
-		  vector3bZBox[eqgeList[i][0]], vector3bZBox[eqgeList[i][1]], vector4);
-	}
-
+	
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
