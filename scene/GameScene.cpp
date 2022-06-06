@@ -4,7 +4,6 @@
 #include "TextureManager.h"
 #include "Vector3.h"
 #include <cassert>
-#include "affin.h"
 #include "math.h"
 
 
@@ -45,30 +44,7 @@ void GameScene::Initialize() {
 	//ライン描画が参照するとビュープロジェクションを指定する(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera_->GetViewProjection());
 
-	//拡大
-	worldTransform_.matWorld_.m[0][0] = 1.0f;
-	worldTransform_.matWorld_.m[1][1] = 1.0f;
-	worldTransform_.matWorld_.m[2][2] = 1.0f;
-	worldTransform_.matWorld_.m[3][3] = 1.0f;
-	worldTransform_.matWorld_ *= scale(5.0f, 5.0f, 5.0f);
-
-	//行列の転送
-	worldTransform_.TransferMatrix();
-
 	
-	////Z軸回転
-	//worldTransform_.matWorld_.m[0][0] = cos(π/ 4) - sin(π / 4);
-	//worldTransform_.matWorld_.m[1][1] = sin(π / 4) + cos(π / 4);
-	//worldTransform_.matWorld_.m[2][2] = 1.0f;
-	//worldTransform_.matWorld_.m[3][3] = 1.0f;
-	//worldTransform_.matWorld_ *= rotationZ(0.0f, 0.0f, π/4);
-
-	////行列の転送
-	//worldTransform_.TransferMatrix();
-
-
-
-
 }
 
 void GameScene::Update() { debugCamera_->Update(); }
