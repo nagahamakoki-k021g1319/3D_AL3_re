@@ -1,12 +1,12 @@
 #include "affin.h"
 
-//Šg‘å
+//æ‹¡å¤§
 Matrix4 scale(float scaleX, float scaleY, float scaleZ) {
 
-	//ƒ}ƒgƒŠƒbƒNƒX‚ÌéŒ¾
+	//ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®å®£è¨€
 	Matrix4 matscale;
 
-	//Šg‘å‚Ì•Ï”
+	//æ‹¡å¤§ã®å¤‰æ•°
 	matscale.m[0][0] = scaleX;
 	matscale.m[1][1] = scaleY;
 	matscale.m[2][2] = scaleZ;
@@ -15,64 +15,70 @@ Matrix4 scale(float scaleX, float scaleY, float scaleZ) {
 	return matscale;
 }
 
-//Z²‰ñ“]
+
+//Zè»¸å›è»¢
 Matrix4 rotationZ(float angleZ) {
 
-	//ƒ}ƒgƒŠƒbƒNƒX‚ÌéŒ¾
+	//ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®å®£è¨€
 	Matrix4 matRotZ;
 
-	//Šg‘å‚Ì•Ï”
-	matRotZ.m[0][0] = cosf(angleZ);
-	matRotZ.m[0][1] = sinf(angleZ);
-	matRotZ.m[1][0] = -sinf(angleZ);
-	matRotZ.m[1][1] = cosf(angleZ);
+	//æ‹¡å¤§ã®å¤‰æ•°
+	matRotZ.m[0][0] = cosf(MathUtility::PI/4);
+	matRotZ.m[0][1] = sinf(MathUtility::PI/4);
+	matRotZ.m[1][0] = -sinf(MathUtility::PI/4);
+	matRotZ.m[1][1] = cosf(MathUtility::PI/4);
+
 	matRotZ.m[2][2] = 1.0f;
 	matRotZ.m[3][3] = 1.0f;
 
 	return matRotZ;
 }
 
-//X²‰ñ“]
+
+//Xè»¸å›è»¢
 Matrix4 rotationX(float angleX) {
 
-	//ƒ}ƒgƒŠƒbƒNƒX‚ÌéŒ¾
+	//ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®å®£è¨€
 	Matrix4 matRotX;
 
-	//Šg‘å‚Ì•Ï”
+	//æ‹¡å¤§ã®å¤‰æ•°
 	matRotX.m[0][0] = 1.0f;
-	matRotX.m[1][1] = cosf(angleX);
-	matRotX.m[1][2] = sinf(angleX);
-	matRotX.m[2][1] = -sinf(angleX);
-	matRotX.m[2][2] = cosf(angleX);
+	matRotX.m[1][1] = cosf(MathUtility::PI/4);
+	matRotX.m[1][2] = sinf(MathUtility::PI/4);
+	matRotX.m[2][1] = -sinf(MathUtility::PI/4);
+	matRotX.m[2][2] = cosf(MathUtility::PI/4);
+
 	matRotX.m[3][3] = 1.0f;
 
 	return matRotX;
 }
 
-//Y²‰ñ“]
+//Yè»¸å›è»¢
 Matrix4 rotationY(float angleY) {
 
-	//ƒ}ƒgƒŠƒbƒNƒX‚ÌéŒ¾
+	//ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®å®£è¨€
 	Matrix4 matRotY;
 
-	//Šg‘å‚Ì•Ï”
-	matRotY.m[0][0] = cosf(angleY);
-	matRotY.m[0][2] = -sinf(angleY);
+	//æ‹¡å¤§ã®å¤‰æ•°
+	matRotY.m[0][0] = cosf(MathUtility::PI / 4);
+	matRotY.m[0][2] = -sinf(MathUtility::PI / 4);
 	matRotY.m[1][1] = 1.0f;
-	matRotY.m[2][0] = sinf(angleY);
-	matRotY.m[2][2] = cosf(angleY);
+	matRotY.m[2][0] = sinf(MathUtility::PI / 4);
+	matRotY.m[2][2] = cosf(MathUtility::PI / 4);
+
 	matRotY.m[3][3] = 1.0f;
 
 	return matRotY;
 }
 
-//•½sˆÚ“®
+
+//å¹³è¡Œç§»å‹•
 Matrix4 translation(float translationX, float translationY, float translationZ) {
 
-	//ƒ}ƒgƒŠƒbƒNƒX‚ÌéŒ¾
+	//ãƒãƒˆãƒªãƒƒã‚¯ã‚¹ã®å®£è¨€
 	Matrix4 matTrans = MathUtility::Matrix4Identity();
 
-	//Šg‘å‚Ì•Ï”
+	//æ‹¡å¤§ã®å¤‰æ•°
 	matTrans.m[0][0] = 1.0f;
 	matTrans.m[1][1] = 1.0f;
 	matTrans.m[2][2] = 1.0f;
@@ -82,4 +88,5 @@ Matrix4 translation(float translationX, float translationY, float translationZ) 
 	matTrans.m[3][3] = 1.0f;
 
 	return matTrans;
+
 }
