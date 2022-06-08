@@ -13,6 +13,7 @@
 #include <math.h>
 
 
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -56,7 +57,7 @@ class GameScene {
 	// 3Dモデル
 	Model* model_ = nullptr;
 	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[100];
+	WorldTransform worldTransform_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
