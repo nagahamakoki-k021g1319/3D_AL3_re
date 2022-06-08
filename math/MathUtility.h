@@ -5,8 +5,9 @@
 
 namespace MathUtility {
 
-const float PI = 3.141592654f;
+const float PI = 3.141592653f;
 
+const float PI2 = PI * 2;
 // 零ベクトルを返す
 const Vector3 Vector3Zero();
 // 2ベクトルが一致しているか調べる
