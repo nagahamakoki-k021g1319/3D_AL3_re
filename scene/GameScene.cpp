@@ -4,7 +4,6 @@
 #include "TextureManager.h"
 #include "Vector3.h"
 #include <cassert>
-#include "affin.h"
 #include "math.h"
 
 
@@ -67,6 +66,7 @@ void GameScene::Initialize() {
 
 	//行列の転送
 	worldTransform_.TransferMatrix();
+
 
 
 
