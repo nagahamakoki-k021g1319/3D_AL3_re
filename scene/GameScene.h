@@ -12,7 +12,7 @@
 #include "WorldTransform.h"
 #include <math.h>
 
-const float π = 3.14;
+
 
 /// <summary>
 /// ゲームシーン

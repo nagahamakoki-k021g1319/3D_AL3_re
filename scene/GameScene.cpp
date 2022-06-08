@@ -6,7 +6,7 @@
 #include <cassert>
 #include "affin.h"
 #include "math.h"
-
+#include "MathUtility.h"
 
 
 GameScene::GameScene() {}
@@ -54,13 +54,13 @@ void GameScene::Initialize() {
 
 	
 	//Z軸回転
-	worldTransform_.matWorld_ *= rotationZ(π/4);
+	worldTransform_.matWorld_ *= rotationZ(MathUtility::PI/4);
 
 	//X軸回転
-	worldTransform_.matWorld_ *= rotationX(π / 4);
+	worldTransform_.matWorld_ *= rotationX(MathUtility::PI / 4);
 
 	//Y軸回転
-	worldTransform_.matWorld_ *= rotationY(π / 4);
+	worldTransform_.matWorld_ *= rotationY(MathUtility::PI / 4);
 
 	//平行移動
 	worldTransform_.matWorld_ *= translation(10.0f, 10.0f, 10.0f);
