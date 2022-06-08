@@ -12,7 +12,6 @@
 #include "WorldTransform.h"
 #include <math.h>
 
-const float π = 3.14;
 
 /// <summary>
 /// ゲームシーン
@@ -57,7 +56,7 @@ class GameScene {
 	// 3Dモデル
 	Model* model_ = nullptr;
 	//ワールドトランスフォーム
-	WorldTransform worldTransform_;
+	WorldTransform worldTransforms_[100];
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
