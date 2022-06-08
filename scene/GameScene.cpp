@@ -52,19 +52,21 @@ void GameScene::Initialize() {
 	worldTransform_.matWorld_.m[3][3] = 1.0f;
 	worldTransform_.matWorld_ *= scale(5.0f, 5.0f, 5.0f);
 
+	
+	//Z軸回転
+	worldTransform_.matWorld_ *= rotationZ(π/4);
+
+	//X軸回転
+	worldTransform_.matWorld_ *= rotationX(π / 4);
+
+	//Y軸回転
+	worldTransform_.matWorld_ *= rotationY(π / 4);
+
+	//平行移動
+	worldTransform_.matWorld_ *= translation(10.0f, 10.0f, 10.0f);
+
 	//行列の転送
 	worldTransform_.TransferMatrix();
-
-	
-	////Z軸回転
-	//worldTransform_.matWorld_.m[0][0] = cos(π/ 4) - sin(π / 4);
-	//worldTransform_.matWorld_.m[1][1] = sin(π / 4) + cos(π / 4);
-	//worldTransform_.matWorld_.m[2][2] = 1.0f;
-	//worldTransform_.matWorld_.m[3][3] = 1.0f;
-	//worldTransform_.matWorld_ *= rotationZ(0.0f, 0.0f, π/4);
-
-	////行列の転送
-	//worldTransform_.TransferMatrix();
 
 
 
