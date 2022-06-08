@@ -4,7 +4,7 @@
 Matrix4 scale(float scaleX, float scaleY, float scaleZ) {
 
 	//マトリックスの宣言
-	Matrix4 matscale;
+	Matrix4 matscale = MathUtility::Matrix4Identity();
 
 	//拡大の変数
 	matscale.m[0][0] = scaleX;
@@ -20,7 +20,7 @@ Matrix4 scale(float scaleX, float scaleY, float scaleZ) {
 Matrix4 rotationZ(float angleZ) {
 
 	//マトリックスの宣言
-	Matrix4 matRotZ;
+	Matrix4 matRotZ = MathUtility::Matrix4Identity();
 
 	//拡大の変数
 	matRotZ.m[0][0] = cosf(MathUtility::PI/4);
@@ -39,7 +39,7 @@ Matrix4 rotationZ(float angleZ) {
 Matrix4 rotationX(float angleX) {
 
 	//マトリックスの宣言
-	Matrix4 matRotX;
+	Matrix4 matRotX = MathUtility::Matrix4Identity();
 
 	//拡大の変数
 	matRotX.m[0][0] = 1.0f;
@@ -57,7 +57,7 @@ Matrix4 rotationX(float angleX) {
 Matrix4 rotationY(float angleY) {
 
 	//マトリックスの宣言
-	Matrix4 matRotY;
+	Matrix4 matRotY = MathUtility::Matrix4Identity();
 
 	//拡大の変数
 	matRotY.m[0][0] = cosf(MathUtility::PI / 4);
