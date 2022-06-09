@@ -159,6 +159,8 @@ void GameScene::Initialize() {
 	worldTransform.TransferMatrix();
 	}
 
+	//カメラ視点座標を設定
+	viewProjection_.eye = {0, 0, -10};
 	//カメラ注視点座標を設定
 	viewProjection_.target = {10, 0, 0};
 	//カメラ上方向ベクトルを設定
