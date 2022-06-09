@@ -1,12 +1,14 @@
 #pragma once
-#include "GameScene.h"
 
-Matrix4 scale(float scaleX, float scaleY, float scaleZ);
+#include <math/Matrix4.h>
+#include <math/Vector3.h>
 
-Matrix4 rotationZ(float angleZ);
+namespace AffinTrans {
 
-Matrix4 rotationX(float angleX);
+Matrix4 Initialize();
+Matrix4 Scale(Vector3 scale);
+Matrix4 Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6);
+Matrix4 Move(Vector3 move);
 
-Matrix4 rotationY(float angleY);
-
-Matrix4 translation(float translationX, float translationY, float translationZ);
+}; 
+// namespace AffinTrans
