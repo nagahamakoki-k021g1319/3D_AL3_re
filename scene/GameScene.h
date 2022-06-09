@@ -10,9 +10,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
-#include <math.h>
-
-
+#include "affin.h"
 
 /// <summary>
 /// ゲームシーン
@@ -20,9 +18,9 @@
 class GameScene {
 
   public: // メンバ関数
-	/// <summary>
-	/// コンストクラタ
-	/// </summary>
+	      /// <summary>
+	      /// コンストクラタ
+	      /// </summary>
 	GameScene();
 
 	/// <summary>
@@ -53,19 +51,18 @@ class GameScene {
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
-
 	// 3Dモデル
 	Model* model_ = nullptr;
+
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
-
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
-	
-
+	Vector3 vector3(float x, float y, float z);
+	Vector4 vector4(int x, int y, int z, int w);
 
 	/// <summary>
 	/// ゲームシーン用
