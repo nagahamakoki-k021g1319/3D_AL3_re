@@ -195,9 +195,7 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
-	//ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
-	PrimitiveDrawer::GetInstance()->DrawLine3d(
-	  vector3(0, 0, 0), vector3(200, 0, 200), vector4(255, 255, 255, 100));
+	
 }
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }

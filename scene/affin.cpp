@@ -16,7 +16,7 @@ Matrix4 AffinTrans::Initialize() {
 
 Matrix4 AffinTrans::Scale(Vector3 scale) {
 
-	//ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°è¡Œåˆ—ã‚’å®£è¨€
+	//ƒXƒP[ƒŠƒ“ƒOs—ñ‚ğéŒ¾
 	Matrix4 matScale = {
 		scale.x, 0.0f,		0.0f,    0.0f, 
 		0.0f,    scale.y,	0.0f,	 0.0f,         
@@ -89,7 +89,7 @@ Matrix4 AffinTrans::Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6) {
 		  0.0f,0.0f,1.0f,0.0f,
 		  0.0f, 0.0f, 0.0f,1.0f
 		};
-		//å„è»¸ã®å›è»¢è¡Œåˆ—ã‚’åˆæˆ
+		//Še²‚Ì‰ñ“]s—ñ‚ğ‡¬
 		matRotXYZ = Initialize();
 
 		matRotXYZ *= matRot_X;
