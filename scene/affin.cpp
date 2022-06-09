@@ -6,8 +6,8 @@ const float PI = 3.141592f;
 Matrix4 AffinTrans::Initialize() {
 	Matrix4 matInitialize = {
 		1.0f, 0.0f, 0.0f, 0.0f, 
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f, 
+		0.0f, 1.0f, 0.0f, 0.0f,                
+		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
 
@@ -16,12 +16,12 @@ Matrix4 AffinTrans::Initialize() {
 
 Matrix4 AffinTrans::Scale(Vector3 scale) {
 
-	//„Çπ„Ç±„Éº„É™„É≥„Ç∞Ë°åÂàó„ÇíÂÆ£Ë®Ä
+	//ÉXÉPÅ[ÉäÉìÉOçsóÒÇêÈåæ
 	Matrix4 matScale = {
-		scale.x, 0.0f,		0.0f,    0.0f, 
-		0.0f,    scale.y,	0.0f,	 0.0f,         
-		0.0f,    0.0f,	    scale.z, 0.0f, 
-		0.0f,	 0.0f,		0.0f,	 1.0f
+		scale.x, 0.0f, 0.0f,    0.0f, 
+		0.0f, scale.y, 0.0f, 0.0f,
+	    0.0f,    0.0f, scale.z, 0.0f, 
+		0.0f, 0.0f,    0.0f, 1.0f
 	};
 
 	Matrix4 scaling = Initialize();
@@ -38,10 +38,10 @@ Matrix4 AffinTrans::Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6) {
 
 	if (X_1_Y_2_Z_3_XYZ_6 == rotationX) {
 		Matrix4 matRotX = {
-		  1.0f,	 0.0f,             0.0f,           0.0f,
-		  0.0f,	 cos(rotation.x),  sin(rotation.x),0.0f,
-		  0.0f, -sin(rotation.x),  cos(rotation.x),0.0f,
-		  0.0f,	 0.0f,             0.0f,           1.0f
+		  1.0f,0.0f,0.0f,0.0f,
+		  0.0f,cos(rotation.x),sin(rotation.x),0.0f,
+		  0.0f,-sin(rotation.x),cos(rotation.x),0.0f,
+		  0.0f,0.0f,0.0f,1.0f
 		};
 		Matrix4 rotationX = Initialize();
 		rotationX *= matRotX;
@@ -51,7 +51,7 @@ Matrix4 AffinTrans::Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6) {
 		Matrix4 matRotY = {
 			cos(rotation.y), 0.0f, -sin(rotation.y), 0.0f, 
 			0.0f, 1.0f, 0.0f, 0.0f,
-		    sin(rotation.y), 0.0f, cos(rotation.y),  0.0f,
+		    sin(rotation.y), 0.0f, cos(rotation.y),  0.0f, 
 			0.0f, 0.0f, 0.0f, 1.0f
 		};
 		Matrix4 rotationY = Initialize();
@@ -60,10 +60,10 @@ Matrix4 AffinTrans::Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6) {
 		return rotationY;
 	} else if (X_1_Y_2_Z_3_XYZ_6 == rotationZ) {
 		Matrix4 matRotZ = {
-		  cos(rotation.z), sin(rotation.z),0.0f,0.0f,
+		  cos(rotation.z),sin(rotation.z),0.0f,0.0f,
 		  -sin(rotation.z),cos(rotation.z),0.0f,0.0f,
-		  0.0f,			   0.0f,		   1.0f, 0.0f,
-		  0.0f,			   0.0f,		   0.0f, 1.0f
+		  0.0f,0.0f,1.0f,0.0f,
+		  0.0f,0.0f,0.0f,1.0f
 		};
 		Matrix4 rotationZ = Initialize();
 		rotationZ *= matRotZ;
@@ -74,22 +74,23 @@ Matrix4 AffinTrans::Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6) {
 		Matrix4 matRot_X, matRot_Y, matRot_Z;
 		matRot_X = {
 		  1.0f,0.0f,0.0f,0.0f,
-		  0.0f,cos(rotation.x),sin(rotation.x),0.0f, 
-			0.0f,-sin(rotation.x),cos(rotation.x),0.0f,
-		  0.0f, 0.0f, 0.0f, 1.0f
+		  0.0f,cos(rotation.x),sin(rotation.x),0.0f,
+		  0.0f,-sin(rotation.x),cos(rotation.x),0.0f,
+		  0.0f,0.0f,0.0f,1.0f
 		};
 		matRot_Y = {
-			cos(rotation.y), 0.0f, -sin(rotation.y),0.0f, 
-			0.0f, 1.0f, 0.0f, 0.0f,
-		    sin(rotation.y), 0.0f, cos(rotation.y), 0.0f, 
-			0.0f, 0.0f, 0.0f, 1.0f};
+			cos(rotation.y), 0.0f, -sin(rotation.y), 
+			0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		    sin(rotation.y), 0.0f, cos(rotation.y),  
+			0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+		};
 		matRot_Z = {
-		  cos(rotation.z),sin(rotation.z),0.0f, 0.0f,
+		  cos(rotation.z),sin(rotation.z),0.0f,0.0f,
 		  -sin(rotation.z),cos(rotation.z),0.0f,0.0f,
 		  0.0f,0.0f,1.0f,0.0f,
-		  0.0f, 0.0f, 0.0f,1.0f
+		  0.0f,0.0f,0.0f,1.0f
 		};
-		//ÂêÑËª∏„ÅÆÂõûËª¢Ë°åÂàó„ÇíÂêàÊàê
+		//äeé≤ÇÃâÒì]çsóÒÇçáê¨
 		matRotXYZ = Initialize();
 
 		matRotXYZ *= matRot_X;
@@ -101,8 +102,12 @@ Matrix4 AffinTrans::Rotation(Vector3 rotation, int X_1_Y_2_Z_3_XYZ_6) {
 }
 
 Matrix4 AffinTrans::Move(Vector3 Move) {
-	Matrix4 matMove = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f,   1.0f,   0.0f,   0.0f,
-	                   0.0f, 0.0f, 1.0f, 0.0f, Move.x, Move.y, Move.z, 1.0f};
+	Matrix4 matMove = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f,   1.0f,   0.0f,   0.0f,
+	    0.0f, 0.0f, 1.0f, 0.0f, 
+	    Move.x, Move.y, Move.z, 1.0f
+	};
 	Matrix4 move = Initialize();
 	move *= matMove;
 
