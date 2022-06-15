@@ -23,6 +23,22 @@ class GameScene {
 	      /// </summary>
 	GameScene();
 
+	public:
+	//パーツID
+	  enum Partid {
+		kRoot,
+		kSpine,
+		kChest,
+		kHead,
+		kArmL,
+		kArmR,
+		kHip,
+		kLegL,
+		kLegR,
+
+		kNumPartid
+	};
+
 	/// <summary>
 	/// デストラクタ
 	/// </summary>

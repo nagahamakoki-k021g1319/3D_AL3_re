@@ -113,3 +113,12 @@ Matrix4 AffinTrans::Move(Vector3 Move) {
 
 	return move;
 }
+
+void AffinTrans::affin(WorldTransform& affin) { 
+	affin.matWorld_ = Initialize();
+	affin.matWorld_ *= Scale(affin.scale_);
+	affin.matWorld_ *= Rotation(affin.rotation_,6);
+	affin.matWorld_ *= Move(affin.translation_);
+
+
+}
