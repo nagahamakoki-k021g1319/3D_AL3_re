@@ -5,6 +5,7 @@
 #include "WinApp.h"
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
+#include "Player.h"
 
 
 // Windowsアプリでのエントリーポイント(main関数)
