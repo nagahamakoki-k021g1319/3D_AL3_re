@@ -7,6 +7,8 @@
 #include <affin.h>
 #include "ViewProjection.h"
 #include "PlayerBullet.h"
+#include <memory>
+#include <list>
 
 
 class Player {
@@ -43,5 +45,9 @@ class Player {
 	DebugText* debugText_ = nullptr;
 
 	//íe
-	PlayerBullet* bullet_ = nullptr;
+	//ï°êî 
+	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+
+	//íPî≠
+	/*std::unique_ptr<PlayerBullet> bullet_ = nullptr;*/
 };
