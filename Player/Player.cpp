@@ -13,7 +13,6 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
 	worldTransform_.Initialize();
-
 }
 
 void Player::Update() {
@@ -23,6 +22,11 @@ void Player::Update() {
 	const float kCharacterSpeed = 0.2f;
 
 	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ð•ÏX
+	if (input_->PushKey(DIK_UP)) {
+		move = {0, kCharacterSpeed, 0};
+	} else if (input_->PushKey(DIK_DOWN)) {
+		move = {0, -kCharacterSpeed, 0};
+	}
 	if (input_->PushKey(DIK_LEFT)) {
 		move = {-kCharacterSpeed, 0, 0};
 	} else if (input_->PushKey(DIK_RIGHT)) {
@@ -36,6 +40,32 @@ void Player::Update() {
 
 	worldTransform_.TransferMatrix();
 
+	const float kMoveLimitX = 35;
+	const float kMoveLimitY = 18;
+
+	//”ÍˆÍ‚ð’´‚¦‚È‚¢ˆ—
+	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
+	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
+	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+
+	const float kChestRotSpeed = 0.05f;
+
+	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ð•ÏX
+	if (input_->PushKey(DIK_U)) {
+		worldTransform_.rotation_.y -= kChestRotSpeed;
+	} else if (input_->PushKey(DIK_I)) {
+		worldTransform_.rotation_.y += kChestRotSpeed;
+	}
+
+	//’e”­ŽËˆ—
+	Attack();
+
+	//’eXV
+	if (bullet_) {
+		bullet_->Update();
+	}
+
 	debugText_->SetPos(50, 150);
 	debugText_->Printf(
 	  "translation : %f,%f,%f", worldTransform_.translation_.x,
@@ -45,6 +75,21 @@ void Player::Update() {
 
 void Player::Draw(ViewProjection viewProjection_) { 
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	//’eXV
+	if (bullet_) {
+		bullet_->Draw(viewProjection_);
+	}
+}
+
+void Player::Attack() { 
+	if (input_->PushKey(DIK_SPACE)) {
+		//’e‚ð¶¬‚µ‰Šú‰»
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		  //’e‚Ì“o˜^
+		  bullet_ = newBullet;
+	} 
 
 }
 

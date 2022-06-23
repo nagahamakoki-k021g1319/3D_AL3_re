@@ -6,6 +6,8 @@
 #include <WorldTransform.h>
 #include <affin.h>
 #include "ViewProjection.h"
+#include "PlayerBullet.h"
+
 
 class Player {
   public:
@@ -24,6 +26,11 @@ class Player {
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
+	///< summary>
+	///初期化
+	///</summary>
+	void Attack();
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -35,4 +42,6 @@ class Player {
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
+	//弾
+	PlayerBullet* bullet_ = nullptr;
 };

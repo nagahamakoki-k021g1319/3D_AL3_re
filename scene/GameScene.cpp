@@ -10,7 +10,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	// delete sprite;
 	delete model_;
-
 	delete player_;
 }
 
@@ -22,7 +21,6 @@ void GameScene::Initialize() {
 	debugText_ = DebugText::GetInstance();
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
-	// sprite = Sprite::Create(textureHandle, { 100,50 });
 	model_ = Model::Create();
 
 	//ビュープロジェクションの初期化
@@ -33,8 +31,7 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
-	//音声再生
-	// audio->PlayWave(soundDataHandle);
+	
 }
 
 void GameScene::Update() {
