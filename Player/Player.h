@@ -33,6 +33,10 @@ class Player {
 	///</summary>
 	void Attack();
 
+	//キャラの向きに応じた方向に球をだす
+	Vector3 bVelocity(Vector3& velocity, WorldTransform& worldTransform);
+
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
