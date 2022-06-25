@@ -12,6 +12,8 @@
 #include "WorldTransform.h"
 #include "affin.h"
 #include "Player.h"
+#include "Enemy.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -55,6 +57,8 @@ class GameScene {
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
+	uint32_t textureHandle2_ = 0;
+
 	// 3Dモデル
 	Model* model_ = nullptr;
 
@@ -68,6 +72,8 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
+	//敵キャラ
+	Enemy* enemy_ = nullptr;
 
 	Vector3 vector3(float x, float y, float z);
 	Vector4 vector4(int x, int y, int z, int w);
