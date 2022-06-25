@@ -11,6 +11,7 @@ GameScene::~GameScene() {
 	// delete sprite;
 	delete model_;
 	delete player_;
+	delete enemy_;
 }
 
 void GameScene::Initialize() {
@@ -21,6 +22,7 @@ void GameScene::Initialize() {
 	debugText_ = DebugText::GetInstance();
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
+	textureHandle2_ = TextureManager::Load("enemy.jpg");
 	model_ = Model::Create();
 
 	//ビュープロジェクションの初期化
@@ -31,7 +33,11 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
-	
+	//敵の生成
+	enemy_ = new Enemy();
+	//敵の初期化
+	enemy_->Initialize(model_, textureHandle2_);
+
 }
 
 void GameScene::Update() {
@@ -43,6 +49,9 @@ void GameScene::Update() {
 
 	//自キャラの更新
 	player_->Update();
+
+	//敵の更新
+	enemy_->Update();
 
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
@@ -88,6 +97,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw(viewProjection_);
+	enemy_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
