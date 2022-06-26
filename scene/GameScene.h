@@ -25,8 +25,6 @@ class GameScene {
 	      /// コンストクラタ
 	      /// </summary>
 	GameScene();
-
-	public:
 	
 
 	/// <summary>
