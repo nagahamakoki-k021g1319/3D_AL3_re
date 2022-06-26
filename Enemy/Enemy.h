@@ -25,11 +25,6 @@ class Enemy {
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
-	//行動フェーズ
-	enum class Phase {
-		Approach, //接近する
-		Leave,    //離脱する
-	};
 
 	
   private:
@@ -43,7 +38,7 @@ class Enemy {
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
-	//フェーズ
-	Phase phase_ = Phase::Approach;
+	////フェーズ
+	//Phase phase_ = Phase::Approach;
 	
 };
