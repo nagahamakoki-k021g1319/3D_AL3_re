@@ -54,4 +54,6 @@ class Player {
 
 	//’P”­
 	/*std::unique_ptr<PlayerBullet> bullet_ = nullptr;*/
+
+
 };
