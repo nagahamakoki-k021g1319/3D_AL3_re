@@ -1,12 +1,13 @@
 #pragma once
 #include "DebugText.h"
 #include "Input.h"
-#include "PlayerBullet.h"
 #include "ViewProjection.h"
 #include <Model.h>
 #include <WorldTransform.h>
 #include <affin.h>
 #include <cassert>
+#include "EnemyBullet.h"
+#include <list>
 
 class Enemy {
   public:
@@ -25,7 +26,16 @@ class Enemy {
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
+	///< summary>
+	///初期化
+	///</summary>
+	void Fire();
 
+	//発射隔離
+	static const int kFireInterval = 60;
+
+	//接近フェーズ初期化
+	void Approach();
 	
   private:
 	//ワールド変換データ
@@ -38,7 +48,11 @@ class Enemy {
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
-	////フェーズ
-	//Phase phase_ = Phase::Approach;
-	
+	//弾
+	//複数
+	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+
+	//発射タイマー
+	int32_t shotTimer = 0;
+
 };
