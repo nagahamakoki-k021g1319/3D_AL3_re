@@ -148,15 +148,15 @@ Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) {
 	return result;
 }
 
-//Vector3 Player::GetWorldPosition2() {
-//	//ワールド座標を入れる変数
-//	Vector3 worldPos;
-//	//ワールド行列の平行移動成分
-//	worldPos.x = worldTransform_.translation_.x;
-//	worldPos.y = worldTransform_.translation_.y;
-//	worldPos.z = worldTransform_.translation_.z;
-//
-//	return worldPos; 
-//}
+Vector3 Player::GetWorldPosition2() {
+	//ワールド座標を入れる変数
+	Vector3 worldPos;
+	//ワールド行列の平行移動成分
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos; 
+}
 
 

@@ -36,8 +36,8 @@ class Player {
 	//キャラの向きに応じた方向に球をだす
 	Vector3 bVelocity(Vector3& velocity, WorldTransform& worldTransform);
 
-	////ワールド座標を取得
-	//Vector3 GetWorldPosition2();
+	//ワールド座標を取得
+	Vector3 GetWorldPosition2();
 
   private:
 	//ワールド変換データ
