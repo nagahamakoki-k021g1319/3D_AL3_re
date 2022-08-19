@@ -38,6 +38,8 @@ void GameScene::Initialize() {
 	//敵の初期化
 	enemy_->Initialize(model_, textureHandle2_);
 
+	////敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_);
 }
 
 void GameScene::Update() {
@@ -113,7 +115,7 @@ void GameScene::Draw() {
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
-	//
+	
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
