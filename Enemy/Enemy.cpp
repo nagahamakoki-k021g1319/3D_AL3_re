@@ -71,26 +71,26 @@ void Enemy::Draw(ViewProjection viewProjection_) {
 
 void Enemy::Fire() {
 
-	assert(player_);
+	/*assert(player_);*/
 
 	//弾の速度
 	const float kBulletSpeed = -1.0f;
 	Vector3 velocity(0, 0, kBulletSpeed);
 
-	//プレイヤーのワールド座標の取得
-	Vector3 playerPosition;
-	playerPosition = player_->GetWorldPosition2();
-	//敵のワールド座標を取得
-	Vector3 enemyPosition;
-	enemyPosition = GetWorldPosition();
-	//差分ベクトルを求める
-	Vector3 A_BVec = Vector3(
-	  playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y,
-	  playerPosition.z - enemyPosition.z);
-	//ベクトル正規化
-	float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
-	//ベクトルの長さを速さに合わせる
-	A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
+	////プレイヤーのワールド座標の取得
+	//Vector3 playerPosition;
+	//playerPosition = player_->GetWorldPosition2();
+	////敵のワールド座標を取得
+	//Vector3 enemyPosition;
+	//enemyPosition = GetWorldPosition();
+	////差分ベクトルを求める
+	//Vector3 A_BVec = Vector3(
+	//  playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y,
+	//  playerPosition.z - enemyPosition.z);
+	////ベクトル正規化
+	//float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
+	////ベクトルの長さを速さに合わせる
+	//A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
 
 
 	//弾を生成し初期化
@@ -98,7 +98,7 @@ void Enemy::Fire() {
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	//単発
 	/*PlayerBullet* newBullet = new PlayerBullet();*/
-	newBullet->Initialize(model_, worldTransform_.translation_, A_BVec);
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 	//弾の登録
 	//複数
@@ -110,13 +110,13 @@ void Enemy::Approach() {
 	shotTimer = kFireInterval;
 }
 
-Vector3 Enemy::GetWorldPosition() { 
-	//ワールド座標を入れる変数
-	Vector3 worldPos;
-	//ワールド行列の平行移動成分
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
-
-	return worldPos;
-}
+//Vector3 Enemy::GetWorldPosition() { 
+//	//ワールド座標を入れる変数
+//	Vector3 worldPos;
+//	//ワールド行列の平行移動成分
+//	worldPos.x = worldTransform_.translation_.x;
+//	worldPos.y = worldTransform_.translation_.y;
+//	worldPos.z = worldTransform_.translation_.z;
+//
+//	return worldPos;
+//}
