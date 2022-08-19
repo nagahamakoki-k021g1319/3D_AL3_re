@@ -8,6 +8,7 @@
 #include <cassert>
 #include "EnemyBullet.h"
 #include <list>
+class Player;
 
 class Enemy {
   public:
@@ -37,6 +38,11 @@ class Enemy {
 	//接近フェーズ初期化
 	void Approach();
 	
+	void SetPlayer(Player* player) { player_ = player;}
+
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -47,6 +53,9 @@ class Enemy {
 
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
+
+	//自キャラ
+	Player* player_ = nullptr;
 
 	//弾
 	//複数

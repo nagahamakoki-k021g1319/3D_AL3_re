@@ -38,7 +38,7 @@ class EnemyBullet {
 	Vector3 velocity_;
 
 	//寿命
-	static const int32_t kLifeTime = 60;
+	static const int32_t kLifeTime = 60 * 5;
 	//デス大麻
 	int32_t deathTimer_ = kLifeTime;
 	//デスフラグ

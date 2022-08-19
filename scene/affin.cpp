@@ -119,6 +119,4 @@ void AffinTrans::affin(WorldTransform& affin) {
 	affin.matWorld_ *= Scale(affin.scale_);
 	affin.matWorld_ *= Rotation(affin.rotation_,6);
 	affin.matWorld_ *= Move(affin.translation_);
-
-
 }
