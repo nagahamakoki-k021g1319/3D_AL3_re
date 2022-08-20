@@ -24,6 +24,13 @@ class PlayerBullet {
 	///</summary>
 	void Draw(const ViewProjection& viewProjection);
 
+	////ワールド座標を取得
+	Vector3 GetWorldPosition();
+
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+
   public:
 	bool InDead() const { return isDead_; }
 
