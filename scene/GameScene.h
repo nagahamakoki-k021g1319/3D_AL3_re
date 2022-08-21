@@ -13,17 +13,17 @@
 #include "affin.h"
 #include "Player.h"
 #include "Enemy.h"
-
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
 /// </summary>
 class GameScene {
 
-  public: // メンバ関数
-	      /// <summary>
-	      /// コンストクラタ
-	      /// </summary>
+  public: 
+	// メンバ関数
+	/// <summary>
+	/// コンストクラタ
 	GameScene();
 	
 
@@ -81,6 +81,11 @@ class GameScene {
 	Enemy* enemy_ = nullptr;
 	int enemyRadius = 1;
 	int enemyBulletRadius = 1;
+	//スカイドーム
+	Skydome* skydome_ = nullptr;
+	//3Dモデル
+	Model* modelSkydome_ = nullptr;
+
 
 	Vector3 vector3(float x, float y, float z);
 	Vector4 vector4(int x, int y, int z, int w);
