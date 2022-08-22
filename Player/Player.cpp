@@ -13,6 +13,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
+	worldTransform_.translation_ = {0, 0, 30};
 }
 
 void Player::Update() {
@@ -45,7 +46,10 @@ void Player::Update() {
 	//行列更新
 	AffinTrans::affin(worldTransform_);
 
+	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+
 	worldTransform_.TransferMatrix();
+
 
 	const float kMoveLimitX = 35;
 	const float kMoveLimitY = 18;
@@ -59,9 +63,9 @@ void Player::Update() {
 	const float kChestRotSpeed = 0.05f;
 
 	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_U)) {
+	if (input_->PushKey(DIK_J)) {
 		worldTransform_.rotation_.y -= kChestRotSpeed;
-	} else if (input_->PushKey(DIK_I)) {
+	} else if (input_->PushKey(DIK_K)) {
 		worldTransform_.rotation_.y += kChestRotSpeed;
 	}
 
@@ -115,7 +119,7 @@ void Player::Attack() {
 
 		//単発
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
 
 		 //弾の登録
 		//複数
@@ -160,5 +164,9 @@ Vector3 Player::GetWorldPosition2() {
 }
 
 void Player::OnCollision() {}
+
+void Player::setparent(WorldTransform* worldTransform) { 
+	worldTransform_.parent_ = worldTransform; 
+}
 
 

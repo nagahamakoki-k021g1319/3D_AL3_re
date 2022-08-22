@@ -12,7 +12,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	debugText_ = DebugText::GetInstance();
 
 	//初期座標をセット
-	worldTransform_.translation_ = {20, 10, 10};
+	worldTransform_.translation_ = {20, 10, 80};
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();

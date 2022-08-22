@@ -42,9 +42,13 @@ class Player {
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
+	void setparent(WorldTransform* worldTransform);
+
+
 	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
+	
 
   private:
 	//ワールド変換データ
