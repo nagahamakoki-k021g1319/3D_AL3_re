@@ -14,6 +14,8 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Skydome.h"
+#include "RailCamera.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -52,6 +54,7 @@ class GameScene {
 	/// </summary>
 	void CheckAllCollisions();
 
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -68,8 +71,8 @@ class GameScene {
 	
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
-	////デバッグカメラ
-	//DebugCamera* debugCamera_ = nullptr;
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
 	//カメラ上方向
 	float viewAngle = 0.0f;
 
@@ -81,10 +84,14 @@ class GameScene {
 	Enemy* enemy_ = nullptr;
 	int enemyRadius = 1;
 	int enemyBulletRadius = 1;
+	
 	//スカイドーム
 	Skydome* skydome_ = nullptr;
 	//3Dモデル
 	Model* modelSkydome_ = nullptr;
+
+	//レールカメラ
+	RailCamera* railCamera_ = nullptr;
 
 
 	Vector3 vector3(float x, float y, float z);

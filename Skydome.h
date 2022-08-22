@@ -27,6 +27,4 @@ class Skydome {
 	WorldTransform worldTransform_;
 	//ƒ‚ƒfƒ‹
 	Model* model_ = nullptr;
-
-
 };

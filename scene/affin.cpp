@@ -120,3 +120,33 @@ void AffinTrans::affin(WorldTransform& affin) {
 	affin.matWorld_ *= Rotation(affin.rotation_,6);
 	affin.matWorld_ *= Move(affin.translation_);
 }
+
+Vector3 AffinTrans::MatVector(const Vector3 vector3, const Matrix4 matrix4) { 
+	
+	Vector3 retVec = {};
+
+	retVec.x =
+	  vector3.x * matrix4.m[0][0] + vector3.y * matrix4.m[1][0] + vector3.z * matrix4.m[2][0];
+
+	retVec.y =
+	  vector3.x * matrix4.m[0][1] + vector3.y * matrix4.m[1][1] + vector3.z * matrix4.m[2][1];
+
+	retVec.z =
+	  vector3.x * matrix4.m[0][2] + vector3.y * matrix4.m[1][2] + vector3.z * matrix4.m[2][2];
+
+	return retVec;
+	
+
+
+}
+
+Vector3 AffinTrans::GetWorldtransform(const Matrix4 matrix4) { 
+	//ワールド座標を入れる変数
+	Vector3 worldPos;
+	//ワールド行列の平行移動成分
+	worldPos.x = matrix4.m[3][0];
+	worldPos.y = matrix4.m[3][1];
+	worldPos.z = matrix4.m[3][2];
+
+	return worldPos;
+}

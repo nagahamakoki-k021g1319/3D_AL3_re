@@ -12,6 +12,8 @@ GameScene::~GameScene() {
 	delete player_;
 	delete enemy_;
 	delete modelSkydome_;
+	delete debugCamera_;
+	delete railCamera_;
 }
 
 void GameScene::Initialize() {
@@ -20,6 +22,8 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
+	//デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	textureHandle2_ = TextureManager::Load("enemy.jpg");
@@ -32,6 +36,7 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	//自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
+	player_->setparent(railCamera_->GetWorldPosition());
 
 	//敵の生成
 	enemy_ = new Enemy();
@@ -46,6 +51,13 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
+
+	//レールカメラ
+	railCamera_ = new RailCamera();
+	//レールカメラの初期化
+	railCamera_->Initialize(Vector3(0,0,0),Vector3(0,0,0));
+
+
 }
 
 void GameScene::Update() {
@@ -55,12 +67,20 @@ void GameScene::Update() {
 	// position.x += 2.0f;
 	// position.y += 1.0f;
 
-	//自キャラの更新
-	player_->Update();
+	//レールカメラの更新
+	railCamera_->Update();
 
+	//自キャラの更新
+	player_->setparent(railCamera_->GetWorldPosition());
+	player_->Update();
+	
 	//敵の更新
 	enemy_->Update();
 
+	//デバックカメラ
+	/*debugCamera_->Update();*/
+
+	
 
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
@@ -109,9 +129,9 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	player_->Draw(viewProjection_);
-	enemy_->Draw(viewProjection_);
-	skydome_->Draw(viewProjection_);
+	player_->Draw(railCamera_->GetViewProjection());
+	enemy_->Draw(railCamera_->GetViewProjection());
+	skydome_->Draw(railCamera_->GetViewProjection());
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -165,19 +185,60 @@ void GameScene::CheckAllCollisions() {
 			//敵弾の衝突時コールバックを呼び出す
 			bullet->OnCollision();
 		}
-		debugText_->SetPos(50, 110);
-		debugText_->Printf("atari:(%f,%f,%f,%f)", posA.x, posA.y, posA.z, cd);
 
 	}
-
-	
-
 	#pragma endregion
 
 	#pragma region 自弾と敵キャラの当たり判定
+	//敵キャラの座標
+	posA = enemy_->GetWorldPosition();
+
+	//自弾と敵キャラの当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		//自弾の座標
+		posB = bullet.get()->GetWorldPosition();
+
+		float x = posB.x - posA.x;
+		float y = posB.y - posA.y;
+		float z = posB.z - posA.z;
+
+		float cd = sqrt(x * x + y * y + z * z);
+
+		if (cd <= playerRadius + enemyBulletRadius) {
+			//敵キャラの衝突時コールバックを呼び出す
+			enemy_->OnCollision();
+			//自弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+
 	#pragma endregion
 
 	#pragma region 自弾と敵弾の当たり判定
+	//自キャラと敵弾すべての当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets) {
+
+			//自弾の座標
+			posA = bullet.get()->GetWorldPosition();
+
+			//敵弾の座標
+			posB = bullet2.get()->GetWorldPosition();
+
+			float x = posB.x - posA.x;
+			float y = posB.y - posA.y;
+			float z = posB.z - posA.z;
+
+			float cd = sqrt(x * x + y * y + z * z);
+
+			if (cd <= playerBulletRadius + enemyBulletRadius) {
+				//自キャラの衝突時コールバックを呼び出す
+				bullet->OnCollision();
+				//敵弾の衝突時コールバックを呼び出す
+				bullet2->OnCollision();
+			}
+		}
+	}
 	#pragma endregion
 }
 
