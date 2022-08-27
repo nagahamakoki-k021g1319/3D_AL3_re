@@ -10,12 +10,14 @@
 #include <list>
 class Player;
 
+class GameScene;
+
 class Enemy {
   public:
 	///< summary>
 	///初期化
 	///</summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, Vector3 vector3);
 
 	///< summary>
 	///初期化
@@ -40,14 +42,15 @@ class Enemy {
 	
 	void SetPlayer(Player* player) { player_ = player;}
 
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
 	////ワールド座標を取得
 	Vector3 GetWorldPosition();
 
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	//弾リストを取得
-	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
+	
 
   private:
 	//ワールド変換データ
@@ -63,11 +66,14 @@ class Enemy {
 	//自キャラ
 	Player* player_ = nullptr;
 
-	//弾
-	//複数
-	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+	//デスフラグ
+	bool isDead_ = false;
 
 	//発射タイマー
 	int32_t shotTimer = 0;
+
+	//ゲームシーン
+	GameScene* gameScene_ = nullptr;
+
 
 };

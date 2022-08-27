@@ -15,7 +15,8 @@
 #include "Enemy.h"
 #include "Skydome.h"
 #include "RailCamera.h"
-
+#include "EnemyBullet.h"
+#include <sstream>
 
 /// <summary>
 /// ゲームシーン
@@ -54,6 +55,28 @@ class GameScene {
 	/// </summary>
 	void CheckAllCollisions();
 
+	/// <summary>
+	/// 敵弾を追加する
+	/// </summary>
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet);
+
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void LoadEnemyPopData();
+
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdataEnemyPopCommands();
+
+	/// <summary>
+	/// 敵の発生
+	/// </summary>
+	void GenerEnemy(Vector3 EnemyPos);
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemybullets_; }
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -81,10 +104,12 @@ class GameScene {
 	int playerRadius = 1;
 	int playerBulletRadius = 1;
 	//敵キャラ
-	Enemy* enemy_ = nullptr;
+	std::list<std::unique_ptr<Enemy>> enemys_;
 	int enemyRadius = 1;
 	int enemyBulletRadius = 1;
-	
+	//弾 複数
+	std::list<std::unique_ptr<EnemyBullet>> enemybullets_;
+
 	//スカイドーム
 	Skydome* skydome_ = nullptr;
 	//3Dモデル
@@ -93,9 +118,17 @@ class GameScene {
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
 
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
 
 	Vector3 vector3(float x, float y, float z);
 	Vector4 vector4(int x, int y, int z, int w);
+
+	//待機中フラグ
+	bool isStand_ = false;
+
+	//待機タイマー
+	int standTime_ = 0;
 
 	/// <summary>
 	/// ゲームシーン用
