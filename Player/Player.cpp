@@ -1,5 +1,6 @@
 #include "Player.h"
 
+using namespace MathUtility;
 
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
@@ -11,23 +12,34 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
+	//3Dレティクル用ワールドトランスフォーム初期化
+	worldTransform3DReticle_.Initialize();
+
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, 0, 30};
+	worldTransform_.translation_ = {-2, -2, 30};
+
+	//レティクル用テクスチャ取得
+	uint32_t textureReticle = TextureManager::Load("tage.png");
+	//スプライト生成
+	sprite2DReticle_.reset(
+	  Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
+
 }
 
-void Player::Update() {
+void Player::Update(ViewProjection viewProjection_) {
 	
 	//デスフラグの立った弾の削除
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) { 
-		return bullet->InDead();  
+		return bullet->IsDead();  
 	});
 
 	
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
 	//キャラクターの移動の速さ
-	const float kCharacterSpeed = 0.5f;
+	const float kCharacterSpeed = 0.2f;
 
 	//押した方向で移動ベクトルを変更
 	if (input_->PushKey(DIK_UP)) {
@@ -83,6 +95,58 @@ void Player::Update() {
 		bullet_->Update();
 	}*/
 
+	//---------自機のワールド座標から3Dレティクルのワールド座標を計算-----------//
+	
+	//自機から3Dレティクルへの距離
+	const float kDistancePlayerTo3DReticle = 60.0f;
+	//自機から3Dレティクルへのオフセット(Z+向き)
+	Vector3 offset = {0, 0, 1.0f};
+	//自機のワールド座標の回転を反映
+	offset = AffinTrans::MatVector(offset,worldTransform_.matWorld_);
+	//ベクトルの長さを整える
+	offset = Vector3Normalize(offset) * kDistancePlayerTo3DReticle;
+	//3Dレティクル座標設定
+	worldTransform3DReticle_.translation_ =
+	  offset + Vector3(
+		  worldTransform_.matWorld_.m[3][0], 
+		  worldTransform_.matWorld_.m[3][1],
+	      worldTransform_.matWorld_.m[3][2]
+	  );
+	//行列更新
+	AffinTrans::affin(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
+	
+	/////////////////////////////////////////////////////////////////
+
+
+	//----------3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算-------//
+
+	Vector3 positionReticle = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_);
+
+	Vector2 windowWH =
+	  Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
+
+	//ビューポート行列
+	Matrix4 Viewport = {
+	   windowWH.x / 2,				  0,  0,  0, 
+					0,	-windowWH.y / 2,  0,  0, 
+				    0,				  0,  1,  0, 
+	   windowWH.x / 2,	 windowWH.y / 2,  0,  1
+	};
+	  
+	//ビュー行列とプロジェクション行列、ビューポート行列を合成する
+	Matrix4 matViewProjectionViewport = viewProjection_.matView * viewProjection_.matProjection * Viewport;
+
+	//ワールド→スクリーン座標変換(ここから3Dから2Dになる)
+	positionReticle = AffinTrans::wDivision(positionReticle, matViewProjectionViewport);
+
+	//スプライトのレティクルに座標設定
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+
+	////////////////////////////////////////////////////////////////////////////////
+
+
+
 	debugText_->SetPos(50, 150);
 	debugText_->Printf(
 	  "translation : %f,%f,%f", worldTransform_.translation_.x,
@@ -92,11 +156,16 @@ void Player::Update() {
 
 void Player::Draw(ViewProjection viewProjection_) { 
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	
 	//弾更新
 	//複数
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
 	}
+
+	//3Dレティクルを描画
+	model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
+
 
 	//単発
 	/*if (bullet_) {
@@ -113,6 +182,10 @@ void Player::Attack() {
 		//速度ベクトルを自機の向きに合わせて回転させる
 		velocity = bVelocity(velocity, worldTransform_);
 
+		//自機から標準オブジェクトへのベクトル
+		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
+		velocity = Vector3Normalize(velocity) * kBulletSpeed;
+
 		//弾を生成し初期化
 		//複数
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
@@ -128,6 +201,11 @@ void Player::Attack() {
 		//単発
 		/*bullet_.reset(newBullet);*/
 	}
+
+}
+
+void Player::DrawUI() { 
+	sprite2DReticle_->Draw();
 
 }
 

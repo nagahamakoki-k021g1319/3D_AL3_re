@@ -58,7 +58,9 @@ void RailCamera::Update() {
 	//レールカメラの回転を反映
 	forward = AffinTrans::MatVector(forward, worldTransform_.matWorld_);
 	//視点から前方に適当な距離進んだ位置が注視点
-	viewProjection_.target = viewProjection_.eye + forward;
+	viewProjection_.target.x = viewProjection_.eye.x + forward.x;
+	viewProjection_.target.y = viewProjection_.eye.y + forward.y;
+	viewProjection_.target.z = viewProjection_.eye.z + forward.z;
 	//ワールド上方ベクトル
 	Vector3 up(0, 1, 0);
 	//レールカメラの回転を反映

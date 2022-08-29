@@ -2,7 +2,9 @@
 
 #include <math/Matrix4.h>
 #include <math/Vector3.h>
+#include <math/Vector4.h>
 #include <3d/WorldTransform.h>
+
 
 namespace AffinTrans {
 
@@ -15,5 +17,8 @@ void  affin(WorldTransform& affin);
 Vector3 MatVector(const Vector3 vector3, const Matrix4 matrix4);
 
 Vector3 GetWorldtransform(const Matrix4 matrix4);
+
+//ç¿ïWïœä∑
+Vector3 wDivision(const Vector3& v, const Matrix4& m);
 };
 

@@ -25,8 +25,6 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 
 void Enemy::Update() {
 
-	
-
 	//“G‚ÌˆÚ“®‚Ì‘¬‚³
 	const float kCharacterSpeed = 0.1f;
 
@@ -115,4 +113,6 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
-void Enemy::OnCollision() { isDead_ = true; }
+void Enemy::OnCollision() { 
+	isDead_ = true; 
+}

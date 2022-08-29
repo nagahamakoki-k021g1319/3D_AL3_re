@@ -30,9 +30,7 @@ class PlayerBullet {
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-
-  public:
-	bool InDead() const { return isDead_; }
+	bool IsDead() const { return isDead_; }
 
   private:
 	//ワールド変換データ

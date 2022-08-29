@@ -50,7 +50,7 @@ class Enemy {
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	
+	bool IsDead() const { return isDead_; }
 
   private:
 	//ワールド変換データ
@@ -74,6 +74,5 @@ class Enemy {
 
 	//ゲームシーン
 	GameScene* gameScene_ = nullptr;
-
 
 };
