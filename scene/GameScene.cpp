@@ -26,6 +26,8 @@ void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	textureHandle2_ = TextureManager::Load("enemy.jpg");
+	//レティクルのテクスチャ
+	TextureManager::Load("tage.png");
 	model_ = Model::Create();
 
 	//ビュープロジェクションの初期化
@@ -53,6 +55,7 @@ void GameScene::Initialize() {
 
 	//ファイルの読み込み
 	LoadEnemyPopData();
+
 }
 
 void GameScene::Update() {
@@ -65,13 +68,15 @@ void GameScene::Update() {
 	//デスフラグの立った弾の削除
 	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->InDead(); });
 
+	//デスフラグの立った敵の削除
+	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
 
 	//レールカメラの更新
 	railCamera_->Update();
 
 	//自キャラの更新
 	player_->setparent(railCamera_->GetWorldPosition());
-	player_->Update();
+	player_->Update(viewProjection_);
 	
 	//敵発生
 	UpdataEnemyPopCommands();
@@ -167,6 +172,8 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
+	player_->DrawUI();
+
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
 	
@@ -227,9 +234,9 @@ void GameScene::CheckAllCollisions() {
 
 			float cd = sqrt(x * x + y * y + z * z);
 
-			if (cd <= playerRadius + enemyBulletRadius) {
+			if (cd <= playerBulletRadius + enemyRadius) {
 				//敵キャラの衝突時コールバックを呼び出す
-				enemy_->OnCollision();
+ 				enemy_->OnCollision();
 				//自弾の衝突時コールバックを呼び出す
 				bullet->OnCollision();
 			}
@@ -238,32 +245,32 @@ void GameScene::CheckAllCollisions() {
 
 	#pragma endregion
 
-	#pragma region 自弾と敵弾の当たり判定
-	//自キャラと敵弾すべての当たり判定
-	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-		for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets) {
+	//#pragma region 自弾と敵弾の当たり判定
+	////自キャラと敵弾すべての当たり判定
+	//for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+	//	for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets) {
 
-			//自弾の座標
-			posA = bullet.get()->GetWorldPosition();
+	//		//自弾の座標
+	//		posA = bullet.get()->GetWorldPosition();
 
-			//敵弾の座標
-			posB = bullet2.get()->GetWorldPosition();
+	//		//敵弾の座標
+	//		posB = bullet2.get()->GetWorldPosition();
 
-			float x = posB.x - posA.x;
-			float y = posB.y - posA.y;
-			float z = posB.z - posA.z;
+	//		float x = posB.x - posA.x;
+	//		float y = posB.y - posA.y;
+	//		float z = posB.z - posA.z;
 
-			float cd = sqrt(x * x + y * y + z * z);
+	//		float cd = sqrt(x * x + y * y + z * z);
 
-			if (cd <= playerBulletRadius + enemyBulletRadius) {
-				//自キャラの衝突時コールバックを呼び出す
-				bullet->OnCollision();
-				//敵弾の衝突時コールバックを呼び出す
-				bullet2->OnCollision();
-			}
-		}
-	}
-	#pragma endregion
+	//		if (cd <= playerBulletRadius + enemyBulletRadius) {
+	//			//自キャラの衝突時コールバックを呼び出す
+	//			bullet->OnCollision();
+	//			//敵弾の衝突時コールバックを呼び出す
+	//			bullet2->OnCollision();
+	//		}
+	//	}
+	//}
+	//#pragma endregion
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet) {

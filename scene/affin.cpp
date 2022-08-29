@@ -150,3 +150,24 @@ Vector3 AffinTrans::GetWorldtransform(const Matrix4 matrix4) {
 
 	return worldPos;
 }
+
+Vector3 AffinTrans::wDivision(const Vector3& vector3, const Matrix4& matrix4) { 
+	
+	Vector4 divVec = {};
+
+	divVec.x = vector3.x * matrix4.m[0][0] + vector3.y * matrix4.m[1][0] + vector3.z * matrix4.m[2][0] + 1 * matrix4.m[3][0];
+
+	divVec.y = vector3.x * matrix4.m[0][1] + vector3.y * matrix4.m[1][1] + vector3.z * matrix4.m[2][1] + 1 * matrix4.m[3][1];
+
+	divVec.z = vector3.x * matrix4.m[0][2] + vector3.y * matrix4.m[1][2] + vector3.z * matrix4.m[2][2] + 1 * matrix4.m[3][2];
+
+	divVec.w = vector3.x * matrix4.m[0][3] + vector3.y * matrix4.m[1][3] + vector3.z * matrix4.m[2][3] + 1 * matrix4.m[3][3];
+
+	divVec.x = divVec.x / divVec.w;
+
+	divVec.y = divVec.y / divVec.w;
+
+	divVec.z = divVec.z / divVec.w;
+
+	return {divVec.x, divVec.y, divVec.z};
+}

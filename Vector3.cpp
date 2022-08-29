@@ -1,6 +1,35 @@
 #include "Vector3.h"
 #include <cmath>
 
+
+float Vector3::length() const { return std::sqrt(x * x + y * y + z * z); }
+
+Vector3& Vector3::normalize() {
+	float len = length();
+	if (len != 0) {
+		return *this /= len;
+	}
+	return *this;
+}
+
+Vector3 Vector3::vector3Normalize(Vector3& v) {
+	float x, y, z, w;
+
+	w = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+	x = v.x / w;
+	y = v.y / w;
+	z = v.z / w;
+
+	return Vector3(x, y, z);
+}
+
+float Vector3::dot(const Vector3& v) const { return x * v.x + y * v.y; }
+
+Vector3 Vector3::cross(const Vector3& v) const {
+	return Vector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+}
+
+
 // Vector2 ƒNƒ‰ƒX‚É‘®‚³‚È‚¢ŠÖ”ŒQ
 // 2€‰‰Zq
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
