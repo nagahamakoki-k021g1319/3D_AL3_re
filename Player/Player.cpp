@@ -42,14 +42,14 @@ void Player::Update(ViewProjection viewProjection_) {
 	const float kCharacterSpeed = 0.2f;
 
 	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_UP)) {
+	if (input_->PushKey(DIK_W)) {
 		move = {0, kCharacterSpeed, 0};
-	} else if (input_->PushKey(DIK_DOWN)) {
+	} else if (input_->PushKey(DIK_S)) {
 		move = {0, -kCharacterSpeed, 0};
 	}
-	if (input_->PushKey(DIK_LEFT)) {
+	if (input_->PushKey(DIK_A)) {
 		move = {-kCharacterSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_RIGHT)) {
+	} else if (input_->PushKey(DIK_D)) {
 		move = {kCharacterSpeed, 0, 0};
 	}
 
@@ -145,7 +145,43 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	////////////////////////////////////////////////////////////////////////////////
 
+	//----------スクリーン座標から2Dレティクルのワールド座標を計算-------//
 
+	POINT mousePosition;
+	//マウス座標(スクリーン座標)を取得する
+	GetCursorPos(&mousePosition);
+
+	//クライアントエリア座標に変換する
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
+
+	//ビュープロジェクションビューポート合成
+	Matrix4 matVPV = viewProjection_.matView * viewProjection_.matProjection * Viewport;
+
+	//合成行列の逆行列を計算する
+	Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
+	//スクリーン座標
+	Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
+	Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
+
+	//スクリーン座標系からワールド座標系へ
+	posNear = AffinTrans::wDivision(posNear, matInverseVPV);
+	posFar = AffinTrans::wDivision(posFar, matInverseVPV);
+
+	//マウスレイの方向
+	Vector3 mouseDirection = posFar - posNear;
+	mouseDirection = Vector3Normalize(mouseDirection);
+	//カメラから照準オブジェクトの距離
+	const float kDistanceTestObject = 222.0f;
+	worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
+
+	//行列更新
+	AffinTrans::affin(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
+
+	/////////////////////////////////////////////////////////////
 
 	debugText_->SetPos(50, 150);
 	debugText_->Printf(
@@ -174,7 +210,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 }
 
 void Player::Attack() { 
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->IsPressMouse(0)) {
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);

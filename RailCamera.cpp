@@ -23,14 +23,14 @@ void RailCamera::Update() {
 	const float kCharacterSpeed = 0.2f;
 
 	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_W)) {
+	if (input_->PushKey(DIK_UP)) {
 		move = {0, kCharacterSpeed, 0};
-	} else if (input_->PushKey(DIK_S)) {
+	} else if (input_->PushKey(DIK_DOWN)) {
 		move = {0, -kCharacterSpeed, 0};
 	}
-	if (input_->PushKey(DIK_A)) {
+	if (input_->PushKey(DIK_LEFT)) {
 		move = {-kCharacterSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_D)) {
+	} else if (input_->PushKey(DIK_RIGHT)) {
 		move = {kCharacterSpeed, 0, 0};
 	}
 
