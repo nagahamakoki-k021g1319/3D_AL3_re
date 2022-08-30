@@ -1,13 +1,12 @@
 ﻿#pragma once
 
-#include "Vector3.h"
 #include "Matrix4.h"
+#include "Vector3.h"
 
 namespace MathUtility {
 
-const float PI = 3.141592653f;
+const float PI = 3.141592654f;
 
-const float PI2 = PI * 2;
 // 零ベクトルを返す
 const Vector3 Vector3Zero();
 // 2ベクトルが一致しているか調べる
@@ -32,6 +31,8 @@ const Vector3 operator/(const Vector3& v, float s);
 Matrix4 Matrix4Identity();
 // 転置行列を求める
 Matrix4 Matrix4Transpose(const Matrix4& m);
+// 逆行列を求める
+Matrix4 Matrix4Inverse(const Matrix4& m, float* det = nullptr);
 
 // 拡大縮小行列の作成
 Matrix4 Matrix4Scaling(float sx, float sy, float sz);

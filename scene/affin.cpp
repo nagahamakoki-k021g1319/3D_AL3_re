@@ -151,6 +151,20 @@ Vector3 AffinTrans::GetWorldtransform(const Matrix4 matrix4) {
 	return worldPos;
 }
 
+Vector3 AffinTrans::AddVector(const Vector3 v1, const Vector3 v2) { 
+	
+	Vector3 addVec = {};
+	
+	addVec.x = v1.x + v2.x;
+
+	addVec.y = v1.y + v2.y;
+
+	addVec.z = v1.z + v2.z;
+
+	return addVec; 
+
+}
+
 Vector3 AffinTrans::wDivision(const Vector3& vector3, const Matrix4& matrix4) { 
 	
 	Vector4 divVec = {};

@@ -18,6 +18,8 @@ Vector3 MatVector(const Vector3 vector3, const Matrix4 matrix4);
 
 Vector3 GetWorldtransform(const Matrix4 matrix4);
 
+Vector3 AddVector(const Vector3 v1, const Vector3 v2);
+
 //ç¿ïWïœä∑
 Vector3 wDivision(const Vector3& v, const Matrix4& m);
 };
