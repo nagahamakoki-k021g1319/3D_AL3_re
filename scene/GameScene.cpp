@@ -1,9 +1,8 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-#include <random>
 #include <fstream>
-
+#include <random>
 
 GameScene::GameScene() {}
 
@@ -26,6 +25,10 @@ void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	textureHandle2_ = TextureManager::Load("enemy.jpg");
+	textureHandle3_ = TextureManager::Load("title.png");
+	textureHandle0_ = TextureManager::Load("kuriku.png");
+	textureHandle4_ = TextureManager::Load("claer.png");
+	textureHandle5_ = TextureManager::Load("over.png");
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 	model_ = Model::Create();
@@ -39,11 +42,29 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, textureHandle_);
 	player_->setparent(railCamera_->GetWorldPosition());
 
-	
+	//タイトルの生成
+	title_ = new Title();
+	//タイトルの初期化
+	title_->Initialize(model_, textureHandle3_);
+
+	//クリックの生成
+	push_ = new push();
+	//クリックの初期化
+	push_->Initialize(model_, textureHandle0_);
+
+	//ゲームクリアの生成
+	gameClear_ = new GameClear();
+	//ゲームクリアの初期化
+	gameClear_->Initialize(model_, textureHandle4_);
+
+	//ゲームオーバーの生成
+	gameOver_ = new GameOver();
+	//ゲームオーバーの初期化
+	gameOver_->Initialize(model_, textureHandle5_);
 
 	//スカイドームの生成
 	skydome_ = new Skydome();
-	//3Dモデルの生成
+	// 3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
@@ -51,11 +72,17 @@ void GameScene::Initialize() {
 	//レールカメラ
 	railCamera_ = new RailCamera();
 	//レールカメラの初期化
-	railCamera_->Initialize(Vector3(0,0,0),Vector3(0,0,0));
+	railCamera_->Initialize(Vector3(0, 0, 0), Vector3(0, 0, 0));
+
+	//敵弾リストの取得
+	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = GetBullets();
+	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+		//敵弾の衝突時コールバックを呼び出す
+		bullet->OnCollision();
+	}
 
 	//ファイルの読み込み
 	LoadEnemyPopData();
-
 }
 
 void GameScene::Update() {
@@ -64,62 +91,88 @@ void GameScene::Update() {
 	//座標を｛２，０｝移動
 	// position.x += 2.0f;
 	// position.y += 1.0f;
-	
+
 	//デスフラグの立った弾の削除
 	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->InDead(); });
 
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
 
-	//レールカメラの更新
-	railCamera_->Update();
+	switch (sceneNo_) {
+	case SceneNo::Title: //タイトル
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
+			sceneNo_ = SceneNo::Game;
+			Initialize();
+		}
+		title_->Update();
+		push_->Update();
+		playerTimer = 1000;
+		enemyDefeat = 0;
+		break;
+	case SceneNo::Game: //射撃
+		                //自機のHPタイマー
+		playerTimer--;
 
-	//自キャラの更新
-	player_->setparent(railCamera_->GetWorldPosition());
-	player_->Update(viewProjection_);
-	
-	//敵発生
-	UpdataEnemyPopCommands();
+		//レールカメラの更新
+		railCamera_->Update();
 
-	//敵の更新
-	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
-		enemy_->SetGameScene(this);
-		enemy_->Update();
+		//自キャラの更新
+		player_->setparent(railCamera_->GetWorldPosition());
+		player_->Update(viewProjection_);
+
+		//敵発生
+		UpdataEnemyPopCommands();
+
+		//敵の更新
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			enemy_->SetGameScene(this);
+			enemy_->Update();
+		}
+
+		//弾更新
+		//複数
+		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+			bullet->Update();
+		}
+
+		CheckAllCollisions();
+
+		//ゲームクリアに突入
+		if (enemyDefeat >= 4) {
+			sceneNo_ = SceneNo::Clear;
+		}
+		//ゲームオーバーに突入
+		if (playerTimer <= 0) {
+			sceneNo_ = SceneNo::Over;
+		}
+
+		//デバッグ用表示
+		debugText_->SetPos(50, 90);
+		debugText_->Printf("gekiha:%d", enemyDefeat);
+		debugText_->SetPos(50, 110);
+		debugText_->Printf("P HP:%d", playerTimer);
+
+		break;
+	case SceneNo::Clear: //クリア
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
+			sceneNo_ = SceneNo::Title;
+		}
+		gameClear_->Update();
+		push_->Update();
+		break;
+	case SceneNo::Over: //オーバー
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
+			sceneNo_ = SceneNo::Title;
+		}
+		gameOver_->Update();
+		push_->Update();
+		break;
 	}
-
-
-
-	//弾更新
-	//複数
-	for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
-		bullet->Update();
-	}
-
-	//デバックカメラ
-	/*debugCamera_->Update();*/
-
-	
-
-	//行列の再計算
-	viewProjection_.UpdateMatrix();
-
-	CheckAllCollisions();
-
 
 	//デバッグ用表示
-#pragma region debugText
-	debugText_->SetPos(50, 70);
+	/*debugText_->SetPos(50, 90);
 	debugText_->Printf(
-	  "target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y,
-	  viewProjection_.target.z);
-
-	debugText_->SetPos(50, 90);
-	debugText_->Printf(
-	  "up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
-
-	debugText_->SetPos(50, 110);
-	debugText_->Printf("%d", enemys_.size());
-
+	  "up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);*/
 #pragma endregion
 }
 
@@ -150,16 +203,34 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	player_->Draw(railCamera_->GetViewProjection());
+	switch (sceneNo_) {
+	case SceneNo::Title: //タイトル
+		title_->Draw(viewProjection_);
+		push_->Draw(viewProjection_);
+		break;
+	case SceneNo::Game: //射撃
+		player_->Draw(railCamera_->GetViewProjection());
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			enemy_->Draw(railCamera_->GetViewProjection());
+		}
+
+		//弾更新
+		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+			bullet->Draw(railCamera_->GetViewProjection());
+		}
+		break;
+	case SceneNo::Clear: //クリア
+		gameClear_->Draw(viewProjection_);
+		push_->Draw(viewProjection_);
+		break;
+	case SceneNo::Over: //オーバー
+		gameOver_->Draw(viewProjection_);
+		push_->Draw(viewProjection_);
+		break;
+	}
+
 	skydome_->Draw(railCamera_->GetViewProjection());
-	for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
-		enemy_->Draw(railCamera_->GetViewProjection());
-	}
-	
-	//弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
-		bullet->Draw(railCamera_->GetViewProjection());
-	}
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -172,11 +243,21 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	player_->DrawUI();
+	switch (sceneNo_) {
+	case SceneNo::Title: //タイトル
+		break;
+	case SceneNo::Game: //射撃
+		player_->DrawUI();
+		break;
+	case SceneNo::Clear: //クリア
+		break;
+	case SceneNo::Over: //オーバー
+		break;
+	}
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
-	
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
@@ -187,7 +268,7 @@ void GameScene::CheckAllCollisions() {
 
 	//判定対象AとBの座標
 	Vector3 posA, posB;
-	
+
 	//自弾リストの取得
 	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	//敵弾リストの取得
@@ -214,9 +295,8 @@ void GameScene::CheckAllCollisions() {
 			//敵弾の衝突時コールバックを呼び出す
 			bullet->OnCollision();
 		}
-
 	}
-	#pragma endregion
+#pragma endregion
 
 #pragma region 自弾と敵キャラの当たり判定
 	//敵キャラの座標
@@ -236,18 +316,19 @@ void GameScene::CheckAllCollisions() {
 
 			if (cd <= playerBulletRadius + enemyRadius) {
 				//敵キャラの衝突時コールバックを呼び出す
- 				enemy_->OnCollision();
+				enemy_->OnCollision();
+				enemyDefeat++;
 				//自弾の衝突時コールバックを呼び出す
 				bullet->OnCollision();
 			}
 		}
 	}
 
-	#pragma endregion
+#pragma endregion
 
 	//#pragma region 自弾と敵弾の当たり判定
 	////自キャラと敵弾すべての当たり判定
-	//for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+	// for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
 	//	for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets) {
 
 	//		//自弾の座標
@@ -279,7 +360,7 @@ void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet) {
 }
 
 void GameScene::LoadEnemyPopData() {
-	
+
 	//ファイルを開く
 	std::ifstream file;
 	file.open("Resources/enemyPop.csv");
@@ -291,11 +372,10 @@ void GameScene::LoadEnemyPopData() {
 
 	//ファイルを閉じる
 	file.close();
-
 }
 
 void GameScene::UpdataEnemyPopCommands() {
-	
+
 	//待機処理
 	if (isStand_) {
 		standTime_--;
@@ -353,7 +433,6 @@ void GameScene::UpdataEnemyPopCommands() {
 			break;
 		}
 	}
-
 }
 
 void GameScene::GenerEnemy(Vector3 EnemyPos) {
