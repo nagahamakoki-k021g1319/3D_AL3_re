@@ -66,7 +66,7 @@ void Enemy::Fire() {
 	/*assert(player_);*/
 
 	//弾の速度
-	const float kBulletSpeed = -1.0f;
+	const float kBulletSpeed = -2.0f;
 	Vector3 velocity(0, 0, kBulletSpeed);
 
 	//プレイヤーのワールド座標の取得

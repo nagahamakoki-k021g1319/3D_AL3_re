@@ -13,10 +13,14 @@
 #include "affin.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "Skydome.h"
-#include "RailCamera.h"
+#include "Skydome/Skydome.h"
+#include "RailCamera/RailCamera.h"
 #include "EnemyBullet.h"
 #include <sstream>
+#include "Title.h"
+#include "push.h"
+#include "GameClear.h"
+#include "GameOver.h"
 
 /// <summary>
 /// ゲームシーン
@@ -78,6 +82,15 @@ class GameScene {
 	//弾リストを取得
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemybullets_; }
 
+	//シーン切り替え
+	enum class SceneNo {
+		Title, //タイトル
+		Game,  //射撃
+		Clear, //ゲームクリア
+		Over   //ゲメオーバー
+	};
+
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -87,6 +100,18 @@ class GameScene {
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 	uint32_t textureHandle2_ = 0;
+	//ボタンを押せ!!
+	uint32_t textureHandle0_ = 0;
+	push* push_ = nullptr;
+	//タイトル
+	uint32_t textureHandle3_ = 0;
+	Title* title_ = nullptr;
+	//ゲームクリア
+	uint32_t textureHandle4_ = 0;
+	GameClear* gameClear_ = 0;
+	//ゲームオーバー
+	uint32_t textureHandle5_ = 0;
+	GameOver* gameOver_ = 0;
 
 	// 3Dモデル
 	Model* model_ = nullptr;
@@ -103,10 +128,14 @@ class GameScene {
 	Player* player_ = nullptr;
 	int playerRadius = 1;
 	int playerBulletRadius = 1;
+	//自機のの撃破カウント
+	int playerTimer = 1000;
 	//敵キャラ
 	std::list<std::unique_ptr<Enemy>> enemys_;
 	int enemyRadius = 1;
 	int enemyBulletRadius = 1;
+	//敵の撃破カウント
+	int enemyDefeat = 0;
 	//弾 複数
 	std::list<std::unique_ptr<EnemyBullet>> enemybullets_;
 
@@ -117,6 +146,9 @@ class GameScene {
 
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
+
+	
+
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
@@ -130,7 +162,7 @@ class GameScene {
 	//待機タイマー
 	int standTime_ = 0;
 
-	/// <summary>
-	/// ゲームシーン用
-	/// </summary>
+	SceneNo sceneNo_ = SceneNo::Title;
+
+
 };

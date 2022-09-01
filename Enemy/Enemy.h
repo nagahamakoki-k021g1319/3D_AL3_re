@@ -74,5 +74,4 @@ class Enemy {
 
 	//ƒQ[ƒ€ƒV[ƒ“
 	GameScene* gameScene_ = nullptr;
-
 };

@@ -17,7 +17,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {-2, -2, 30};
+	worldTransform_.translation_ = {0, 0, 40};
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
@@ -188,6 +188,18 @@ void Player::Update(ViewProjection viewProjection_) {
 	  "translation : %f,%f,%f", worldTransform_.translation_.x,
 	  worldTransform_.translation_.y,
 	  worldTransform_.translation_.z);
+	DebugText::GetInstance()->SetPos(20, 200);
+	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
+	DebugText::GetInstance()->SetPos(20, 220);
+	DebugText::GetInstance()->Printf("Near:(%f,%f,%f)", posNear.x, posNear.y, posNear.z);
+	DebugText::GetInstance()->SetPos(20, 240);
+	DebugText::GetInstance()->Printf("Far:(%f,%f,%f)", posFar.x, posFar.y, posFar.z);
+	DebugText::GetInstance()->SetPos(20, 260);
+	DebugText::GetInstance()->Printf(
+	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
+	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);
+
+
 }
 
 void Player::Draw(ViewProjection viewProjection_) { 
@@ -210,7 +222,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 }
 
 void Player::Attack() { 
-	if (input_->IsPressMouse(0)) {
+	if (input_->IsTriggerMouse(0)) {
 		//弾の速度
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
