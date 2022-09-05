@@ -90,6 +90,7 @@ class GameScene {
 		Over   //ゲメオーバー
 	};
 
+	void EnemyReset();
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;

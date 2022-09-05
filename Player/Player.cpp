@@ -183,7 +183,7 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	/////////////////////////////////////////////////////////////
 
-	debugText_->SetPos(50, 150);
+	/*debugText_->SetPos(50, 150);
 	debugText_->Printf(
 	  "translation : %f,%f,%f", worldTransform_.translation_.x,
 	  worldTransform_.translation_.y,
@@ -197,7 +197,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	DebugText::GetInstance()->SetPos(20, 260);
 	DebugText::GetInstance()->Printf(
 	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
-	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);
+	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
 
 
 }

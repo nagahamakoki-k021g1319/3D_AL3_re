@@ -1,6 +1,9 @@
 #include "RailCamera.h"
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
+	// マウスカーソルの非表示
+	ShowCursor(FALSE);
+	
 	//ワールドトランスフォームの初期設定
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
@@ -68,10 +71,6 @@ void RailCamera::Update() {
 	//ビュープロジェクションを更新
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
-
-	debugText_->SetPos(50, 130);
-	debugText_->Printf(
-	  "eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
 
 }
 

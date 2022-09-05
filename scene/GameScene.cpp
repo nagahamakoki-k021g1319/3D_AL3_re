@@ -106,6 +106,7 @@ void GameScene::Update() {
 		}
 		title_->Update();
 		push_->Update();
+		EnemyReset();
 		playerTimer = 1000;
 		enemyDefeat = 0;
 		break;
@@ -147,10 +148,8 @@ void GameScene::Update() {
 		}
 
 		//デバッグ用表示
-		debugText_->SetPos(50, 90);
-		debugText_->Printf("gekiha:%d", enemyDefeat);
 		debugText_->SetPos(50, 110);
-		debugText_->Printf("P HP:%d", playerTimer);
+		debugText_->Printf("Time limit :%d", playerTimer);
 
 		break;
 	case SceneNo::Clear: //クリア
@@ -446,6 +445,12 @@ void GameScene::GenerEnemy(Vector3 EnemyPos) {
 
 	//リストに登録する
 	enemys_.push_back(std::move(newEnemy));
+}
+
+void GameScene::EnemyReset() {
+	enemyPopCommands.str("");
+	enemyPopCommands.clear(std::stringstream::goodbit);
+	LoadEnemyPopData();
 }
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }

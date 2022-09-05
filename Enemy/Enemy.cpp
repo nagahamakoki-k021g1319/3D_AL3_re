@@ -47,13 +47,6 @@ void Enemy::Update() {
 		shotTimer = kFireInterval;
 	}
 
-	
-
-
-	debugText_->SetPos(50, 180);
-	debugText_->Printf(
-	  "Enemytranslation : %f,%f,%f", worldTransform_.translation_.x, worldTransform_.translation_.y,
-	  worldTransform_.translation_.z);
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {
