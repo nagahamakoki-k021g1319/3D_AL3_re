@@ -92,6 +92,10 @@ class GameScene {
 
 	void EnemyReset();
 
+	void EnemyTarget(Vector3 targetPos,Vector3 playerPos,float distance);
+
+	
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;

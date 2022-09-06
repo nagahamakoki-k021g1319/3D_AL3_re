@@ -97,7 +97,7 @@ void GameScene::Update() {
 
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
-
+	
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
@@ -114,8 +114,7 @@ void GameScene::Update() {
 		                //自機のHPタイマー
 		playerTimer--;
 
-		//レールカメラの更新
-		railCamera_->Update();
+		
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
@@ -128,6 +127,7 @@ void GameScene::Update() {
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->SetGameScene(this);
 			enemy_->Update();
+			EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 		}
 
 		//弾更新
@@ -142,10 +142,15 @@ void GameScene::Update() {
 		if (enemyDefeat >= 4) {
 			sceneNo_ = SceneNo::Clear;
 		}
-		//ゲームオーバーに突入
-		if (playerTimer <= 0) {
-			sceneNo_ = SceneNo::Over;
-		}
+		////ゲームオーバーに突入
+		//if (playerTimer <= 0) {
+		//	sceneNo_ = SceneNo::Over;
+		//}
+
+		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
+		
+		//レールカメラの更新
+		railCamera_->Update();
 
 		//デバッグ用表示
 		debugText_->SetPos(50, 110);
@@ -153,6 +158,12 @@ void GameScene::Update() {
 
 		break;
 	case SceneNo::Clear: //クリア
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			enemy_->OnCollision();
+		}
+		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+			bullet->OnCollision();
+		}
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
@@ -160,6 +171,12 @@ void GameScene::Update() {
 		push_->Update();
 		break;
 	case SceneNo::Over: //オーバー
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			enemy_->OnCollision();
+		}
+		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+			bullet->OnCollision();
+		}
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
@@ -362,7 +379,7 @@ void GameScene::LoadEnemyPopData() {
 
 	//ファイルを開く
 	std::ifstream file;
-	file.open("Resources/enemyPop.csv");
+	file.open("Resources/enemyPop2.csv");
 
 	assert(file.is_open());
 
@@ -451,6 +468,20 @@ void GameScene::EnemyReset() {
 	enemyPopCommands.str("");
 	enemyPopCommands.clear(std::stringstream::goodbit);
 	LoadEnemyPopData();
+}
+
+void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance)
+{
+	//単位ベクトルの取得
+	Vector3 playerTarget = { targetPos.x - playerPos.x,targetPos.y - playerPos.y,targetPos.z - playerPos.z };
+	float length = sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
+	Vector3 unitvecPlayerTarget = { playerTarget.x / length,playerTarget.y / length,playerTarget.z / length };
+
+	//カメラの位置制御
+	railCamera_->GetWorldPosition()->translation_ = { playerPos.x - unitvecPlayerTarget.x * distance,1.0f,playerPos.z - unitvecPlayerTarget.z * distance };
+
+	//注視点取得
+	railCamera_->GetViewProjection().target = { targetPos.x + unitvecPlayerTarget.x,targetPos.y + unitvecPlayerTarget.y,targetPos.z + unitvecPlayerTarget.z };
 }
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }
