@@ -1,6 +1,8 @@
 #include "RailCamera.h"
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
+	
+	
 	//ワールドトランスフォームの初期設定
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
@@ -21,18 +23,23 @@ void RailCamera::Update() {
 	Vector3 rotate = {0, 0, 0};
 	//キャラクターの移動の速さ
 	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed1 = -0.2f;
+	const float kCharacterLimit = -1.0f;
 
 	//押した方向で移動ベクトルを変更
 	if (input_->PushKey(DIK_UP)) {
 		move = {0, kCharacterSpeed, 0};
 	} else if (input_->PushKey(DIK_DOWN)) {
-		move = {0, -kCharacterSpeed, 0};
+		move = {0, kCharacterSpeed1, 0};
 	}
 	if (input_->PushKey(DIK_LEFT)) {
 		move = {-kCharacterSpeed, 0, 0};
 	} else if (input_->PushKey(DIK_RIGHT)) {
 		move = {kCharacterSpeed, 0, 0};
 	}
+
+	
+	
 
 	worldTransform_.translation_ += move;
 
@@ -70,8 +77,7 @@ void RailCamera::Update() {
 	viewProjection_.TransferMatrix();
 
 	debugText_->SetPos(50, 130);
-	debugText_->Printf(
-	  "eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+	    debugText_->Printf("otiro :%f",kCharacterSpeed1);
 
 }
 

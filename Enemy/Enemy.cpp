@@ -26,17 +26,26 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 void Enemy::Update() {
 
 	//敵の移動の速さ
-	const float kCharacterSpeed = 0.1f;
-
+	 float kCharacterSpeed = 0.1f;
+	 float kCharacterSpeedX = 0.1f;
+	 float kCharacterSpeedX2 = 0.6f;
 	//行列更新
 	AffinTrans::affin(worldTransform_);
 
 	worldTransform_.TransferMatrix();
 
 	//移動(ベクトルを加算)
-	worldTransform_.translation_ += {0, 0, -kCharacterSpeed};
-	
+	if (worldTransform_.translation_.x > 30.0f) {
+		isChangeFlag = 1;
+		/*kCharacterSpeedX = -kCharacterSpeedX;*/
+	} /*else if (worldTransform_.translation_.x <= -20.0f) {
+		kCharacterSpeedX = -kCharacterSpeedX;
+	}*/
+	if (isChangeFlag == 1) {
+		kCharacterSpeedX = -kCharacterSpeedX;
+	}
 
+	worldTransform_.translation_ += {kCharacterSpeedX, 0, -kCharacterSpeed};
 	//発射タイマーカウントダウン
 	shotTimer--;
 
@@ -47,13 +56,6 @@ void Enemy::Update() {
 		shotTimer = kFireInterval;
 	}
 
-	
-
-
-	debugText_->SetPos(50, 180);
-	debugText_->Printf(
-	  "Enemytranslation : %f,%f,%f", worldTransform_.translation_.x, worldTransform_.translation_.y,
-	  worldTransform_.translation_.z);
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {

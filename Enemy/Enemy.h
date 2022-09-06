@@ -74,4 +74,7 @@ class Enemy {
 
 	//ゲームシーン
 	GameScene* gameScene_ = nullptr;
+
+	//方向転換のフラグ
+	int isChangeFlag = 0;
 };
