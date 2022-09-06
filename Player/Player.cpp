@@ -35,6 +35,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		return bullet->IsDead();  
 	});
 
+
 	
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
@@ -43,9 +44,9 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	//押した方向で移動ベクトルを変更
 	if (input_->PushKey(DIK_W)) {
-		move = {0, kCharacterSpeed, 0};
+		move = {0, 0, kCharacterSpeed };
 	} else if (input_->PushKey(DIK_S)) {
-		move = {0, -kCharacterSpeed, 0};
+		move = {0, 0, -kCharacterSpeed };
 	}
 	if (input_->PushKey(DIK_A)) {
 		move = {-kCharacterSpeed, 0, 0};
@@ -74,13 +75,7 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	const float kChestRotSpeed = 0.05f;
 
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_J)) {
-		worldTransform_.rotation_.y -= kChestRotSpeed;
-	} else if (input_->PushKey(DIK_K)) {
-		worldTransform_.rotation_.y += kChestRotSpeed;
-	}
-
+	
 	//弾発射処理
 	Attack();
 
