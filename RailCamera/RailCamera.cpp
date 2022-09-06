@@ -1,83 +1,84 @@
 #include "RailCamera.h"
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
+
+	// ãƒžã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã®éžè¡¨ç¤º
+	ShowCursor(FALSE);
+
 	
-	
-	//ƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚Ì‰ŠúÝ’è
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ ã®åˆæœŸè¨­å®š
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“‚Ì‰Šú‰»
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–
 	viewProjection_.Initialize();
 }
 
 void RailCamera::Update() {
 	
-	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®ƒxƒNƒgƒ‹
-	Vector3 move = {0, 0, 0};
-	Vector3 rotate = {0, 0, 0};
-	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®‚Ì‘¬‚³
-	const float kCharacterSpeed = 0.2f;
-	const float kCharacterSpeed1 = -0.2f;
-	const float kCharacterLimit = -1.0f;
 
-	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ð•ÏX
-	if (input_->PushKey(DIK_UP)) {
-		move = {0, kCharacterSpeed, 0};
-	} else if (input_->PushKey(DIK_DOWN)) {
-		move = {0, kCharacterSpeed1, 0};
-	}
-	if (input_->PushKey(DIK_LEFT)) {
-		move = {-kCharacterSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_RIGHT)) {
-		move = {kCharacterSpeed, 0, 0};
-	}
+	////ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«
+	//Vector3 move = {0, 0, 0};
+	//Vector3 rotate = {0, 0, 0};
+	////ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ã®é€Ÿã•
+	//const float kCharacterSpeed = 0.2f;
 
+	////æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
+	//if (input_->PushKey(DIK_UP)) {
+	//	move = {0, kCharacterSpeed, 0};
+	//} else if (input_->PushKey(DIK_DOWN)) {
+	//	move = {0, -kCharacterSpeed, 0};
+	//}
+	//if (input_->PushKey(DIK_LEFT)) {
+	//	move = {-kCharacterSpeed, 0, 0};
+	//} else if (input_->PushKey(DIK_RIGHT)) {
+	//	move = {kCharacterSpeed, 0, 0};
+	//}
+
+	//worldTransform_.translation_ += move;
+
+	////å›žè»¢
+	//const float kChestRotSpeed = 0.02f;
+
+	////æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
+	//if (input_->PushKey(DIK_U)) {
+	//	rotate = {0, kChestRotSpeed, 0};
+	//} else if (input_->PushKey(DIK_I)) {
+	//	rotate = {0, -kChestRotSpeed, 0};
+	//}
+	//worldTransform_.rotation_ += rotate;
+
+	////è¡Œåˆ—æ›´æ–°
+	//AffinTrans::affin(worldTransform_);
+
+	//worldTransform_.TransferMatrix();
+
+	//viewProjection_.eye = worldTransform_.translation_;
+	////ãƒ¯ãƒ¼ãƒ«ãƒ‰å‰æ–¹ãƒ™ã‚¯ãƒˆãƒ«
+	//Vector3 forward(0, 0, 1);
+	////ãƒ¬ãƒ¼ãƒ«ã‚«ãƒ¡ãƒ©ã®å›žè»¢ã‚’åæ˜ 
+	//forward = AffinTrans::MatVector(forward, worldTransform_.matWorld_);
+	//////è¦–ç‚¹ã‹ã‚‰å‰æ–¹ã«é©å½“ãªè·é›¢é€²ã‚“ã ä½ç½®ãŒæ³¨è¦–ç‚¹
+	//viewProjection_.target.x = viewProjection_.eye.x + forward.x;
+	//viewProjection_.target.y = viewProjection_.eye.y + forward.y;
+	//viewProjection_.target.z = viewProjection_.eye.z + forward.z;
 	
-	
 
-	worldTransform_.translation_ += move;
 
-	//‰ñ“]
-	const float kChestRotSpeed = 0.02f;
 
-	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ð•ÏX
-	if (input_->PushKey(DIK_U)) {
-		rotate = {0, kChestRotSpeed, 0};
-	} else if (input_->PushKey(DIK_I)) {
-		rotate = {0, -kChestRotSpeed, 0};
-	}
-	worldTransform_.rotation_ += rotate;
-
-	//s—ñXV
-	AffinTrans::affin(worldTransform_);
-
-	worldTransform_.TransferMatrix();
-
-	viewProjection_.eye = worldTransform_.translation_;
-	//ƒ[ƒ‹ƒh‘O•ûƒxƒNƒgƒ‹
-	Vector3 forward(0, 0, 1);
-	//ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ð”½‰f
-	forward = AffinTrans::MatVector(forward, worldTransform_.matWorld_);
-	//Ž‹“_‚©‚ç‘O•û‚É“K“–‚È‹——£i‚ñ‚¾ˆÊ’u‚ª’Ž‹“_
-	viewProjection_.target.x = viewProjection_.eye.x + forward.x;
-	viewProjection_.target.y = viewProjection_.eye.y + forward.y;
-	viewProjection_.target.z = viewProjection_.eye.z + forward.z;
-	//ƒ[ƒ‹ƒhã•ûƒxƒNƒgƒ‹
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰ä¸Šæ–¹ãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 up(0, 1, 0);
-	//ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ð”½‰f
+	//ãƒ¬ãƒ¼ãƒ«ã‚«ãƒ¡ãƒ©ã®å›žè»¢ã‚’åæ˜ 
 	viewProjection_.up = AffinTrans::MatVector(up, worldTransform_.matWorld_);
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“‚ðXV
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ›´æ–°
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
 
-	debugText_->SetPos(50, 130);
-	    debugText_->Printf("otiro :%f",kCharacterSpeed1);
 
 }
 
@@ -89,5 +90,11 @@ WorldTransform* RailCamera::GetWorldPosition() {
     
 
 	return &worldTransform_;
+}
+
+void RailCamera::SetWorldPos(Vector3 vec)
+{
+	worldTransform_.translation_ += vec;
+	
 }
 

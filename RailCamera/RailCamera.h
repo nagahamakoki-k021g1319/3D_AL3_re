@@ -25,6 +25,9 @@ class RailCamera {
 	//ワールド座標を取得
 	WorldTransform* GetWorldPosition();
 
+	//セッター
+	void SetWorldPos(Vector3 vec);
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;

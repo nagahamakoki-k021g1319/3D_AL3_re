@@ -3,25 +3,25 @@
 using namespace MathUtility;
 
 void Player::Initialize(Model* model, uint32_t textureHandle) {
-	//NULLƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN
+	//NULLãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯
 	assert(model);
 	model_ = model;
 	textureHandle_ = textureHandle;
 	
-	//ƒVƒ“ƒOƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	//3DƒŒƒeƒBƒNƒ‹—pƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‰Šú‰»
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ åˆæœŸåŒ–
 	worldTransform3DReticle_.Initialize();
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = {0, -12, 40};
 
-	//ƒŒƒeƒBƒNƒ‹—pƒeƒNƒXƒ`ƒƒæ“¾
+	//ãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£å–å¾—
 	uint32_t textureReticle = TextureManager::Load("tage.png");
-	//ƒXƒvƒ‰ƒCƒg¶¬
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆç”Ÿæˆ
 	sprite2DReticle_.reset(
 	  Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
@@ -30,22 +30,24 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 void Player::Update(ViewProjection viewProjection_) {
 	
-	//ƒfƒXƒtƒ‰ƒO‚Ì—§‚Á‚½’e‚Ìíœ
+	//ãƒ‡ã‚¹ãƒ•ãƒ©ã‚°ã®ç«‹ã£ãŸå¼¾ã®å‰Šé™¤
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) { 
 		return bullet->IsDead();  
 	});
 
+
+
 	
-	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®ƒxƒNƒgƒ‹
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 move = {0, 0, 0};
-	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®‚Ì‘¬‚³
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ã®é€Ÿã•
 	const float kCharacterSpeed = 0.2f;
 
-	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
+	//æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
 	if (input_->PushKey(DIK_W)) {
-		move = {0, kCharacterSpeed, 0};
+		move = {0, 0, kCharacterSpeed };
 	} else if (input_->PushKey(DIK_S)) {
-		move = {0, -kCharacterSpeed, 0};
+		move = {0, 0, -kCharacterSpeed };
 	}
 	if (input_->PushKey(DIK_A)) {
 		move = {-kCharacterSpeed, 0, 0};
@@ -55,10 +57,10 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	worldTransform_.translation_ += move;
 
-	//s—ñXV
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform_);
 
-	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+	//worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
 
 	worldTransform_.TransferMatrix();
 
@@ -66,7 +68,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	const float kMoveLimitX = 35;
 	const float kMoveLimitY = 18;
 
-	//”ÍˆÍ‚ğ’´‚¦‚È‚¢ˆ—
+	//ç¯„å›²ã‚’è¶…ãˆãªã„å‡¦ç†
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
@@ -74,59 +76,53 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	const float kChestRotSpeed = 0.05f;
 
-	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
-	if (input_->PushKey(DIK_J)) {
-		worldTransform_.rotation_.y -= kChestRotSpeed;
-	} else if (input_->PushKey(DIK_K)) {
-		worldTransform_.rotation_.y += kChestRotSpeed;
-	}
-
-	//’e”­Ëˆ—
+	
+	//å¼¾ç™ºå°„å‡¦ç†
 	Attack();
 
-	//’eXV
-	//•¡”
+	//å¼¾æ›´æ–°
+	//è¤‡æ•°
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Update();
 	}
 
-	//’P”­
+	//å˜ç™º
 	/*if (bullet_) {
 		bullet_->Update();
 	}*/
 
-	//---------©‹@‚Ìƒ[ƒ‹ƒhÀ•W‚©‚ç3DƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒhÀ•W‚ğŒvZ-----------//
+	//---------è‡ªæ©Ÿã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‹ã‚‰3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’è¨ˆç®—-----------//
 	
-	//©‹@‚©‚ç3DƒŒƒeƒBƒNƒ‹‚Ö‚Ì‹——£
+	//è‡ªæ©Ÿã‹ã‚‰3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã¸ã®è·é›¢
 	const float kDistancePlayerTo3DReticle = 60.0f;
-	//©‹@‚©‚ç3DƒŒƒeƒBƒNƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg(Z+Œü‚«)
+	//è‡ªæ©Ÿã‹ã‚‰3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ(Z+å‘ã)
 	Vector3 offset = {0, 0, 1.0f};
-	//©‹@‚Ìƒ[ƒ‹ƒhÀ•W‚Ì‰ñ“]‚ğ”½‰f
+	//è‡ªæ©Ÿã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã®å›è»¢ã‚’åæ˜ 
 	offset = AffinTrans::MatVector(offset,worldTransform_.matWorld_);
-	//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ®‚¦‚é
+	//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’æ•´ãˆã‚‹
 	offset = Vector3Normalize(offset) * kDistancePlayerTo3DReticle;
-	//3DƒŒƒeƒBƒNƒ‹À•Wİ’è
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«åº§æ¨™è¨­å®š
 	worldTransform3DReticle_.translation_ =
 	  offset + Vector3(
 		  worldTransform_.matWorld_.m[3][0], 
 		  worldTransform_.matWorld_.m[3][1],
 	      worldTransform_.matWorld_.m[3][2]
 	  );
-	//s—ñXV
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform3DReticle_);
 	worldTransform3DReticle_.TransferMatrix();
 	
 	/////////////////////////////////////////////////////////////////
 
 
-	//----------3DƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒhÀ•W‚©‚ç2DƒŒƒeƒBƒNƒ‹‚ÌƒXƒNƒŠ[ƒ“À•W‚ğŒvZ-------//
+	//----------3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‹ã‚‰2Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã‚’è¨ˆç®—-------//
 
 	Vector3 positionReticle = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_);
 
 	Vector2 windowWH =
 	  Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
 
-	//ƒrƒ…[ƒ|[ƒgs—ñ
+	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—
 	Matrix4 Viewport = {
 	   windowWH.x / 2,				  0,  0,  0, 
 					0,	-windowWH.y / 2,  0,  0, 
@@ -134,71 +130,90 @@ void Player::Update(ViewProjection viewProjection_) {
 	   windowWH.x / 2,	 windowWH.y / 2,  0,  1
 	};
 	  
-	//ƒrƒ…[s—ñ‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñAƒrƒ…[ƒ|[ƒgs—ñ‚ğ‡¬‚·‚é
+	//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã€ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—ã‚’åˆæˆã™ã‚‹
 	Matrix4 matViewProjectionViewport = viewProjection_.matView * viewProjection_.matProjection * Viewport;
 
-	//ƒ[ƒ‹ƒh¨ƒXƒNƒŠ[ƒ“À•W•ÏŠ·(‚±‚±‚©‚ç3D‚©‚ç2D‚É‚È‚é)
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰â†’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™å¤‰æ›(ã“ã“ã‹ã‚‰3Dã‹ã‚‰2Dã«ãªã‚‹)
 	positionReticle = AffinTrans::wDivision(positionReticle, matViewProjectionViewport);
 
-	//ƒXƒvƒ‰ƒCƒg‚ÌƒŒƒeƒBƒNƒ‹‚ÉÀ•Wİ’è
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®ãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã«åº§æ¨™è¨­å®š
 	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 
 	////////////////////////////////////////////////////////////////////////////////
 
-	//----------ƒXƒNƒŠ[ƒ“À•W‚©‚ç2DƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒhÀ•W‚ğŒvZ-------//
+	//----------ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã‹ã‚‰2Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’è¨ˆç®—-------//
 
 	POINT mousePosition;
-	//ƒ}ƒEƒXÀ•W(ƒXƒNƒŠ[ƒ“À•W)‚ğæ“¾‚·‚é
+	//ãƒã‚¦ã‚¹åº§æ¨™(ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™)ã‚’å–å¾—ã™ã‚‹
 	GetCursorPos(&mousePosition);
 
-	//ƒNƒ‰ƒCƒAƒ“ƒgƒGƒŠƒAÀ•W‚É•ÏŠ·‚·‚é
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¨ãƒªã‚¢åº§æ¨™ã«å¤‰æ›ã™ã‚‹
 	HWND hwnd = WinApp::GetInstance()->GetHwnd();
 	ScreenToClient(hwnd, &mousePosition);
 
 	sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
 
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“ƒrƒ…[ƒ|[ƒg‡¬
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆåˆæˆ
 	Matrix4 matVPV = viewProjection_.matView * viewProjection_.matProjection * Viewport;
 
-	//‡¬s—ñ‚Ì‹ts—ñ‚ğŒvZ‚·‚é
+	//åˆæˆè¡Œåˆ—ã®é€†è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹
 	Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
-	//ƒXƒNƒŠ[ƒ“À•W
+	//ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™
 	Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
 	Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
 
-	//ƒXƒNƒŠ[ƒ“À•WŒn‚©‚çƒ[ƒ‹ƒhÀ•WŒn‚Ö
+	//ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ç³»ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»ã¸
 	posNear = AffinTrans::wDivision(posNear, matInverseVPV);
 	posFar = AffinTrans::wDivision(posFar, matInverseVPV);
 
-	//ƒ}ƒEƒXƒŒƒC‚Ì•ûŒü
+	//ãƒã‚¦ã‚¹ãƒ¬ã‚¤ã®æ–¹å‘
 	Vector3 mouseDirection = posFar - posNear;
 	mouseDirection = Vector3Normalize(mouseDirection);
-	//ƒJƒƒ‰‚©‚çÆ€ƒIƒuƒWƒFƒNƒg‚Ì‹——£
+	//ã‚«ãƒ¡ãƒ©ã‹ã‚‰ç…§æº–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è·é›¢
 	const float kDistanceTestObject = 222.0f;
 	worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
 
-	//s—ñXV
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform3DReticle_);
 	worldTransform3DReticle_.TransferMatrix();
 
 	/////////////////////////////////////////////////////////////
+
+
+	/*debugText_->SetPos(50, 150);
+	debugText_->Printf(
+	  "translation : %f,%f,%f", worldTransform_.translation_.x,
+	  worldTransform_.translation_.y,
+	  worldTransform_.translation_.z);
+	DebugText::GetInstance()->SetPos(20, 200);
+	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
+	DebugText::GetInstance()->SetPos(20, 220);
+	DebugText::GetInstance()->Printf("Near:(%f,%f,%f)", posNear.x, posNear.y, posNear.z);
+	DebugText::GetInstance()->SetPos(20, 240);
+	DebugText::GetInstance()->Printf("Far:(%f,%f,%f)", posFar.x, posFar.y, posFar.z);
+	DebugText::GetInstance()->SetPos(20, 260);
+	DebugText::GetInstance()->Printf(
+	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
+	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
+
+
 
 }
 
 void Player::Draw(ViewProjection viewProjection_) { 
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 	
-	//’eXV
-	//•¡”
+	//å¼¾æ›´æ–°
+	//è¤‡æ•°
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
 	}
 
-	//3DƒŒƒeƒBƒNƒ‹‚ğ•`‰æ
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã‚’æç”»
 	model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
 
 
-	//’P”­
+	//å˜ç™º
 	/*if (bullet_) {
 		bullet_->Draw(viewProjection_);
 	}*/
@@ -206,30 +221,30 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 void Player::Attack() { 
 	if (input_->IsTriggerMouse(0)) {
-		//’e‚Ì‘¬“x
+		//å¼¾ã®é€Ÿåº¦
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
-		//‘¬“xƒxƒNƒgƒ‹‚ğ©‹@‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]‚³‚¹‚é
+		//é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«ã‚’è‡ªæ©Ÿã®å‘ãã«åˆã‚ã›ã¦å›è»¢ã•ã›ã‚‹
 		velocity = bVelocity(velocity, worldTransform_);
 
-		//©‹@‚©‚ç•W€ƒIƒuƒWƒFƒNƒg‚Ö‚ÌƒxƒNƒgƒ‹
+		//è‡ªæ©Ÿã‹ã‚‰æ¨™æº–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
 		velocity = Vector3Normalize(velocity) * kBulletSpeed;
 
-		//’e‚ğ¶¬‚µ‰Šú‰»
-		//•¡”
+		//å¼¾ã‚’ç”Ÿæˆã—åˆæœŸåŒ–
+		//è¤‡æ•°
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 
-		//’P”­
+		//å˜ç™º
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
 		newBullet->Initialize(model_, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
 
-		 //’e‚Ì“o˜^
-		//•¡”
+		 //å¼¾ã®ç™»éŒ²
+		//è¤‡æ•°
 		bullets_.push_back(std::move(newBullet));
 
-		//’P”­
+		//å˜ç™º
 		/*bullet_.reset(newBullet);*/
 	}
 
@@ -262,9 +277,9 @@ Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) {
 }
 
 Vector3 Player::GetWorldPosition2() {
-	//ƒ[ƒ‹ƒhÀ•W‚ğ“ü‚ê‚é•Ï”
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	Vector3 worldPos;
-	//ƒ[ƒ‹ƒhs—ñ‚Ì•½sˆÚ“®¬•ª
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®å¹³è¡Œç§»å‹•æˆåˆ†
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
