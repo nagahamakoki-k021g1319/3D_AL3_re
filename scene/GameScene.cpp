@@ -142,6 +142,7 @@ void GameScene::Update() {
 		if (enemyDefeat >= 4) {
 			sceneNo_ = SceneNo::Clear;
 		}
+
 		////ゲームオーバーに突入
 		//if (playerTimer <= 0) {
 		//	sceneNo_ = SceneNo::Over;

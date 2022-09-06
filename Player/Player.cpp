@@ -36,6 +36,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	});
 
 
+
 	
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
