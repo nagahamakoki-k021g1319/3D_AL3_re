@@ -4,6 +4,7 @@
 #include <fstream>
 #include <random>
 
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -83,6 +84,10 @@ void GameScene::Initialize() {
 
 	//ファイルの読み込み
 	LoadEnemyPopData();
+
+	audio_ = Audio::GetInstance();
+	bgmHandle = audio_->LoadWave("fanfare.wav");
+
 }
 
 void GameScene::Update() {
@@ -97,22 +102,27 @@ void GameScene::Update() {
 
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
-	
+
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
 			sceneNo_ = SceneNo::Game;
-			Initialize();
+			EnemyReset();
+			playerTimer = 1000;
+			enemyDefeat = 0;
 		}
 		title_->Update();
+
 		push_->Update();
 		EnemyReset();
 		playerTimer = 1000;
 		enemyDefeat = 0;
+
 		break;
 	case SceneNo::Game: //射撃
-		                //自機のHPタイマー
-		playerTimer--;
+
+		playerTimer--; //自機のHPタイマー
+		
 
 		
 
@@ -157,6 +167,7 @@ void GameScene::Update() {
 		debugText_->SetPos(50, 110);
 		debugText_->Printf("Time limit :%d", playerTimer);
 
+
 		break;
 	case SceneNo::Clear: //クリア
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
@@ -168,6 +179,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
+	
 		gameClear_->Update();
 		push_->Update();
 		break;
@@ -181,15 +193,16 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
+	
 		gameOver_->Update();
 		push_->Update();
 		break;
 	}
 
 	//デバッグ用表示
-	/*debugText_->SetPos(50, 90);
+	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-	  "up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);*/
+	  "up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
 #pragma endregion
 }
 
@@ -224,8 +237,12 @@ void GameScene::Draw() {
 	case SceneNo::Title: //タイトル
 		title_->Draw(viewProjection_);
 		push_->Draw(viewProjection_);
+		if (audio_->IsPlaying(soundHandle) == 0 || soundHandle == -1) {
+			soundHandle = audio_->PlayWave(bgmHandle, true, 0.5f);
+		}
 		break;
 	case SceneNo::Game: //射撃
+		audio_->StopWave(soundHandle);
 		player_->Draw(railCamera_->GetViewProjection());
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->Draw(railCamera_->GetViewProjection());
@@ -471,6 +488,7 @@ void GameScene::EnemyReset() {
 	LoadEnemyPopData();
 }
 
+
 void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance)
 {
 	//単位ベクトルの取得
@@ -491,6 +509,7 @@ void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance
 	//カメラの位置制御
 	railCamera_->GetViewProjection().eye = cameraPos;
 }
+
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }
 

@@ -22,6 +22,8 @@
 #include "GameClear.h"
 #include "GameOver.h"
 
+
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -92,15 +94,22 @@ class GameScene {
 
 	void EnemyReset();
 
+
 	void EnemyTarget(Vector3 targetPos,Vector3 playerPos,float distance);
 
 	
 
 
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
+	//音
 	Audio* audio_ = nullptr;
+	uint32_t bgmHandle = 0;
+	int soundHandle = -1;
+
+
 	DebugText* debugText_ = nullptr;
 
 	//テクスチャハンドル
@@ -169,6 +178,7 @@ class GameScene {
 	int standTime_ = 0;
 
 	SceneNo sceneNo_ = SceneNo::Title;
-
+	
+	
 
 };
