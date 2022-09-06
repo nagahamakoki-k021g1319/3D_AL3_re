@@ -58,7 +58,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	//s—ñXV
 	AffinTrans::affin(worldTransform_);
 
-	worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+	//worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
 
 	worldTransform_.TransferMatrix();
 

@@ -72,7 +72,7 @@ void GameScene::Initialize() {
 	//レールカメラ
 	railCamera_ = new RailCamera();
 	//レールカメラの初期化
-	railCamera_->Initialize(Vector3(0, 0, 0), Vector3(0, 0, 0));
+	railCamera_->Initialize(Vector3(0, 0, 20), Vector3(0, 0, 0));
 
 	//敵弾リストの取得
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = GetBullets();
@@ -118,7 +118,7 @@ void GameScene::Update() {
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
-		player_->Update(viewProjection_);
+		player_->Update(railCamera_->GetViewProjection());
 
 		//敵発生
 		UpdataEnemyPopCommands();
@@ -477,11 +477,18 @@ void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance
 	float length = sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
 	Vector3 unitvecPlayerTarget = { playerTarget.x / length,playerTarget.y / length,playerTarget.z / length };
 
-	//カメラの位置制御
-	railCamera_->GetWorldPosition()->translation_ = { playerPos.x - unitvecPlayerTarget.x * distance,1.0f,playerPos.z - unitvecPlayerTarget.z * distance };
-
 	//注視点取得
 	railCamera_->GetViewProjection().target = { targetPos.x + unitvecPlayerTarget.x,targetPos.y + unitvecPlayerTarget.y,targetPos.z + unitvecPlayerTarget.z };
+
+
+	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
+	float len = 30.0f;
+	Vector3 cameraPos = { playerPos.x - PosNorm.x * len,
+		playerPos.y + 10.0f ,
+		playerPos.z - PosNorm.z * len };
+	
+	//カメラの位置制御
+	railCamera_->GetViewProjection().eye = cameraPos;
 }
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }

@@ -64,6 +64,9 @@ void RailCamera::Update() {
 	//viewProjection_.target.x = viewProjection_.eye.x + forward.x;
 	//viewProjection_.target.y = viewProjection_.eye.y + forward.y;
 	//viewProjection_.target.z = viewProjection_.eye.z + forward.z;
+	
+
+
 	//ワールド上方ベクトル
 	Vector3 up(0, 1, 0);
 	//レールカメラの回転を反映
@@ -82,5 +85,11 @@ WorldTransform* RailCamera::GetWorldPosition() {
     
 
 	return &worldTransform_;
+}
+
+void RailCamera::SetWorldPos(Vector3 vec)
+{
+	worldTransform_.translation_ += vec;
+	
 }
 
