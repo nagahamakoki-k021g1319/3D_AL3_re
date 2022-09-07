@@ -25,6 +25,7 @@ class RailCamera {
 	//ワールド座標を取得
 	WorldTransform* GetWorldPosition();
 
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -33,5 +34,8 @@ class RailCamera {
 
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
+
+	//MSと変形機のチェンジ
+	int isPlayerChange = 0;
 
 };

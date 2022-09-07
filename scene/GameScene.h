@@ -100,8 +100,9 @@ class GameScene {
 	//音
 	Audio* audio_ = nullptr;
 	uint32_t bgmHandle = 0;
+	uint32_t bgmHandle2 = 0;
 	int soundHandle = -1;
-
+	int soundHandle2 = -1;
 
 	DebugText* debugText_ = nullptr;
 
@@ -137,7 +138,7 @@ class GameScene {
 	int playerRadius = 1;
 	int playerBulletRadius = 1;
 	//自機のの撃破カウント
-	int playerTimer = 1000;
+	int playerTimer = 10000;
 	//敵キャラ
 	std::list<std::unique_ptr<Enemy>> enemys_;
 	int enemyRadius = 1;

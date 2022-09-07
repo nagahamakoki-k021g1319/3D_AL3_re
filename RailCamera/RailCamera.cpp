@@ -22,22 +22,43 @@ void RailCamera::Update() {
 	Vector3 move = {0, 0, 0};
 	Vector3 rotate = {0, 0, 0};
 	//キャラクターの移動の速さ
-	const float kCharacterSpeed = 0.2f;
-	const float kCharacterSpeed1 = -0.2f;
-	const float kCharacterLimit = -1.0f;
+	const float kCharacterSpeed = 0.3f;
+	const float kCharacterSpeed2 = 0.8f;
+
+	//MSと変形機のチェンジ
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isPlayerChange == 0) {
+			isPlayerChange = 1;
+		} else{
+			isPlayerChange = 0;
+		}
+	}
 
 	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_UP)) {
-		move = {0, kCharacterSpeed, 0};
-	} else if (input_->PushKey(DIK_DOWN)) {
-		move = {0, kCharacterSpeed1, 0};
+	if (isPlayerChange == 1) {
+		if (input_->PushKey(DIK_UP)) {
+			move = {0, kCharacterSpeed, 0};
+		} else if (input_->PushKey(DIK_DOWN)) {
+			move = {0, -kCharacterSpeed, 0};
+		}
+		if (input_->PushKey(DIK_LEFT)) {
+			move = {-kCharacterSpeed, 0, 0};
+		} else if (input_->PushKey(DIK_RIGHT)) {
+			move = {kCharacterSpeed, 0, 0};
+		}
 	}
-	if (input_->PushKey(DIK_LEFT)) {
-		move = {-kCharacterSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_RIGHT)) {
-		move = {kCharacterSpeed, 0, 0};
+	else if (isPlayerChange == 0) {
+		if (input_->PushKey(DIK_UP)) {
+			move = {0, kCharacterSpeed2, 0};
+		} else if (input_->PushKey(DIK_DOWN)) {
+			move = {0, -kCharacterSpeed2, 0};
+		}
+		if (input_->PushKey(DIK_LEFT)) {
+			move = {-kCharacterSpeed2, 0, 0};
+		} else if (input_->PushKey(DIK_RIGHT)) {
+			move = {kCharacterSpeed2, 0, 0};
+		}
 	}
-
 	
 	
 
@@ -76,8 +97,9 @@ void RailCamera::Update() {
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
 
-	debugText_->SetPos(50, 130);
-	    debugText_->Printf("otiro :%f",kCharacterSpeed1);
+	//デバッグ用表示
+	debugText_->SetPos(50, 150);
+	debugText_->Printf("Change:%d", isPlayerChange);
 
 }
 

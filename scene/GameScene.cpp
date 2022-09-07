@@ -37,6 +37,8 @@ void GameScene::Initialize() {
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
+	
+
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
@@ -87,7 +89,7 @@ void GameScene::Initialize() {
 
 	audio_ = Audio::GetInstance();
 	bgmHandle = audio_->LoadWave("fanfare.wav");
-
+	bgmHandle2 = audio_->LoadWave("bgm1.wav");
 }
 
 void GameScene::Update() {
@@ -110,7 +112,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
 			sceneNo_ = SceneNo::Game;
 			EnemyReset();
-			playerTimer = 1000;
+			playerTimer = 10000;
 			enemyDefeat = 0;
 		}
 		title_->Update();
@@ -223,6 +225,11 @@ void GameScene::Draw() {
 		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
+		if (audio_->IsPlaying(soundHandle2) == 0 || soundHandle2 == -1) {
+			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.2f);
+		}
+
+
 		player_->Draw(railCamera_->GetViewProjection());
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->Draw(railCamera_->GetViewProjection());
@@ -234,10 +241,12 @@ void GameScene::Draw() {
 		}
 		break;
 	case SceneNo::Clear: //クリア
+		audio_->StopWave(soundHandle2);
 		gameClear_->Draw(viewProjection_);
 		push_->Draw(viewProjection_);
 		break;
 	case SceneNo::Over: //オーバー
+		audio_->StopWave(soundHandle2);
 		gameOver_->Draw(viewProjection_);
 		push_->Draw(viewProjection_);
 		break;

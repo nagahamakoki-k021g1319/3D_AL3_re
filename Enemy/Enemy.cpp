@@ -26,26 +26,33 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 void Enemy::Update() {
 
 	//敵の移動の速さ
-	 float kCharacterSpeed = 0.1f;
-	 float kCharacterSpeedX = 0.1f;
-	 float kCharacterSpeedX2 = 0.6f;
+	float kCharacterSpeed = 0.1f;
+	float kCharacterSpeedX = 0.1f;
+	float kCharacterSpeedX2 = 0.6f;
 	//行列更新
 	AffinTrans::affin(worldTransform_);
 
 	worldTransform_.TransferMatrix();
 
 	//移動(ベクトルを加算)
-	if (worldTransform_.translation_.x > 30.0f) {
-		isChangeFlag = 1;
-		/*kCharacterSpeedX = -kCharacterSpeedX;*/
-	} /*else if (worldTransform_.translation_.x <= -20.0f) {
-		kCharacterSpeedX = -kCharacterSpeedX;
-	}*/
+	if (isChangeFlag == 0) {
+		if (worldTransform_.translation_.x > 30.0f) {
+			isChangeFlag = 1;
+		}
+	}
+	else if (isChangeFlag == 1) {
+		if (worldTransform_.translation_.x <= -20.0f) {
+			isChangeFlag = 2;
+		}
+	}
 	if (isChangeFlag == 1) {
 		kCharacterSpeedX = -kCharacterSpeedX;
 	}
-
+	else if (isChangeFlag == 2) {
+		kCharacterSpeedX = kCharacterSpeedX;
+	}
 	worldTransform_.translation_ += {kCharacterSpeedX, 0, -kCharacterSpeed};
+
 	//発射タイマーカウントダウン
 	shotTimer--;
 
@@ -55,12 +62,10 @@ void Enemy::Update() {
 		//発射タイマー初期化
 		shotTimer = kFireInterval;
 	}
-
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-	
 }
 
 void Enemy::Fire() {
@@ -86,25 +91,23 @@ void Enemy::Fire() {
 	//ベクトルの長さを速さに合わせる
 	A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
 
-
 	//弾を生成し初期化
 	//複数
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	//単発
 	/*PlayerBullet* newBullet = new PlayerBullet();*/
 	newBullet->Initialize(model_, worldTransform_.translation_, A_BVec);
-	
+
 	//弾を登録する
 	gameScene_->AddEnemyBullet(newBullet);
-	
 }
 
-void Enemy::Approach() { 
+void Enemy::Approach() {
 	//発射タイマーを初期化
 	shotTimer = kFireInterval;
 }
 
-Vector3 Enemy::GetWorldPosition() { 
+Vector3 Enemy::GetWorldPosition() {
 	//ワールド座標を入れる変数
 	Vector3 worldPos;
 	//ワールド行列の平行移動成分
@@ -115,6 +118,4 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
-void Enemy::OnCollision() { 
-	isDead_ = true; 
-}
+void Enemy::OnCollision() { isDead_ = true; }

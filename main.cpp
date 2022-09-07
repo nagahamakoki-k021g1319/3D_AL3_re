@@ -6,7 +6,7 @@
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
 #include "Player.h"
-
+#include "FPS.h"
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -19,6 +19,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	AxisIndicator* axisIndicator = nullptr;
 	PrimitiveDrawer* primitiveDrawer = nullptr;
 	GameScene* gameScene = nullptr;
+	FPS* fps_ = nullptr;
 
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
@@ -27,6 +28,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
+
+	// FPSの生成
+	fps_ = new FPS();
+	fps_->GetFrameRate();
+	fps_->FpsControlBegin();
 
 #pragma region 汎用機能初期化
 	// 入力の初期化
@@ -96,8 +102,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		dxCommon->PostDraw();
 
 		//----------------------------------------------//
-
+		
 	}
+
+	fps_->SetFrameRate(20);
+	fps_->FpsControlEnd();
 
 	// 各種解放
 	SafeDelete(gameScene);
