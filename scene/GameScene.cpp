@@ -122,9 +122,6 @@ void GameScene::Update() {
 	case SceneNo::Game: //射撃
 
 		playerTimer--; //自機のHPタイマー
-		
-
-		
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());

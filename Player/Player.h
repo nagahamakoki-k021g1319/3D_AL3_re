@@ -79,4 +79,7 @@ class Player {
 	//2Dレティクル用スプライト
 	std::unique_ptr<Sprite> sprite2DReticle_;
 
+	// MSと変形機のチェンジ
+	int isPlayerChange = 0;
+
 };

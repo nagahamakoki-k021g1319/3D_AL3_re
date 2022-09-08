@@ -2,10 +2,6 @@
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
 
-	// マウスカーソルの非表示
-	ShowCursor(FALSE);
-
-	
 	//ワールドトランスフォームの初期設定
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
@@ -68,8 +64,9 @@ void RailCamera::Update() {
 	//viewProjection_.target.y = viewProjection_.eye.y + forward.y;
 	//viewProjection_.target.z = viewProjection_.eye.z + forward.z;
 	
+	
 
-
+	
 
 	//ワールド上方ベクトル
 	Vector3 up(0, 1, 0);

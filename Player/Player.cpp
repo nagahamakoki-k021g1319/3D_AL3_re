@@ -17,7 +17,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, -12, 40};
+	worldTransform_.translation_ = {0, -12, 0};
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
@@ -35,26 +35,62 @@ void Player::Update(ViewProjection viewProjection_) {
 		return bullet->IsDead();  
 	});
 
-
-
-	
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
 	//キャラクターの移動の速さ
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.8f;
+	const float kCharacterSpeed2 = 0.3f;
+
+
+	// MSと変形機のチェンジ
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isPlayerChange == 0) {
+			isPlayerChange = 1;
+		} else {
+			isPlayerChange = 0;
+		}
+	}
+
+
 
 	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_W)) {
-		move = {0, 0, kCharacterSpeed };
-	} else if (input_->PushKey(DIK_S)) {
-		move = {0, 0, -kCharacterSpeed };
-	}
-	if (input_->PushKey(DIK_A)) {
-		move = {-kCharacterSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_D)) {
-		move = {kCharacterSpeed, 0, 0};
-	}
+	if (isPlayerChange == 0) {
+		if (input_->PushKey(DIK_W)) {
+			move = {0, 0, kCharacterSpeed};
+		} else if (input_->PushKey(DIK_S)) {
+			move = {0, 0, -kCharacterSpeed};
+		}
+		if (input_->PushKey(DIK_A)) {
+			move = {-kCharacterSpeed, 0, 0};
+		} else if (input_->PushKey(DIK_D)) {
+			move = {kCharacterSpeed, 0, 0};
+		}
 
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_U)) {
+			move = {0, kCharacterSpeed, 0};
+		} else if (input_->PushKey(DIK_I)) {
+			move = {0, -kCharacterSpeed, 0};
+		}
+	}else if (isPlayerChange == 1) {
+		if (input_->PushKey(DIK_W)) {
+			move = {0, 0, kCharacterSpeed2};
+		} else if (input_->PushKey(DIK_S)) {
+			move = {0, 0, -kCharacterSpeed2};
+		}
+		if (input_->PushKey(DIK_A)) {
+			move = {-kCharacterSpeed2, 0, 0};
+		} else if (input_->PushKey(DIK_D)) {
+			move = {kCharacterSpeed2, 0, 0};
+		}
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_U)) {
+			move = {0, kCharacterSpeed2, 0};
+		} else if (input_->PushKey(DIK_I)) {
+			move = {0, -kCharacterSpeed2, 0};
+		}
+	}
 	worldTransform_.translation_ += move;
 
 	//行列更新
@@ -195,7 +231,9 @@ void Player::Update(ViewProjection viewProjection_) {
 	DebugText::GetInstance()->Printf(
 	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
 	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
-
+	//デバッグ用表示
+	debugText_->SetPos(50, 150);
+	debugText_->Printf("Change:%d", isPlayerChange);
 
 
 }
@@ -222,11 +260,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 void Player::Attack() { 
 	if (input_->IsTriggerMouse(0)) {
 		//弾の速度
-		const float kBulletSpeed = 1.0f;
+		const float kBulletSpeed = 3.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		velocity = bVelocity(velocity, worldTransform_);
+		////速度ベクトルを自機の向きに合わせて回転させる
+		//velocity = bVelocity(velocity, worldTransform_);
 
 		//自機から標準オブジェクトへのベクトル
 		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
