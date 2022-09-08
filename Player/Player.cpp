@@ -17,7 +17,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, -12, 40};
+	worldTransform_.translation_ = {0, -12, 0};
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
@@ -37,7 +37,18 @@ void Player::Update(ViewProjection viewProjection_) {
 
 
 	//キャラクターの移動の速さ
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.8f;
+	const float kCharacterSpeed2 = 0.3f;
+
+
+
+	// MSと変形機のチェンジ
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isPlayerChange == 0) {
+			isPlayerChange = 1;
+		} else {
+			isPlayerChange = 0;
+		}
 
 	
 
@@ -64,6 +75,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	else if (input_->PushKey(DIK_D)) {
 		isPushTrans = true;
 		atanAngle += 0.5f * PI;
+
 	}
 	Vector3 v2 = { 0,atanAngle,0 };
 
@@ -90,7 +102,6 @@ void Player::Update(ViewProjection viewProjection_) {
 	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
 	//move = { cos(atanAngle), 0, sin(atanAngle) };
 	//worldTransform_.translation_ += v3;
-
 
 	//行列更新
 	AffinTrans::affin(worldTransform_);
@@ -230,7 +241,9 @@ void Player::Update(ViewProjection viewProjection_) {
 	DebugText::GetInstance()->Printf(
 	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
 	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
-
+	//デバッグ用表示
+	debugText_->SetPos(50, 150);
+	debugText_->Printf("Change:%d", isPlayerChange);
 
 
 }
@@ -257,11 +270,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 void Player::Attack() { 
 	if (input_->IsTriggerMouse(0)) {
 		//弾の速度
-		const float kBulletSpeed = 1.0f;
+		const float kBulletSpeed = 3.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		velocity = bVelocity(velocity, worldTransform_);
+		////速度ベクトルを自機の向きに合わせて回転させる
+		//velocity = bVelocity(velocity, worldTransform_);
 
 		////自機から標準オブジェクトへのベクトル
 		//velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
