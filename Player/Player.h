@@ -83,7 +83,12 @@ class Player {
 	// MSと変形機のチェンジ
 	int isPlayerChange = 0;
 
+	bool isBoost = false;
+	bool isOldBoost = false;
 	bool isPushTrans = false;
-
+	bool isOldPush = false;
+	float playerAngle = 0.0f;
+	int quadrant = 0;
+	
 
 };
