@@ -13,14 +13,15 @@
 #include "affin.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "Skydome/Skydome.h"
-#include "RailCamera/RailCamera.h"
+#include "Skydome.h"
+#include "RailCamera.h"
 #include "EnemyBullet.h"
 #include <sstream>
 #include "Title.h"
 #include "push.h"
 #include "GameClear.h"
 #include "GameOver.h"
+#include "Effect.h"
 
 /// <summary>
 /// ゲームシーン
@@ -64,6 +65,8 @@ class GameScene {
 	/// </summary>
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet);
 
+	void AddEffect(std::unique_ptr<Effect>& effect);
+
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
@@ -81,6 +84,10 @@ class GameScene {
 
 	//弾リストを取得
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemybullets_; }
+
+	//エフェクトリストを取得
+	const std::list<std::unique_ptr<Effect>>& GetEffect() { return effects_; }
+
 
 	//シーン切り替え
 	enum class SceneNo {
@@ -143,6 +150,8 @@ class GameScene {
 	int enemyDefeat = 0;
 	//弾 複数
 	std::list<std::unique_ptr<EnemyBullet>> enemybullets_;
+	//エフェクト 複数
+	std::list<std::unique_ptr<Effect>> effects_;
 
 	//スカイドーム
 	Skydome* skydome_ = nullptr;

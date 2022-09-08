@@ -1,5 +1,5 @@
 #include "Enemy.h"
-#include "Player/Player.h"
+#include "Player.h"
 #include <GameScene.h>
 #include <cmath>
 
@@ -8,7 +8,8 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 	assert(model);
 	model_ = model;
 	textureHandle_ = textureHandle;
-
+	effectModel_ = Model::CreateFromOBJ("explosion", false);
+	bulletModel_ = Model::CreateFromOBJ("tamaX", false);
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
@@ -36,7 +37,6 @@ void Enemy::Update() {
 	//移動(ベクトルを加算)
 	worldTransform_.translation_ += {0, 0, -kCharacterSpeed};
 	
-
 	//発射タイマーカウントダウン
 	shotTimer--;
 
@@ -59,7 +59,7 @@ void Enemy::Fire() {
 	/*assert(player_);*/
 
 	//弾の速度
-	const float kBulletSpeed = -2.0f;
+	const float kBulletSpeed = 2.0f;
 	Vector3 velocity(0, 0, kBulletSpeed);
 
 	//プレイヤーのワールド座標の取得
@@ -76,14 +76,14 @@ void Enemy::Fire() {
 	float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
 	//ベクトルの長さを速さに合わせる
 	A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
-
+	A_BVec*= kBulletSpeed;
 
 	//弾を生成し初期化
 	//複数
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	//単発
 	/*PlayerBullet* newBullet = new PlayerBullet();*/
-	newBullet->Initialize(model_, worldTransform_.translation_, A_BVec);
+	newBullet->Initialize(bulletModel_, worldTransform_.translation_, A_BVec);
 	
 	//弾を登録する
 	gameScene_->AddEnemyBullet(newBullet);
@@ -107,5 +107,10 @@ Vector3 Enemy::GetWorldPosition() {
 }
 
 void Enemy::OnCollision() { 
+	for (int i = 0; i < 10; i++) {
+		std::unique_ptr<Effect> newEffect = std::make_unique<Effect>();
+		newEffect->Initialize(effectModel_, worldTransform_.translation_);
+		gameScene_->AddEffect(newEffect);
+	}
 	isDead_ = true; 
 }

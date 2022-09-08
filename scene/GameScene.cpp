@@ -97,6 +97,9 @@ void GameScene::Update() {
 
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
+
+	//デスフラグの立った敵の削除
+	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
 	
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
@@ -135,7 +138,9 @@ void GameScene::Update() {
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->Update();
 		}
-
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->Update();
+		}
 		CheckAllCollisions();
 
 		//ゲームクリアに突入
@@ -185,6 +190,8 @@ void GameScene::Update() {
 		break;
 	}
 
+	debugText_->SetPos(10, 30);
+	debugText_->Printf("%d", effects_.size());
 	//デバッグ用表示
 	/*debugText_->SetPos(50, 90);
 	debugText_->Printf(
@@ -233,6 +240,9 @@ void GameScene::Draw() {
 		//弾更新
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->Draw(railCamera_->GetViewProjection());
+		}
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->Draw(railCamera_->GetViewProjection());
 		}
 		break;
 	case SceneNo::Clear: //クリア
@@ -373,6 +383,12 @@ void GameScene::CheckAllCollisions() {
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet) {
 	//リストに登録する
 	enemybullets_.push_back(std::move(enemyBullet));
+}
+
+void GameScene::AddEffect(std::unique_ptr<Effect>& efect)
+{
+	//リストに登録する
+	effects_.push_back(std::move(efect));
 }
 
 void GameScene::LoadEnemyPopData() {

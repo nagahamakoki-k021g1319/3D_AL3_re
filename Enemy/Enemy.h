@@ -55,8 +55,16 @@ class Enemy {
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
+
+	//	エフェクト用ワールド変換データ
+	WorldTransform effectWorldTransform_;
+
 	//モデル
 	Model* model_ = nullptr;
+
+	Model* bulletModel_ = nullptr;
+
+	Model* effectModel_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 

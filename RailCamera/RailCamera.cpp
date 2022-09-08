@@ -1,9 +1,11 @@
 #include "RailCamera.h"
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
-	// マウスカーソルの非表示
-	ShowCursor(FALSE);
+	//// マウスカーソルの非表示
+	//ShowCursor(FALSE);
 	
+	viewProjection_.farZ = 2500;
+
 	//ワールドトランスフォームの初期設定
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
