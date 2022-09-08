@@ -122,9 +122,6 @@ void GameScene::Update() {
 	case SceneNo::Game: //射撃
 
 		playerTimer--; //自機のHPタイマー
-		
-
-		
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
@@ -503,7 +500,7 @@ void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance
 	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
 	float len = 30.0f;
 	Vector3 cameraPos = { playerPos.x - PosNorm.x * len,
-		playerPos.y + 10.0f ,
+		(playerPos.y - PosNorm.y * len) + 6.0f  ,
 		playerPos.z - PosNorm.z * len };
 	
 	//カメラの位置制御

@@ -29,23 +29,29 @@ void Enemy::Update() {
 	 float kCharacterSpeed = 0.1f;
 	 float kCharacterSpeedX = 0.1f;
 	 float kCharacterSpeedX2 = 0.6f;
-	//行列更新
+	
+	 //行列更新
 	AffinTrans::affin(worldTransform_);
 
 	worldTransform_.TransferMatrix();
 
 	//移動(ベクトルを加算)
-	if (worldTransform_.translation_.x > 30.0f) {
-		isChangeFlag = 1;
-		/*kCharacterSpeedX = -kCharacterSpeedX;*/
-	} /*else if (worldTransform_.translation_.x <= -20.0f) {
-		kCharacterSpeedX = -kCharacterSpeedX;
-	}*/
+	if (isChangeFlag == 0) {
+		if (worldTransform_.translation_.x > 30.0f) {
+			isChangeFlag = 1;
+		}
+	} else if (isChangeFlag == 1) {
+		if (worldTransform_.translation_.x <= -20.0f) {
+			isChangeFlag = 2;
+		}
+	}
 	if (isChangeFlag == 1) {
 		kCharacterSpeedX = -kCharacterSpeedX;
+	} else if (isChangeFlag == 2) {
+		kCharacterSpeedX = kCharacterSpeedX;
 	}
-
 	worldTransform_.translation_ += {kCharacterSpeedX, 0, -kCharacterSpeed};
+
 	//発射タイマーカウントダウン
 	shotTimer--;
 
@@ -65,10 +71,10 @@ void Enemy::Draw(ViewProjection viewProjection_) {
 
 void Enemy::Fire() {
 
-	/*assert(player_);*/
+	assert(player_);
 
 	//弾の速度
-	const float kBulletSpeed = -2.0f;
+	const float kBulletSpeed = 15.0f;
 	Vector3 velocity(0, 0, kBulletSpeed);
 
 	//プレイヤーのワールド座標の取得
@@ -85,6 +91,8 @@ void Enemy::Fire() {
 	float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
 	//ベクトルの長さを速さに合わせる
 	A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
+	
+	A_BVec *= kBulletSpeed;
 
 
 	//弾を生成し初期化
