@@ -179,6 +179,10 @@ class GameScene {
 
 	SceneNo sceneNo_ = SceneNo::Title;
 	
+	//ロックオンカメラのフラグ
+	int cameraFlag_ = 0;
+	Vector3 lastEnemyPos;
+	
 	
 
 };

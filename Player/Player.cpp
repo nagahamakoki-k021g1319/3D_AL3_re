@@ -35,11 +35,11 @@ void Player::Update(ViewProjection viewProjection_) {
 		return bullet->IsDead();  
 	});
 
-	//キャラクターの移動ベクトル
-	Vector3 move = {0, 0, 0};
+
 	//キャラクターの移動の速さ
 	const float kCharacterSpeed = 0.8f;
 	const float kCharacterSpeed2 = 0.3f;
+
 
 
 	// MSと変形機のチェンジ
@@ -49,49 +49,59 @@ void Player::Update(ViewProjection viewProjection_) {
 		} else {
 			isPlayerChange = 0;
 		}
-	}
 
+	
 
+	Vector3 v1;
+	v1 =  worldTransform_.translation_ - viewProjection_.eye;
+	v1 = MathUtility::Vector3Normalize(v1);
+	float atanAngle = atan2f(v1.x, v1.z);
+	
 
+	isPushTrans = false;
+	
 	//押した方向で移動ベクトルを変更
-	if (isPlayerChange == 0) {
-		if (input_->PushKey(DIK_W)) {
-			move = {0, 0, kCharacterSpeed};
-		} else if (input_->PushKey(DIK_S)) {
-			move = {0, 0, -kCharacterSpeed};
-		}
-		if (input_->PushKey(DIK_A)) {
-			move = {-kCharacterSpeed, 0, 0};
-		} else if (input_->PushKey(DIK_D)) {
-			move = {kCharacterSpeed, 0, 0};
-		}
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_U)) {
-			move = {0, kCharacterSpeed, 0};
-		} else if (input_->PushKey(DIK_I)) {
-			move = {0, -kCharacterSpeed, 0};
-		}
-	}else if (isPlayerChange == 1) {
-		if (input_->PushKey(DIK_W)) {
-			move = {0, 0, kCharacterSpeed2};
-		} else if (input_->PushKey(DIK_S)) {
-			move = {0, 0, -kCharacterSpeed2};
-		}
-		if (input_->PushKey(DIK_A)) {
-			move = {-kCharacterSpeed2, 0, 0};
-		} else if (input_->PushKey(DIK_D)) {
-			move = {kCharacterSpeed2, 0, 0};
-		}
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_U)) {
-			move = {0, kCharacterSpeed2, 0};
-		} else if (input_->PushKey(DIK_I)) {
-			move = {0, -kCharacterSpeed2, 0};
-		}
+	if (input_->PushKey(DIK_W)) {
+		isPushTrans = true;
 	}
-	worldTransform_.translation_ += move;
+	else if (input_->PushKey(DIK_S)) {
+		isPushTrans = true;
+		atanAngle += 1.0f * PI;
+	}
+	if (input_->PushKey(DIK_A)) {
+		isPushTrans = true;
+		atanAngle -= 0.5f * PI;
+	}
+	else if (input_->PushKey(DIK_D)) {
+		isPushTrans = true;
+		atanAngle += 0.5f * PI;
+
+	}
+	Vector3 v2 = { 0,atanAngle,0 };
+
+	/*const float kCharacterRotateSpeed = 0.05f;
+	if (input_->PushKey(DIK_Q)) {
+		rotation = { 0, kCharacterRotateSpeed, 0 };
+	}
+	else if (input_->PushKey(DIK_E)) {
+		rotation = { 0, -kCharacterRotateSpeed, 0 };
+	}*/
+
+	worldTransform_.rotation_ = v2;
+
+
+	Vector3 v3 = { 0,0,0.1f };
+
+	v3 = bVelocity(v3, worldTransform_);
+
+	if (isPushTrans == true) {
+		worldTransform_.translation_ += v3;
+	}else{}
+
+	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
+	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
+	//move = { cos(atanAngle), 0, sin(atanAngle) };
+	//worldTransform_.translation_ += v3;
 
 	//行列更新
 	AffinTrans::affin(worldTransform_);
@@ -266,9 +276,9 @@ void Player::Attack() {
 		////速度ベクトルを自機の向きに合わせて回転させる
 		//velocity = bVelocity(velocity, worldTransform_);
 
-		//自機から標準オブジェクトへのベクトル
-		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
-		velocity = Vector3Normalize(velocity) * kBulletSpeed;
+		////自機から標準オブジェクトへのベクトル
+		//velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
+		//velocity = Vector3Normalize(velocity) * kBulletSpeed;
 
 		//弾を生成し初期化
 		//複数
