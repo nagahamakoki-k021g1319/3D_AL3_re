@@ -78,11 +78,11 @@ void Player::Update(ViewProjection viewProjection_) {
 			if (isBoost == true && isOldBoost == false) {
 				playerAngle = atanAngle;
 			}
-			else if (isBoost == true && isOldBoost == false) {
-				if (playerAngle >= 1.0f * PI) {
+			else if (isBoost == true && isOldBoost == true) {
+				if (sinf(playerAngle) > 0.0f) {
 					playerAngle += kAngleSpeed * PI;
 				}
-				else if (playerAngle < 1.0f * PI) {
+				else if (sinf(playerAngle) < 0.0f) {
 					playerAngle -= kAngleSpeed * PI;
 				}
 			}
@@ -96,12 +96,12 @@ void Player::Update(ViewProjection viewProjection_) {
 			if (isBoost == true && isOldBoost == false) {
 				playerAngle = atanAngle + 1.0f*PI;
 			}
-			else if (isBoost == true && isOldBoost == false) {
-				if (playerAngle > 0.0f && playerAngle < 1.0f * PI) {
-					playerAngle += kAngleSpeed * PI;
-				}
-				else if (playerAngle > 1.0f * PI && playerAngle < 2.0f * PI) {
+			else if (isBoost == true && isOldBoost == true) {
+				if (sinf(playerAngle) > 0.0f) {
 					playerAngle -= kAngleSpeed * PI;
+				}
+				else if (sinf(playerAngle) < 0.0f) {
+					playerAngle += kAngleSpeed * PI;
 				}
 			}
 		}
@@ -114,12 +114,12 @@ void Player::Update(ViewProjection viewProjection_) {
 			if (isBoost == true && isOldBoost == false) {
 				playerAngle = atanAngle - 0.5f * PI;
 			}
-			else if (isBoost == true && isOldBoost == false) {
-				if (quadrant == 1 || quadrant == 4) {
-					playerAngle -= kAngleSpeed * PI;
-				}
-				else if (quadrant == 2 || quadrant == 3) {
+			else if (isBoost == true && isOldBoost == true) {
+				if (cosf(playerAngle) > 0.0f) {
 					playerAngle += kAngleSpeed * PI;
+				}
+				else if (cosf(playerAngle) < 0.0f) {
+					playerAngle -= kAngleSpeed * PI;
 				}
 			}
 		}
@@ -132,11 +132,11 @@ void Player::Update(ViewProjection viewProjection_) {
 			if (isBoost == true && isOldBoost == false) {
 				playerAngle = atanAngle + 0.5f * PI;
 			}
-			else if (isBoost == true && isOldBoost == false) {
-				if (quadrant == 1 || quadrant == 4) {
+			else if (isBoost == true && isOldBoost == true) {
+				if (cosf(playerAngle) > 0.0f) {
 					playerAngle -= kAngleSpeed * PI;
 				}
-				else if (quadrant == 2 || quadrant == 3) {
+				else if (cosf(playerAngle) < 0.0f) {
 					playerAngle += kAngleSpeed * PI;
 				}
 			}
@@ -144,26 +144,27 @@ void Player::Update(ViewProjection viewProjection_) {
 		else { isBoost = false; }
 
 	}
+	else { isBoost = false; }
 
-	if (playerAngle >= 0.0f && playerAngle < 0.5f * PI) {	//playerの角度が0~2の範囲に調整
-		quadrant = 1;
-	}
-	else if (playerAngle >= 0.5f * PI && playerAngle < 1.0f * PI) {
-		quadrant = 2;
-	}
-	else if (playerAngle >= 1.0f * PI && playerAngle < 1.5f * PI) {
-		quadrant = 3;
-	}
-	else if (playerAngle >= 1.5f * PI && playerAngle < 2.0f * PI) {
-		quadrant = 4;
-	}
-	else if (playerAngle > 2.0f * PI) {
-		playerAngle -= 2.0f;
-	}
-	else if (playerAngle < 0.0f) {
-		playerAngle += 2.0f;
-	}
-	else {}
+	//if (playerAngle >= 0.0f && playerAngle < 0.5f * PI) {	//playerの角度が0~2の範囲に調整
+	//	quadrant = 1;
+	//}
+	//else if (playerAngle >= 0.5f * PI && playerAngle < 1.0f * PI) {
+	//	quadrant = 2;
+	//}
+	//else if (playerAngle >= 1.0f * PI && playerAngle < 1.5f * PI) {
+	//	quadrant = 3;
+	//}
+	//else if (playerAngle >= 1.5f * PI && playerAngle < 2.0f * PI) {
+	//	quadrant = 4;
+	//}
+	//else if (playerAngle > 2.0f * PI) {
+	//	playerAngle -= 2.0f;
+	//}
+	//else if (playerAngle < 0.0f) {
+	//	playerAngle += 2.0f;
+	//}
+	//else {}
 
 	Vector3 v2 = { 0,playerAngle,0 };
 
