@@ -53,201 +53,202 @@ void Player::Update(ViewProjection viewProjection_) {
 
 
 
-		Vector3 v1;
-		v1 = worldTransform_.translation_ - viewProjection_.eye;
-		v1 = MathUtility::Vector3Normalize(v1);
-		float atanAngle = atan2f(v1.x, v1.z);
+	}
 
 
-		isPushTrans = false;
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_W)) {
-			isPushTrans = true;
-		}
-		else if (input_->PushKey(DIK_S)) {
-			isPushTrans = true;
-			atanAngle += 1.0f * PI;
-		}
-		if (input_->PushKey(DIK_A)) {
-			isPushTrans = true;
-			atanAngle -= 0.5f * PI;
-		}
-		else if (input_->PushKey(DIK_D)) {
-			isPushTrans = true;
-			atanAngle += 0.5f * PI;
-
-		}
-		Vector3 v2 = { 0,atanAngle,0 };
-
-		/*const float kCharacterRotateSpeed = 0.05f;
-		if (input_->PushKey(DIK_Q)) {
-			rotation = { 0, kCharacterRotateSpeed, 0 };
-		}
-		else if (input_->PushKey(DIK_E)) {
-			rotation = { 0, -kCharacterRotateSpeed, 0 };
-		}*/
-
-		worldTransform_.rotation_ = v2;
+	Vector3 v1;
+	v1 = worldTransform_.translation_ - viewProjection_.eye;
+	v1 = MathUtility::Vector3Normalize(v1);
+	float atanAngle = atan2f(v1.x, v1.z);
 
 
-		Vector3 v3 = { 0,0,0.1f };
+	isPushTrans = false;
 
-		v3 = bVelocity(v3, worldTransform_);
-
-		if (isPushTrans == true) {
-			worldTransform_.translation_ += v3;
-		}
-		else {}
-
-		//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
-		//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
-		//move = { cos(atanAngle), 0, sin(atanAngle) };
-		//worldTransform_.translation_ += v3;
-
-		//行列更新
-		AffinTrans::affin(worldTransform_);
-
-		//worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
-
-		worldTransform_.TransferMatrix();
-
-
-		const float kMoveLimitX = 35;
-		const float kMoveLimitY = 18;
-
-		//範囲を超えない処理
-		worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
-		worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
-		worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-		worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
-
-		const float kChestRotSpeed = 0.05f;
-
-
-		//弾発射処理
-		Attack();
-
-		//弾更新
-		//複数
-		for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-			bullet->Update();
-		}
-
-		//単発
-		/*if (bullet_) {
-			bullet_->Update();
-		}*/
-
-		//---------自機のワールド座標から3Dレティクルのワールド座標を計算-----------//
-
-		//自機から3Dレティクルへの距離
-		const float kDistancePlayerTo3DReticle = 60.0f;
-		//自機から3Dレティクルへのオフセット(Z+向き)
-		Vector3 offset = { 0, 0, 1.0f };
-		//自機のワールド座標の回転を反映
-		offset = AffinTrans::MatVector(offset, worldTransform_.matWorld_);
-		//ベクトルの長さを整える
-		offset = Vector3Normalize(offset) * kDistancePlayerTo3DReticle;
-		//3Dレティクル座標設定
-		worldTransform3DReticle_.translation_ =
-			offset + Vector3(
-				worldTransform_.matWorld_.m[3][0],
-				worldTransform_.matWorld_.m[3][1],
-				worldTransform_.matWorld_.m[3][2]
-			);
-		//行列更新
-		AffinTrans::affin(worldTransform3DReticle_);
-		worldTransform3DReticle_.TransferMatrix();
-
-		/////////////////////////////////////////////////////////////////
-
-
-		//----------3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算-------//
-
-		Vector3 positionReticle = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_);
-
-		Vector2 windowWH =
-			Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
-
-		//ビューポート行列
-		Matrix4 Viewport = {
-		   windowWH.x / 2,				  0,  0,  0,
-						0,	-windowWH.y / 2,  0,  0,
-						0,				  0,  1,  0,
-		   windowWH.x / 2,	 windowWH.y / 2,  0,  1
-		};
-
-		//ビュー行列とプロジェクション行列、ビューポート行列を合成する
-		Matrix4 matViewProjectionViewport = viewProjection_.matView * viewProjection_.matProjection * Viewport;
-
-		//ワールド→スクリーン座標変換(ここから3Dから2Dになる)
-		positionReticle = AffinTrans::wDivision(positionReticle, matViewProjectionViewport);
-
-		//スプライトのレティクルに座標設定
-		sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
-
-		////////////////////////////////////////////////////////////////////////////////
-
-		//----------スクリーン座標から2Dレティクルのワールド座標を計算-------//
-
-		POINT mousePosition;
-		//マウス座標(スクリーン座標)を取得する
-		GetCursorPos(&mousePosition);
-
-		//クライアントエリア座標に変換する
-		HWND hwnd = WinApp::GetInstance()->GetHwnd();
-		ScreenToClient(hwnd, &mousePosition);
-
-		sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
-
-		//ビュープロジェクションビューポート合成
-		Matrix4 matVPV = viewProjection_.matView * viewProjection_.matProjection * Viewport;
-
-		//合成行列の逆行列を計算する
-		Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
-		//スクリーン座標
-		Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
-		Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
-
-		//スクリーン座標系からワールド座標系へ
-		posNear = AffinTrans::wDivision(posNear, matInverseVPV);
-		posFar = AffinTrans::wDivision(posFar, matInverseVPV);
-
-		//マウスレイの方向
-		Vector3 mouseDirection = posFar - posNear;
-		mouseDirection = Vector3Normalize(mouseDirection);
-		//カメラから照準オブジェクトの距離
-		const float kDistanceTestObject = 222.0f;
-		worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
-
-		//行列更新
-		AffinTrans::affin(worldTransform3DReticle_);
-		worldTransform3DReticle_.TransferMatrix();
-
-		/////////////////////////////////////////////////////////////
-
-
-		/*debugText_->SetPos(50, 150);
-		debugText_->Printf(
-		  "translation : %f,%f,%f", worldTransform_.translation_.x,
-		  worldTransform_.translation_.y,
-		  worldTransform_.translation_.z);
-		DebugText::GetInstance()->SetPos(20, 200);
-		DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
-		DebugText::GetInstance()->SetPos(20, 220);
-		DebugText::GetInstance()->Printf("Near:(%f,%f,%f)", posNear.x, posNear.y, posNear.z);
-		DebugText::GetInstance()->SetPos(20, 240);
-		DebugText::GetInstance()->Printf("Far:(%f,%f,%f)", posFar.x, posFar.y, posFar.z);
-		DebugText::GetInstance()->SetPos(20, 260);
-		DebugText::GetInstance()->Printf(
-		  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
-		  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
-		  //デバッグ用表示
-		debugText_->SetPos(50, 150);
-		debugText_->Printf("Change:%d", isPlayerChange);
+	//押した方向で移動ベクトルを変更
+	if (input_->PushKey(DIK_W)) {
+		isPushTrans = true;
+	}
+	else if (input_->PushKey(DIK_S)) {
+		isPushTrans = true;
+		atanAngle += 1.0f * PI;
+	}
+	if (input_->PushKey(DIK_A)) {
+		isPushTrans = true;
+		atanAngle -= 0.5f * PI;
+	}
+	else if (input_->PushKey(DIK_D)) {
+		isPushTrans = true;
+		atanAngle += 0.5f * PI;
 
 	}
+	Vector3 v2 = { 0,atanAngle,0 };
+
+	/*const float kCharacterRotateSpeed = 0.05f;
+	if (input_->PushKey(DIK_Q)) {
+		rotation = { 0, kCharacterRotateSpeed, 0 };
+	}
+	else if (input_->PushKey(DIK_E)) {
+		rotation = { 0, -kCharacterRotateSpeed, 0 };
+	}*/
+
+	worldTransform_.rotation_ = v2;
+
+
+	Vector3 v3 = { 0,0,0.5f };
+
+	v3 = bVelocity(v3, worldTransform_);
+
+	if (isPushTrans == true) {
+		worldTransform_.translation_ += v3;
+	}
+	else {}
+
+	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
+	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
+	//move = { cos(atanAngle), 0, sin(atanAngle) };
+	//worldTransform_.translation_ += v3;
+
+	//行列更新
+	AffinTrans::affin(worldTransform_);
+
+	//worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
+
+	worldTransform_.TransferMatrix();
+
+
+	const float kMoveLimitX = 35;
+	const float kMoveLimitY = 18;
+
+	//範囲を超えない処理
+	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
+	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
+	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+
+	const float kChestRotSpeed = 0.05f;
+
+
+	//弾発射処理
+	Attack();
+
+	//弾更新
+	//複数
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->Update();
+	}
+
+	//単発
+	/*if (bullet_) {
+		bullet_->Update();
+	}*/
+
+	//---------自機のワールド座標から3Dレティクルのワールド座標を計算-----------//
+
+	//自機から3Dレティクルへの距離
+	const float kDistancePlayerTo3DReticle = 60.0f;
+	//自機から3Dレティクルへのオフセット(Z+向き)
+	Vector3 offset = { 0, 0, 1.0f };
+	//自機のワールド座標の回転を反映
+	offset = AffinTrans::MatVector(offset, worldTransform_.matWorld_);
+	//ベクトルの長さを整える
+	offset = Vector3Normalize(offset) * kDistancePlayerTo3DReticle;
+	//3Dレティクル座標設定
+	worldTransform3DReticle_.translation_ =
+		offset + Vector3(
+			worldTransform_.matWorld_.m[3][0],
+			worldTransform_.matWorld_.m[3][1],
+			worldTransform_.matWorld_.m[3][2]
+		);
+	//行列更新
+	AffinTrans::affin(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
+
+	/////////////////////////////////////////////////////////////////
+
+
+	//----------3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算-------//
+
+	Vector3 positionReticle = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_);
+
+	Vector2 windowWH =
+		Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
+
+	//ビューポート行列
+	Matrix4 Viewport = {
+	   windowWH.x / 2,				  0,  0,  0,
+					0,	-windowWH.y / 2,  0,  0,
+					0,				  0,  1,  0,
+	   windowWH.x / 2,	 windowWH.y / 2,  0,  1
+	};
+
+	//ビュー行列とプロジェクション行列、ビューポート行列を合成する
+	Matrix4 matViewProjectionViewport = viewProjection_.matView * viewProjection_.matProjection * Viewport;
+
+	//ワールド→スクリーン座標変換(ここから3Dから2Dになる)
+	positionReticle = AffinTrans::wDivision(positionReticle, matViewProjectionViewport);
+
+	//スプライトのレティクルに座標設定
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+
+	////////////////////////////////////////////////////////////////////////////////
+
+	//----------スクリーン座標から2Dレティクルのワールド座標を計算-------//
+
+	POINT mousePosition;
+	//マウス座標(スクリーン座標)を取得する
+	GetCursorPos(&mousePosition);
+
+	//クライアントエリア座標に変換する
+	HWND hwnd = WinApp::GetInstance()->GetHwnd();
+	ScreenToClient(hwnd, &mousePosition);
+
+	sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
+
+	//ビュープロジェクションビューポート合成
+	Matrix4 matVPV = viewProjection_.matView * viewProjection_.matProjection * Viewport;
+
+	//合成行列の逆行列を計算する
+	Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
+	//スクリーン座標
+	Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
+	Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
+
+	//スクリーン座標系からワールド座標系へ
+	posNear = AffinTrans::wDivision(posNear, matInverseVPV);
+	posFar = AffinTrans::wDivision(posFar, matInverseVPV);
+
+	//マウスレイの方向
+	Vector3 mouseDirection = posFar - posNear;
+	mouseDirection = Vector3Normalize(mouseDirection);
+	//カメラから照準オブジェクトの距離
+	const float kDistanceTestObject = 222.0f;
+	worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
+
+	//行列更新
+	AffinTrans::affin(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
+
+	/////////////////////////////////////////////////////////////
+
+
+	/*debugText_->SetPos(50, 150);
+	debugText_->Printf(
+	  "translation : %f,%f,%f", worldTransform_.translation_.x,
+	  worldTransform_.translation_.y,
+	  worldTransform_.translation_.z);
+	DebugText::GetInstance()->SetPos(20, 200);
+	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
+	DebugText::GetInstance()->SetPos(20, 220);
+	DebugText::GetInstance()->Printf("Near:(%f,%f,%f)", posNear.x, posNear.y, posNear.z);
+	DebugText::GetInstance()->SetPos(20, 240);
+	DebugText::GetInstance()->Printf("Far:(%f,%f,%f)", posFar.x, posFar.y, posFar.z);
+	DebugText::GetInstance()->SetPos(20, 260);
+	DebugText::GetInstance()->Printf(
+	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
+	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
+	  //デバッグ用表示
+	debugText_->SetPos(50, 150);
+	debugText_->Printf("Change:%d", isPlayerChange);
 }
 
 void Player::Draw(ViewProjection viewProjection_) { 
