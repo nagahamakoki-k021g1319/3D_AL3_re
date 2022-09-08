@@ -122,9 +122,9 @@ void GameScene::Update() {
 	case SceneNo::Game: //射撃
 
 		playerTimer--; //自機のHPタイマー
-		
 
-		
+
+
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
@@ -132,14 +132,32 @@ void GameScene::Update() {
 
 		//敵発生
 		UpdataEnemyPopCommands();
-
+		cameraFlag_ = 0;
 		//敵の更新
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+
 			enemy_->SetGameScene(this);
 			enemy_->Update();
 			EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
+
+			cameraFlag_ = 1;
 		}
 
+		if (cameraFlag_ == 0) {
+			Vector3 p = player_->GetWorldPosition2();
+			Vector3 e = lastEnemyPos;
+			Vector3 playerTarget = {e.x - p.x,e.y - p.y,e.z - p.z };
+
+
+			Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
+			float len = 30.0f;
+			Vector3 cameraPos = { p.x - PosNorm.x * len,
+				(p.y - PosNorm.y * len) + 6.0f  ,
+				p.z - PosNorm.z * len };
+
+			//カメラの位置制御
+			railCamera_->GetViewProjection().eye = cameraPos;
+		}
 		//弾更新
 		//複数
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
@@ -159,7 +177,7 @@ void GameScene::Update() {
 		//}
 
 		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
-		
+
 		//レールカメラの更新
 		railCamera_->Update();
 
@@ -179,7 +197,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
-	
+
 		gameClear_->Update();
 		push_->Update();
 		break;
@@ -193,7 +211,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
-	
+
 		gameOver_->Update();
 		push_->Update();
 		break;
@@ -202,7 +220,7 @@ void GameScene::Update() {
 	//デバッグ用表示
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-	  "up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
+		"up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
 #pragma endregion
 }
 
@@ -308,9 +326,11 @@ void GameScene::CheckAllCollisions() {
 	//敵弾リストの取得
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = GetBullets();
 
+
 #pragma region 自キャラと敵弾の当たり判定
 	//自キャラの座標
 	posA = player_->GetWorldPosition2();
+
 
 	//自キャラと敵弾すべての当たり判定
 	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
@@ -491,6 +511,7 @@ void GameScene::EnemyReset() {
 
 void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance)
 {
+
 	//単位ベクトルの取得
 	Vector3 playerTarget = { targetPos.x - playerPos.x,targetPos.y - playerPos.y,targetPos.z - playerPos.z };
 	float length = sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
@@ -505,7 +526,8 @@ void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance
 	Vector3 cameraPos = { playerPos.x - PosNorm.x * len,
 		(playerPos.y - PosNorm.y * len) + 6.0f  ,
 		playerPos.z - PosNorm.z * len };
-	
+	lastEnemyPos = cameraPos;
+
 	//カメラの位置制御
 	railCamera_->GetViewProjection().eye = cameraPos;
 }

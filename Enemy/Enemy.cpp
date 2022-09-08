@@ -27,8 +27,8 @@ void Enemy::Update() {
 
 	//“G‚ÌˆÚ“®‚Ì‘¬‚³
 	 float kCharacterSpeed = 0.1f;
-	 float kCharacterSpeedX = 0.1f;
-	 float kCharacterSpeedX2 = 0.6f;
+	 float kCharacterSpeedX = 0.0f;
+	 float kCharacterSpeedX2 = 0.0f;
 	//s—ñXV
 	AffinTrans::affin(worldTransform_);
 

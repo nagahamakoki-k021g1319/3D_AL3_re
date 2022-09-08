@@ -79,4 +79,6 @@ class Player {
 	//2Dレティクル用スプライト
 	std::unique_ptr<Sprite> sprite2DReticle_;
 
+	bool isPushTrans = false;
+
 };
