@@ -67,7 +67,6 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	isPushTrans = false;
 
-
 	float kAngleSpeed = 0.07f;
 
 	//押した方向で移動ベクトルを変更
@@ -80,10 +79,10 @@ void Player::Update(ViewProjection viewProjection_) {
 				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if(sinf(saveAngle) < 1.0f && cosf(saveAngle) > 0.0f){
+				if(sinf(saveAngle) < 0.9f && cosf(saveAngle) > 0.0f){
 					saveAngle -= kAngleSpeed;
 				}
-				 if (sinf(saveAngle) < 1.0f && cosf(saveAngle) < 0.0f) {
+				if (sinf(saveAngle) < 0.9f && cosf(saveAngle) < 0.0f) {
 					saveAngle += kAngleSpeed;
 				}
 				playerAngle += saveAngle;
@@ -100,10 +99,10 @@ void Player::Update(ViewProjection viewProjection_) {
 				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (sinf(saveAngle) > -1.0f && cosf(saveAngle) > 0.0f) {
+				if (sinf(saveAngle) > -0.9f && cosf(saveAngle) > 0.0f) {
 					saveAngle += kAngleSpeed;
 				}
-				if (sinf(saveAngle) > -1.0f && cosf(saveAngle) < 0.0f) {
+				if (sinf(saveAngle) > -0.9f && cosf(saveAngle) < 0.0f) {
 					saveAngle -= kAngleSpeed;
 				}
 				playerAngle += saveAngle;
@@ -121,10 +120,10 @@ void Player::Update(ViewProjection viewProjection_) {
 				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (cosf(saveAngle) > 1.0f && sinf(saveAngle) > 0.0f) {
+				if (cosf(saveAngle) > 0.9f && sinf(saveAngle) > 0.0f) {
 					saveAngle -= kAngleSpeed;
 				}
-				if (cosf(saveAngle) > 1.0f && sinf(saveAngle) < 0.0f) {
+				if (cosf(saveAngle) > 0.9f && sinf(saveAngle) < 0.0f) {
 					saveAngle += kAngleSpeed;
 				}
 			}
@@ -142,10 +141,10 @@ void Player::Update(ViewProjection viewProjection_) {
 				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (cosf(saveAngle) < -1.0f && sinf(saveAngle) > 0.0f) {
+				if (cosf(saveAngle) < -0.9f && sinf(saveAngle) > 0.0f) {
 					saveAngle -= kAngleSpeed;
 				}
-				if (cosf(saveAngle) < -1.0f && sinf(saveAngle) < 0.0f) {
+				if (cosf(saveAngle) < -0.9f && sinf(saveAngle) < 0.0f) {
 					saveAngle += kAngleSpeed;
 				}
 			}
@@ -154,7 +153,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		else { isBoost = false; }
 
 	}
-	else { isBoost = false; }
+	
 
 	//if (playerAngle >= 0.0f && playerAngle < 0.5f * PI) {	//playerの角度が0~2の範囲に調整
 	//	quadrant = 1;

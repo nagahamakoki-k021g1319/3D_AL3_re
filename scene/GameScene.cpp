@@ -67,6 +67,7 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	// 3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
 
