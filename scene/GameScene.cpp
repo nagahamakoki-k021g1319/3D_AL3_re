@@ -190,8 +190,11 @@ void GameScene::Update() {
 		break;
 	}
 
-	debugText_->SetPos(10, 30);
-	debugText_->Printf("%d", effects_.size());
+	if (!enemys_.empty())
+	{
+		debugText_->SetPos(10, 30);
+		debugText_->Printf("%f:%f:%f", enemys_.front().get()->GetWorldPosition().x, enemys_.front().get()->GetWorldPosition().y, enemys_.front().get()->GetWorldPosition().z);
+	}
 	//デバッグ用表示
 	/*debugText_->SetPos(50, 90);
 	debugText_->Printf(
