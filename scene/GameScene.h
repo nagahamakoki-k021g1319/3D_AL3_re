@@ -125,6 +125,10 @@ class GameScene {
 	uint32_t textureHandle5_ = 0;
 	GameOver* gameOver_ = 0;
 
+	//敵2Dレティクル用スプライト
+	uint32_t textureHandleEnemyReticle_ = 0;
+	std::unique_ptr<Sprite> enemy2DReticle_;
+
 	// 3Dモデル
 	Model* model_ = nullptr;
 

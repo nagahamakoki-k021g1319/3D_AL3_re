@@ -106,6 +106,7 @@
     <ClCompile Include="Player\PlayerBullet.cpp" />
     <ClCompile Include="RailCamera\RailCamera.cpp" />
     <ClCompile Include="scene\affin.cpp" />
+    <ClCompile Include="scene\EnemyReticle.cpp" />
     <ClCompile Include="scene\GameClear.cpp" />
     <ClCompile Include="scene\GameOver.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Player\PlayerBullet.h" />
     <ClInclude Include="RailCamera\RailCamera.h" />
     <ClInclude Include="scene\affin.h" />
+    <ClInclude Include="scene\EnemyReticle.h" />
     <ClInclude Include="scene\GameClear.h" />
     <ClInclude Include="scene\GameOver.h" />
     <ClInclude Include="scene\GameScene.h" />

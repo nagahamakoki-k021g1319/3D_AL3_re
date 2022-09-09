@@ -29,6 +29,7 @@ void GameScene::Initialize() {
 	textureHandle0_ = TextureManager::Load("kuriku.png");
 	textureHandle4_ = TextureManager::Load("claer.png");
 	textureHandle5_ = TextureManager::Load("over.png");
+	textureHandleEnemyReticle_ = TextureManager::Load("RedReticle.png");
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 	model_ = Model::Create();
