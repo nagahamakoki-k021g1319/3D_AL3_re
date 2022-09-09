@@ -82,8 +82,13 @@ class Player {
 
 	// MSと変形機のチェンジ
 	int isPlayerChange = 0;
+	int oldPlayerChangeMode = 0;
 
 	bool isPushTrans = false;
 
+	float primaryAngle = 0.0f;
+	float controlAngleX = 0.0f;
+	float controlAngleY = 0.0f;
+	float angleVelocity = 0.0f;
 
 };
