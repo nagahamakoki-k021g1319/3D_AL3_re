@@ -75,16 +75,18 @@ void Player::Update(ViewProjection viewProjection_) {
 		isPushTrans = true;
 		if (input_->IsPressMouse(0)) {	//ブーストは左クリック
 			isBoost = true;
+			playerAngle = atanAngle;
 			if (isBoost == true && isOldBoost == false) {
-				playerAngle = atanAngle;
+				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (sinf(playerAngle) > 0.0f) {
-					playerAngle += kAngleSpeed * PI;
+				if(sinf(saveAngle) < 1.0f && cosf(saveAngle) > 0.0f){
+					saveAngle -= kAngleSpeed;
 				}
-				else if (sinf(playerAngle) < 0.0f) {
-					playerAngle -= kAngleSpeed * PI;
+				 if (sinf(saveAngle) < 1.0f && cosf(saveAngle) < 0.0f) {
+					saveAngle += kAngleSpeed;
 				}
+				playerAngle += saveAngle;
 			}
 		}else{ isBoost = false; }
 		
@@ -93,16 +95,18 @@ void Player::Update(ViewProjection viewProjection_) {
 		isPushTrans = true;
 		if (input_->IsPressMouse(0)) {
 			isBoost = true;
+			playerAngle = atanAngle + 1.0f * PI;
 			if (isBoost == true && isOldBoost == false) {
-				playerAngle = atanAngle + 1.0f*PI;
+				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (sinf(playerAngle) > 0.0f) {
-					playerAngle -= kAngleSpeed * PI;
+				if (sinf(saveAngle) > -1.0f && cosf(saveAngle) > 0.0f) {
+					saveAngle += kAngleSpeed;
 				}
-				else if (sinf(playerAngle) < 0.0f) {
-					playerAngle += kAngleSpeed * PI;
+				if (sinf(saveAngle) > -1.0f && cosf(saveAngle) < 0.0f) {
+					saveAngle -= kAngleSpeed;
 				}
+				playerAngle += saveAngle;
 			}
 		}
 		else { isBoost = false; }
@@ -111,17 +115,20 @@ void Player::Update(ViewProjection viewProjection_) {
 		isPushTrans = true;
 		if (input_->IsPressMouse(0)) {
 			isBoost = true;
+			playerAngle = atanAngle - 0.5f * PI;
 			if (isBoost == true && isOldBoost == false) {
-				playerAngle = atanAngle - 0.5f * PI;
+				
+				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (cosf(playerAngle) > 0.0f) {
-					playerAngle += kAngleSpeed * PI;
+				if (cosf(saveAngle) > 1.0f && sinf(saveAngle) > 0.0f) {
+					saveAngle -= kAngleSpeed;
 				}
-				else if (cosf(playerAngle) < 0.0f) {
-					playerAngle -= kAngleSpeed * PI;
+				if (cosf(saveAngle) > 1.0f && sinf(saveAngle) < 0.0f) {
+					saveAngle += kAngleSpeed;
 				}
 			}
+			playerAngle += saveAngle;
 		}
 		else { isBoost = false; }
 	}
@@ -129,17 +136,20 @@ void Player::Update(ViewProjection viewProjection_) {
 		isPushTrans = true;
 		if (input_->IsPressMouse(0)) {
 			isBoost = true;
+			playerAngle = atanAngle + 0.5f * PI;
 			if (isBoost == true && isOldBoost == false) {
-				playerAngle = atanAngle + 0.5f * PI;
+				
+				saveAngle = 0.0f;
 			}
 			else if (isBoost == true && isOldBoost == true) {
-				if (cosf(playerAngle) > 0.0f) {
-					playerAngle -= kAngleSpeed * PI;
+				if (cosf(saveAngle) < -1.0f && sinf(saveAngle) > 0.0f) {
+					saveAngle -= kAngleSpeed;
 				}
-				else if (cosf(playerAngle) < 0.0f) {
-					playerAngle += kAngleSpeed * PI;
+				if (cosf(saveAngle) < -1.0f && sinf(saveAngle) < 0.0f) {
+					saveAngle += kAngleSpeed;
 				}
 			}
+			playerAngle += saveAngle;
 		}
 		else { isBoost = false; }
 

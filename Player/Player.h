@@ -89,6 +89,6 @@ class Player {
 	bool isOldPush = false;
 	float playerAngle = 0.0f;
 	int quadrant = 0;
-	
+	float saveAngle = 0.0f;
 
 };
