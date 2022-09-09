@@ -1,7 +1,8 @@
 #include "Vector3.h"
 #include <cmath>
-
-
+//#include "MathUtility.h"
+//
+//using namespace MathUtility;
 float Vector3::length() const { return std::sqrt(x * x + y * y + z * z); }
 
 Vector3& Vector3::normalize() {
@@ -29,6 +30,33 @@ Vector3 Vector3::cross(const Vector3& v) const {
 	return Vector3(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 }
 
+Vector3 Vector3::SphereLinear(Vector3& out, Vector3& start, Vector3& end, float t)
+{
+
+	Vector3 s, e;
+	start.normalize();
+	end.normalize();
+	s = start;
+	e = end;
+
+	// 2ƒxƒNƒgƒ‹ŠÔ‚ÌŠp“xi‰sŠp‘¤j
+	float angle = 0.0f;
+	angle = acos(s.dot(e));
+	float SinTh = sin(angle);
+
+	// •âŠÔŒW”
+	float Ps = sin(angle * (1 - t));
+	float Pe = sin(angle * t);
+
+	/*out = (s * Ps+ Pe * e) / SinTh;*/
+	out = { (s.x * Ps) + (e.x * Ps),(s.y * Ps) + (e.y * Ps),(s.z * Ps) + (e.z * Ps) };
+	// ˆê‰³‹K‰»‚µ‚Ä‹…–ÊüŒ`•âŠÔ‚É
+	out.normalize();
+
+	return out;
+
+}
+
 
 // Vector2 ƒNƒ‰ƒX‚É‘®‚³‚È‚¢ŠÖ”ŒQ
 // 2€‰‰Zq
@@ -47,7 +75,10 @@ const Vector3 operator*(const Vector3& v, float s) {
 	return temp * s;
 }
 
-const Vector3 operator*(float s, const Vector3& v) { return v * s; }
+const Vector3 operator*(float s, const Vector3& v) { 
+	Vector3 temp(v);
+	return v * s;
+}
 
 const Vector3 operator/(const Vector3& v, float s) {
 	Vector3 temp(v);

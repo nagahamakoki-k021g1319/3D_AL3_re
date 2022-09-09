@@ -81,6 +81,9 @@ void Enemy::Fire() {
 	//’e‚ğ¶¬‚µ‰Šú‰»
 	//•¡”
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+
+	newBullet->SetPlayer(player_);
+
 	//’P”­
 	/*PlayerBullet* newBullet = new PlayerBullet();*/
 	newBullet->Initialize(bulletModel_, worldTransform_.translation_, A_BVec);
