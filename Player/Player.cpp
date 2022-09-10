@@ -88,7 +88,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		}
 		primaryAngle = atanAngle + angleVelocity;
 		isPushTrans = false;
-		float kControlSpeed = 0.01f;
+		float kControlSpeed = 0.03f;
 		//押した方向で移動ベクトルを変更
 		if (input_->PushKey(DIK_W)) {
 			isPushTrans = true;
@@ -299,7 +299,7 @@ void Player::Update(ViewProjection viewProjection_) {
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	model_->Draw(worldTransform_, viewProjection_);
 
 	//弾更新
 	//複数
