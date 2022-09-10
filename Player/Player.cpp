@@ -85,7 +85,7 @@ void Player::Update(ViewProjection viewProjection_) {
 
 			}
 
-			
+	
 		}
 		primaryAngle = atanAngle + angleVelocity;
 		isPushTrans = false;
