@@ -84,6 +84,7 @@ void Player::Update(ViewProjection viewProjection_) {
 				angleVelocity = 0.5f * PI;
 
 			}
+
 			
 		}
 		primaryAngle = atanAngle + angleVelocity;
@@ -98,14 +99,14 @@ void Player::Update(ViewProjection viewProjection_) {
 			isPushTrans = true;
 			controlAngleX += kControlSpeed;
 		}
-		else {
+		/*else {
 			if (controlAngleX > 0.0f) {
 				controlAngleX -= kControlSpeed;
 			}
 			if (controlAngleX < 0.0f) {
 				controlAngleX += kControlSpeed;
 			}
-		}
+		}*/
 		if (input_->PushKey(DIK_A)) {
 			isPushTrans = true;
 			controlAngleY -= kControlSpeed;
@@ -115,14 +116,14 @@ void Player::Update(ViewProjection viewProjection_) {
 			controlAngleY += kControlSpeed;
 
 		}
-		else {
+		/*else {
 			if (controlAngleY > 0.0f) {
 				controlAngleY -= kControlSpeed;
 			}
 			if (controlAngleY < 0.0f) {
 				controlAngleY += kControlSpeed;
 			}
-		}
+		}*/
 		Vector3 v2 = { controlAngleX,primaryAngle + controlAngleY,0 };
 
 		/*const float kCharacterRotateSpeed = 0.05f;

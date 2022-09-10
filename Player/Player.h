@@ -81,7 +81,7 @@ class Player {
 
 
 	// MSと変形機のチェンジ
-	int isPlayerChange = 0;
+	int isPlayerChange = 1;
 	int oldPlayerChangeMode = 0;
 
 	bool isPushTrans = false;
