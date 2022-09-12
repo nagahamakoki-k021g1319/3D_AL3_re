@@ -37,6 +37,7 @@ void GameScene::Initialize() {
 
 	model_ = Model::Create();
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
+	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -44,7 +45,7 @@ void GameScene::Initialize() {
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
-	player_->Initialize(modelPlayer1_, textureHandle_);
+	player_->Initialize(modelPlayer2_, modelPlayer1_, textureHandle_);
 	player_->setparent(railCamera_->GetWorldPosition());
 
 	//タイトルの生成

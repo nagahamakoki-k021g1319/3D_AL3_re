@@ -2,10 +2,11 @@
 
 using namespace MathUtility;
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
+void Player::Initialize(Model* jikiNormal, Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
 	assert(model);
 	model_ = model;
+	modelNormal_ = jikiNormal;
 	textureHandle_ = textureHandle;
 
 	//シングルインスタンスを取得する
@@ -104,12 +105,14 @@ void Player::Update(ViewProjection viewProjection_) {
 				angleVelocity = 0.0f;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
 			}
 			else if (input_->PushKey(DIK_S) && input_->IsTriggerMouse(0)) {
 				isPushTrans = true;
 				angleVelocity = 1.0f * PI;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
 			}
 
 			if (input_->PushKey(DIK_A) && input_->IsTriggerMouse(0)) {
@@ -117,12 +120,14 @@ void Player::Update(ViewProjection viewProjection_) {
 				angleVelocity = -0.5f * PI;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
 			}
 			else if (input_->PushKey(DIK_D) && input_->IsTriggerMouse(0)) {
 				isPushTrans = true;
 				angleVelocity = 0.5f * PI;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
 			}
 
 		
@@ -166,7 +171,7 @@ void Player::Update(ViewProjection viewProjection_) {
 #pragma region 重力
 		if (isFly == 1) {
 			if (gravityVel >= -2.5f) {
-				float kGlavityVel = 0.02f;
+				float kGlavityVel = 0.05f;
 				gravityVel -= kGlavityVel;
 			}
 			if (worldTransform_.matWorld_.m[3][1] > 0.0f) {
@@ -407,7 +412,12 @@ void Player::Update(ViewProjection viewProjection_) {
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
-	model_->Draw(worldTransform_, viewProjection_);
+	if (isPlayerChange == 1) {
+		model_->Draw(worldTransform_, viewProjection_);
+	}
+	else if (isPlayerChange == 0) {
+		modelNormal_->Draw(worldTransform_, viewProjection_);
+	}
 
 	//弾更新
 	//複数

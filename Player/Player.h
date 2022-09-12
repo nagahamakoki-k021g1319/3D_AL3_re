@@ -17,7 +17,7 @@ class Player {
 	///<summary>
 	///初期化
 	///</summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* jikiNormal,Model* model, uint32_t textureHandle);
 
 	///< summary>
 	///初期化
@@ -65,6 +65,7 @@ class Player {
 	WorldTransform worldTransform3DReticle_;
 	//モデル
 	Model* model_ = nullptr;
+	Model* modelNormal_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	
