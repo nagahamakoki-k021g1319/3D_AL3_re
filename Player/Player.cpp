@@ -17,7 +17,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0, -12, 0 };
+	worldTransform_.translation_ = { 0, 20, 0 };
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
@@ -50,9 +50,13 @@ void Player::Update(ViewProjection viewProjection_) {
 			isPlayerChange = 1;
 			controlAngleX = 0.0f;
 			controlAngleY = 0.0f;
+			
 		}
 		else {
 			isPlayerChange = 0;
+			controlAngleX = 0.0f;
+			controlAngleY = 0.0f;
+			isFly = 1;
 		}
 
 
@@ -65,27 +69,139 @@ void Player::Update(ViewProjection viewProjection_) {
 	float atanAngle = atan2f(v1.x, v1.z);
 
 	if (isPlayerChange == 0) {
+		angleVelocity = 0.0f;
 		if (isPlayerChange != oldPlayerChangeMode) {
+			//押した方向で移動ベクトルを変更
+			if (input_->PushKey(DIK_W)) {
+				speedUpParam.z = 1.0f;
+				isInitAngleMode = 1;
+			}
+			else if (input_->PushKey(DIK_S)) {
+				speedUpParam.z = -1.0f;
+				isInitAngleMode = 2;
+			}
+			else if (input_->PushKey(DIK_A)) {
+				speedUpParam.x = -1.0f;
+				speedUpParam.z = 0.3f;
+				isInitAngleMode = 3;
+			}
+			else if (input_->PushKey(DIK_D)) {
+				speedUpParam.x = 1.0f;
+				speedUpParam.z = 0.3f;
+				isInitAngleMode = 4;
+
+			}
+			primaryAngle = atanAngle + angleVelocity;
+		}
+
+		
+		isPushTrans = false;
+		float kControlSpeed = 0.03f;
+	
+		
+			if (input_->PushKey(DIK_W) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 0.0f;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+			}
+			else if (input_->PushKey(DIK_S) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 1.0f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+			}
+
+			if (input_->PushKey(DIK_A) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = -0.5f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+			}
+			else if (input_->PushKey(DIK_D) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 0.5f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+			}
+
+		
+		
+		Vector3 v2 = { 0,primaryAngle,0 };
+
+		/*const float kCharacterRotateSpeed = 0.05f;
+		if (input_->PushKey(DIK_Q)) {
+			rotation = { 0, kCharacterRotateSpeed, 0 };
+		}
+		else if (input_->PushKey(DIK_E)) {
+			rotation = { 0, -kCharacterRotateSpeed, 0 };
+		}*/
+
+		worldTransform_.rotation_ = v2;
+
+
+		Vector3 v3 = { speedUpParam.x,speedUpParam.y,speedUpParam.z};
+
+		/*float kMinusSpeed = 0.1f;
+		if (speedUpParam.x > 0.0f) {
+			speedUpParam.x -= kMinusSpeed;
+		}
+		if (speedUpParam.y > 0.0f) {
+			speedUpParam.y -= kMinusSpeed;
+		}
+		if (speedUpParam.z > 0.0f) {
+			speedUpParam.z -= kMinusSpeed;
+		}*/
+
+		v3 = bVelocity(v3, worldTransform_);
+
+		worldTransform_.translation_ += v3;
+
+
+		/*if (isPushTrans == true) {
 			
+		}
+		else {
+		}*/
+#pragma region 重力
+		if (isFly == 1) {
+			if (gravityVel >= -2.5f) {
+				float kGlavityVel = 0.02f;
+				gravityVel -= kGlavityVel;
+			}
+			if (worldTransform_.matWorld_.m[3][1] > 0.0f) {
+				worldTransform_.translation_.y += gravityVel;
+			}
+			else if (worldTransform_.matWorld_.m[3][1] <= 0.0f) {
+				worldTransform_.matWorld_.m[3][1] = 0.0f;
+				isFly = 0;
+				gravityVel = 0.0f;
+			}
+		}
+#pragma endregion
+	}
+	else if (isPlayerChange == 1) {
+		if (isPlayerChange != oldPlayerChangeMode) {
+
 			//押した方向で移動ベクトルを変更
 			if (input_->PushKey(DIK_W)) {
 				angleVelocity = 0.0f;
 			}
 			else if (input_->PushKey(DIK_S)) {
-				
+
 				angleVelocity = 1.0f * PI;
 			}
 			if (input_->PushKey(DIK_A)) {
-				
+
 				angleVelocity = -0.5f * PI;
 			}
 			else if (input_->PushKey(DIK_D)) {
-				
+
 				angleVelocity = 0.5f * PI;
 
 			}
 
-	
+
 		}
 		primaryAngle = atanAngle + angleVelocity;
 		isPushTrans = false;
@@ -99,14 +215,14 @@ void Player::Update(ViewProjection viewProjection_) {
 			isPushTrans = true;
 			controlAngleX += kControlSpeed;
 		}
-		/*else {
+		else {
 			if (controlAngleX > 0.0f) {
 				controlAngleX -= kControlSpeed;
 			}
 			if (controlAngleX < 0.0f) {
 				controlAngleX += kControlSpeed;
 			}
-		}*/
+		}
 		if (input_->PushKey(DIK_A)) {
 			isPushTrans = true;
 			controlAngleY -= kControlSpeed;
@@ -116,14 +232,14 @@ void Player::Update(ViewProjection viewProjection_) {
 			controlAngleY += kControlSpeed;
 
 		}
-		/*else {
+		else {
 			if (controlAngleY > 0.0f) {
 				controlAngleY -= kControlSpeed;
 			}
 			if (controlAngleY < 0.0f) {
 				controlAngleY += kControlSpeed;
 			}
-		}*/
+		}
 		Vector3 v2 = { controlAngleX,primaryAngle + controlAngleY,0 };
 
 		/*const float kCharacterRotateSpeed = 0.05f;
@@ -136,20 +252,11 @@ void Player::Update(ViewProjection viewProjection_) {
 
 		worldTransform_.rotation_ = v2;
 
-
 		Vector3 v3 = { 0,0,0.5f };
 
 		v3 = bVelocity(v3, worldTransform_);
 
 		worldTransform_.translation_ += v3;
-		/*if (isPushTrans == true) {
-			
-		}
-		else {
-		}*/
-	}
-	else if (isPlayerChange == 2) {
-
 	}
 	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
 	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
@@ -164,14 +271,14 @@ void Player::Update(ViewProjection viewProjection_) {
 	worldTransform_.TransferMatrix();
 
 
-	const float kMoveLimitX = 35;
-	const float kMoveLimitY = 18;
+	/*const float kMoveLimitX = 35;
+	const float kMoveLimitY = 18;*/
 
-	//範囲を超えない処理
-	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
-	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
-	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+	////範囲を超えない処理
+	//worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	//worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
+	//worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
+	//worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
 	const float kChestRotSpeed = 0.05f;
 

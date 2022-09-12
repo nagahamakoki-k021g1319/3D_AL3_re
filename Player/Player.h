@@ -86,9 +86,20 @@ class Player {
 
 	bool isPushTrans = false;
 
+	//アングル用
 	float primaryAngle = 0.0f;
 	float controlAngleX = 0.0f;
 	float controlAngleY = 0.0f;
 	float angleVelocity = 0.0f;
 
+	//通常携帯時のみで使う↓
+	//入力時のhogehoge
+	int isInitAngleMode = 0;
+	
+	//スピードの可変値
+	Vector3 speedUpParam = {0.0f,0.0f,0.0f};
+	
+	//飛んでいるか否か
+	float gravityVel = 0.0f;
+	bool isFly;
 };
