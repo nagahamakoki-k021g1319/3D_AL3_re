@@ -97,7 +97,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		}
 
 		//スピード調整
-		float kAdjustSpeed = 0.08f;
+		float kAdjustSpeed = 0.15f;
 		if (speedUpParam.x > kSpeedParamVel) {
 			speedUpParam.x -= kAdjustSpeed;
 		}
@@ -191,21 +191,23 @@ void Player::Update(ViewProjection viewProjection_) {
 				float kRotSpeed = 0.1f * PI;
 				if (isInitAngleMode == 3) {
 					speedUpParam.x = -4.0f;
+					speedUpParam.z = 3.0f;
 				
 					turnAngle -= kRotSpeed;
 					worldTransform_.rotation_.z += turnAngle;
 				}else if (isInitAngleMode == 4) {
 					speedUpParam.x = 4.0f;
+					speedUpParam.z = 3.0f;
 					
 					turnAngle += kRotSpeed;
 					worldTransform_.rotation_.z += turnAngle;
 				}else if (isInitAngleMode == 1) {
-					speedUpParam.z = 4.0f;
+					speedUpParam.z = 5.0f;
 					
 					turnAngle += kRotSpeed;
 					worldTransform_.rotation_.x += turnAngle;
 				}else if (isInitAngleMode == 2) {
-					speedUpParam.z = -4.0f;
+					speedUpParam.z = -5.0f;
 					turnAngle -= kRotSpeed;
 					worldTransform_.rotation_.x += turnAngle;
 				}
