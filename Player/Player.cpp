@@ -18,7 +18,7 @@ void Player::Initialize(Model* jikiNormal, Model* model, uint32_t textureHandle)
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0, 20, 0 };
+	worldTransform_.translation_ = { 0, 0, 0 };
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
@@ -58,6 +58,8 @@ void Player::Update(ViewProjection viewProjection_) {
 			controlAngleX = 0.0f;
 			controlAngleY = 0.0f;
 			isFly = 1;
+			isModeChangeBoost = true;
+			gravityVel = 0.0f;
 		}
 	}
 
@@ -71,21 +73,22 @@ void Player::Update(ViewProjection viewProjection_) {
 		angleVelocity = 0.0f;
 		if (isPlayerChange != oldPlayerChangeMode) {
 			//押した方向で移動ベクトルを変更
+			
 			if (input_->PushKey(DIK_W)) {
-				speedUpParam.z = 1.0f;
+				speedUpParam.z = kSpeedParamVel;
 				isInitAngleMode = 1;
 			}
 			else if (input_->PushKey(DIK_S)) {
-				speedUpParam.z = -1.0f;
+				speedUpParam.z = -kSpeedParamVel;
 				isInitAngleMode = 2;
 			}
 			else if (input_->PushKey(DIK_A)) {
-				speedUpParam.x = -1.0f;
+				speedUpParam.x = -kSpeedParamVel;
 				speedUpParam.z = 0.3f;
 				isInitAngleMode = 3;
 			}
 			else if (input_->PushKey(DIK_D)) {
-				speedUpParam.x = 1.0f;
+				speedUpParam.x = kSpeedParamVel;
 				speedUpParam.z = 0.3f;
 				isInitAngleMode = 4;
 
@@ -93,11 +96,32 @@ void Player::Update(ViewProjection viewProjection_) {
 			primaryAngle = atanAngle + angleVelocity;
 		}
 
+		//スピード調整
+		float kAdjustSpeed = 0.08f;
+		if (speedUpParam.x > kSpeedParamVel) {
+			speedUpParam.x -= kAdjustSpeed;
+		}
+		else if (speedUpParam.x < -kSpeedParamVel) {
+			speedUpParam.x += kAdjustSpeed;
+		}
+		if (speedUpParam.y > kSpeedParamVel) {
+			speedUpParam.y -= kAdjustSpeed;
+		}
+		else if (speedUpParam.y < -kSpeedParamVel) {
+			speedUpParam.y += kAdjustSpeed;
+		}
+		if (speedUpParam.z > kSpeedParamVel) {
+			speedUpParam.z -= kAdjustSpeed;
+		}
+		else if (speedUpParam.z < -kSpeedParamVel) {
+			speedUpParam.z += kAdjustSpeed;
+		}
+
 		
 		isPushTrans = false;
 		float kControlSpeed = 0.03f;
 	
-		
+		/*
 			if (input_->PushKey(DIK_W) && input_->IsTriggerMouse(0)) {
 				isPushTrans = true;
 				angleVelocity = 0.0f;
@@ -126,7 +150,7 @@ void Player::Update(ViewProjection viewProjection_) {
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
 				speedUpParam = { 0,0,1.0f };
-			}
+			}*/
 
 
 		
@@ -144,7 +168,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		worldTransform_.rotation_ = v2;
 
 
-		Vector3 v3 = { speedUpParam.x,speedUpParam.y,speedUpParam.z};
+		Vector3 v3 = { speedUpParam.x + boostVelX,speedUpParam.y,speedUpParam.z};
 
 		/*float kMinusSpeed = 0.1f;
 		if (speedUpParam.x > 0.0f) {
@@ -161,6 +185,43 @@ void Player::Update(ViewProjection viewProjection_) {
 
 		worldTransform_.translation_ += v3;
 
+		if (isModeChangeBoost == true) {
+			boostCount++;
+			if (boostCount <= 7) {
+				float kRotSpeed = 0.1f * PI;
+				if (isInitAngleMode == 3) {
+					speedUpParam.x = -4.0f;
+				
+					turnAngle += kRotSpeed;
+					worldTransform_.rotation_.z += turnAngle;
+				}else if (isInitAngleMode == 4) {
+					speedUpParam.x = 4.0f;
+					
+					turnAngle -= kRotSpeed;
+					worldTransform_.rotation_.z += turnAngle;
+				}else if (isInitAngleMode == 1) {
+					speedUpParam.z = 4.0f;
+					
+					turnAngle += kRotSpeed;
+					worldTransform_.rotation_.x += turnAngle;
+				}else if (isInitAngleMode == 2) {
+					speedUpParam.z = -4.0f;
+					turnAngle -= kRotSpeed;
+					worldTransform_.rotation_.x += turnAngle;
+				}
+			}
+			else {
+				isModeChangeBoost = 0;
+				turnAngle = 0.0f;
+				worldTransform_.rotation_.x = 0;
+				worldTransform_.rotation_.z = 0;
+				boostCount = 0;
+				boostVelZ = 0.0f;
+				boostVelX = 0.0f;
+			}
+		}
+
+		
 
 		/*if (isPushTrans == true) {
 			
@@ -169,8 +230,8 @@ void Player::Update(ViewProjection viewProjection_) {
 		}*/
 #pragma region 重力
 		if (isFly == 1) {
-			if (gravityVel >= -2.5f) {
-				float kGlavityVel = 0.05f;
+			if (gravityVel >= -4.0f) {
+				float kGlavityVel = 0.03f;
 				gravityVel -= kGlavityVel;
 			}
 			if (worldTransform_.matWorld_.m[3][1] > 0.0f) {
@@ -180,6 +241,29 @@ void Player::Update(ViewProjection viewProjection_) {
 				worldTransform_.matWorld_.m[3][1] = 0.0f;
 				isFly = 0;
 				gravityVel = 0.0f;
+			}
+		}
+		else {	//tyakuti
+			float kAdjustVel = 0.03f;
+			if (speedUpParam.x > 0) {
+				speedUpParam.x -= kAdjustVel;
+			}
+			else if (speedUpParam.x < 0) {
+				speedUpParam.x += kAdjustVel;
+			}
+
+			if (speedUpParam.y > 0) {
+				speedUpParam.y -= kAdjustVel;
+			}
+			else if (speedUpParam.y < 0) {
+				speedUpParam.y += kAdjustVel;
+			}
+
+			if (speedUpParam.z > 0) {
+				speedUpParam.z -= kAdjustVel;
+			}
+			else if (speedUpParam.z < 0) {
+				speedUpParam.z += kAdjustVel;
 			}
 		}
 #pragma endregion
@@ -260,7 +344,7 @@ void Player::Update(ViewProjection viewProjection_) {
 
 		worldTransform_.rotation_ = v2;
 
-		Vector3 v3 = { 0,0,0.5f };
+		Vector3 v3 = { 0,0.1f,1.5f };
 
 		v3 = bVelocity(v3, worldTransform_);
 

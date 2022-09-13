@@ -91,7 +91,7 @@ void GameScene::Initialize() {
 	//レールカメラ
 	railCamera_ = new RailCamera();
 	//レールカメラの初期化
-	railCamera_->Initialize(Vector3(0, 0, 20), Vector3(0, 0, 0));
+	railCamera_->Initialize(Vector3(0, 10, 30), Vector3(0, 0, 0));
 
 	//敵弾リストの取得
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = GetBullets();
@@ -165,9 +165,9 @@ void GameScene::Update() {
 			Vector3 playerTarget = {e.x - p.x, e.y - p.y, e.z - p.z};
 
 			Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
-			float len = 30.0f;
+			float len = 50.0f;
 			Vector3 cameraPos = {
-			  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 6.0f, p.z - PosNorm.z * len};
+			  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 10.0f, p.z - PosNorm.z * len};
 
 			//カメラの位置制御
 			railCamera_->GetViewProjection().eye = cameraPos;
@@ -540,9 +540,9 @@ void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance
 	  targetPos.z + unitvecPlayerTarget.z};
 
 	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
-	float len = 30.0f;
+	float len = 50.0f;
 	Vector3 cameraPos = {
-	  playerPos.x - PosNorm.x * len, (playerPos.y - PosNorm.y * len) + 6.0f,
+	  playerPos.x - PosNorm.x * len, (playerPos.y - PosNorm.y * len) + 11.0f,
 	  playerPos.z - PosNorm.z * len};
 	lastEnemyPos = cameraPos;
 

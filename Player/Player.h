@@ -85,6 +85,13 @@ class Player {
 	int isPlayerChange = 1;
 	int oldPlayerChangeMode = 0;
 
+	const float kSpeedParamVel = 1.0f;
+	bool isModeChangeBoost = false;
+	int boostCount = 0;
+	float turnAngle = 0.0f; //変形児の旋回
+	float boostVelX = 0.0f;
+	float boostVelZ = 0.0f;
+
 	bool isPushTrans = false;
 
 	//アングル用
