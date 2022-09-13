@@ -36,13 +36,13 @@ void Player::Update(ViewProjection viewProjection_) {
 		return bullet->IsDead();
 		});
 
-
+	//キャラクターの移動ベクトル
+	Vector3 move = {0, 0, 0};
 	//キャラクターの移動の速さ
 	const float kCharacterSpeed = 0.8f;
 	const float kCharacterSpeed2 = 0.3f;
 
 
-	
 	// MSと変形機のチェンジ
 	oldPlayerChangeMode = isPlayerChange;	//前フレーム処理
 
@@ -59,10 +59,8 @@ void Player::Update(ViewProjection viewProjection_) {
 			controlAngleY = 0.0f;
 			isFly = 1;
 		}
-
-
-
 	}
+
 
 	Vector3 v1;
 	v1 = worldTransform_.translation_ - viewProjection_.eye;
@@ -195,15 +193,19 @@ void Player::Update(ViewProjection viewProjection_) {
 			}
 			else if (input_->PushKey(DIK_S)) {
 
+
 				angleVelocity = 1.0f * PI;
 			}
 			if (input_->PushKey(DIK_A)) {
+
 
 				angleVelocity = -0.5f * PI;
 			}
 			else if (input_->PushKey(DIK_D)) {
 
+
 				angleVelocity = 0.5f * PI;
+
 
 			}
 
@@ -308,7 +310,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	//自機から3Dレティクルへの距離
 	const float kDistancePlayerTo3DReticle = 60.0f;
 	//自機から3Dレティクルへのオフセット(Z+向き)
-	Vector3 offset = { 0, 0, 1.0f };
+	Vector3 offset = { 0, 0, 2.0f };
 	//自機のワールド座標の回転を反映
 	offset = AffinTrans::MatVector(offset, worldTransform_.matWorld_);
 	//ベクトルの長さを整える
@@ -382,7 +384,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	Vector3 mouseDirection = posFar - posNear;
 	mouseDirection = Vector3Normalize(mouseDirection);
 	//カメラから照準オブジェクトの距離
-	const float kDistanceTestObject = 222.0f;
+	const float kDistanceTestObject = 100.0f;
 	worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
 
 	//行列更新
@@ -426,8 +428,11 @@ void Player::Draw(ViewProjection viewProjection_) {
 		bullet->Draw(viewProjection_);
 	}
 
-	//3Dレティクルを描画
-	model_->Draw(worldTransform3DReticle_, viewProjection_, textureHandle_);
+
+	////3Dレティクルを描画
+	//model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
+
+
 
 
 	//単発
@@ -442,12 +447,12 @@ void Player::Attack() {
 		const float kBulletSpeed = 3.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
-		////速度ベクトルを自機の向きに合わせて回転させる
-		//velocity = bVelocity(velocity, worldTransform_);
+		//速度ベクトルを自機の向きに合わせて回転させる
+		velocity = bVelocity(velocity, worldTransform_);
 
-		////自機から標準オブジェクトへのベクトル
-		//velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
-		//velocity = Vector3Normalize(velocity) * kBulletSpeed;
+		//自機から標準オブジェクトへのベクトル
+		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
+		velocity = Vector3Normalize(velocity) * kBulletSpeed;
 
 		//弾を生成し初期化
 		//複数

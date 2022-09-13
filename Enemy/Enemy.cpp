@@ -21,6 +21,8 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 
 	/*Fire();*/
 	Approach();
+
+
 }
 
 void Enemy::Update() {
@@ -127,3 +129,5 @@ Vector3 Enemy::GetWorldPosition() {
 void Enemy::OnCollision() { 
 	isDead_ = true; 
 }
+
+
