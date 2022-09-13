@@ -17,11 +17,6 @@
 #include "RailCamera.h"
 #include "EnemyBullet.h"
 #include <sstream>
-#include "Title.h"
-#include "push.h"
-#include "GameClear.h"
-#include "GameOver.h"
-
 #include "Effect.h"
 
 #include "Ground.h"
@@ -132,22 +127,19 @@ class GameScene {
 	uint32_t textureHandle_ = 0;
 	uint32_t textureHandle2_ = 0;
 	uint32_t textureHandle1_ = 0;
-	//ボタンを押せ!!
-	uint32_t textureHandle0_ = 0;
-	push* push_ = nullptr;
-	//タイトル
-	uint32_t textureHandle3_ = 0;
-	Title* title_ = nullptr;
+	// タイトル
+	std::unique_ptr<Sprite> spriteTitle;
 	//ゲームクリア
-	uint32_t textureHandle4_ = 0;
-	GameClear* gameClear_ = 0;
+	std::unique_ptr<Sprite> spriteClear;
 	//ゲームオーバー
-	uint32_t textureHandle5_ = 0;
-	GameOver* gameOver_ = 0;
+	std::unique_ptr<Sprite> spriteOver; 
 
 	//敵2Dレティクル用スプライト
 	uint32_t textureHandleEnemyReticle_ = 0;
 	std::unique_ptr<Sprite> enemy2DReticle_;
+	// 赤ロック
+	std::unique_ptr<Sprite> spriterock;
+
 
 	// 3Dモデル
 	Model* model_ = nullptr;
@@ -212,8 +204,7 @@ class GameScene {
 	Vector3 lastEnemyPos;
 	
 	
-	// 2Dレティクル用スプライト
-	std::unique_ptr<Sprite> spriterock;
+	
 
 
 	int targetChange = 0;
