@@ -1,5 +1,5 @@
 #include "Enemy.h"
-#include "Player/Player.h"
+#include "Player.h"
 #include <GameScene.h>
 #include <cmath>
 
@@ -9,7 +9,12 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 	model_ = model;
 	textureHandle_ = textureHandle;
 
+	effectModel_ = Model::CreateFromOBJ("explosion", false);
+	bulletModel_ = Model::CreateFromOBJ("tamaX", false);
+
+
 	//シングルインスタンスを取得する
+
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
@@ -38,24 +43,10 @@ void Enemy::Update() {
 
 	worldTransform_.TransferMatrix();
 
-	//移動(ベクトルを加算)
-	if (isChangeFlag == 0) {
-		if (worldTransform_.translation_.x > 30.0f) {
-			isChangeFlag = 1;
-		}
-	} else if (isChangeFlag == 1) {
-		if (worldTransform_.translation_.x <= -20.0f) {
-			isChangeFlag = 2;
-		}
-	}
-	if (isChangeFlag == 1) {
-		kCharacterSpeedX = -kCharacterSpeedX;
-	} else if (isChangeFlag == 2) {
-		kCharacterSpeedX = kCharacterSpeedX;
-	}
-	worldTransform_.translation_ += {kCharacterSpeedX, 0, -kCharacterSpeed};
 
-	//発射タイマーカウントダウン
+	worldTransform_.translation_ += {0, 0, -kCharacterSpeed};
+	
+
 	shotTimer--;
 
 	if (shotTimer == 0) {
@@ -65,6 +56,9 @@ void Enemy::Update() {
 		shotTimer = kFireInterval;
 	}
 
+
+	debugText_->SetPos(10, 50);
+	debugText_->Printf("%d", enemyId);
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {
@@ -76,8 +70,10 @@ void Enemy::Fire() {
 
 	assert(player_);
 
+
 	//弾の速度
 	const float kBulletSpeed = 15.0f;
+
 	Vector3 velocity(0, 0, kBulletSpeed);
 
 	//プレイヤーのワールド座標の取得
@@ -94,16 +90,24 @@ void Enemy::Fire() {
 	float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
 	//ベクトルの長さを速さに合わせる
 	A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
+
 	
 	A_BVec *= kBulletSpeed;
+
 
 
 	//弾を生成し初期化
 	//複数
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+
+
+	newBullet->SetPlayer(player_);
+
+
 	//単発
+
 	/*PlayerBullet* newBullet = new PlayerBullet();*/
-	newBullet->Initialize(model_, worldTransform_.translation_, A_BVec);
+	newBullet->Initialize(bulletModel_, worldTransform_.translation_, A_BVec);
 	
 	//弾を登録する
 	gameScene_->AddEnemyBullet(newBullet);
@@ -127,6 +131,11 @@ Vector3 Enemy::GetWorldPosition() {
 }
 
 void Enemy::OnCollision() { 
+	for (int i = 0; i < 10; i++) {
+		std::unique_ptr<Effect> newEffect = std::make_unique<Effect>();
+		newEffect->Initialize(effectModel_, worldTransform_.translation_);
+		gameScene_->AddEffect(newEffect);
+	}
 	isDead_ = true; 
 }
 

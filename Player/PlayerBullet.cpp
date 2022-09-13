@@ -15,6 +15,9 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 
 	//ˆø”‚Åó‚¯æ‚Á‚½‘¬“x‚ğƒƒ“ƒo•Ï”‚É‘ã“ü
 	velocity_ = velocity;
+
+
+
 }
 
 void PlayerBullet::Update() {

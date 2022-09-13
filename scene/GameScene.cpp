@@ -32,6 +32,8 @@ void GameScene::Initialize() {
 	textureHandle4_ = TextureManager::Load("claer.png");
 	textureHandle5_ = TextureManager::Load("over.png");
 
+	textureHandleEnemyReticle_ = TextureManager::Load("RedReticle.png");
+
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 
@@ -120,6 +122,10 @@ void GameScene::Update() {
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
 
+
+	//デスフラグの立った敵の削除
+	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
+
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
@@ -138,7 +144,11 @@ void GameScene::Update() {
 		break;
 	case SceneNo::Game: //射撃
 
-		playerTimer--; //自機のHPタイマー
+						//自機のHPタイマー
+		playerTimer--;
+
+
+
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
@@ -146,12 +156,43 @@ void GameScene::Update() {
 
 		//敵発生
 		UpdataEnemyPopCommands();
+
+		if (input_->TriggerKey(DIK_E)) {
+			targetChange++;
+		}
+		noEnemy = 0;
+
 		cameraFlag_ = 0;
+
 		//敵の更新
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 
 			enemy_->SetGameScene(this);
 			enemy_->Update();
+
+			//デバッグ用表示
+
+			if (targetChange > targetMax || goThrough == 1) {
+				targetChange = enemy_->GetId();
+				goThrough = 0;
+			}
+
+			if (enemy_->GetId() == targetChange) {
+				EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
+				noEnemy++;
+			}
+			//else if (targetChange != enemy_->GetId() && goThrough >= 1) {
+			//	targetChange++;
+			//}
+
+
+		}
+		if (noEnemy == 0) {
+			targetChange++;
+		}
+		debugText_->SetPos(50, 110);
+		debugText_->Printf("Time limit :%d", targetChange);
+
 			EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 			
 
@@ -172,12 +213,15 @@ void GameScene::Update() {
 			//カメラの位置制御
 			railCamera_->GetViewProjection().eye = cameraPos;
 		}
+
 		//弾更新
 		//複数
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->Update();
 		}
-
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->Update();
+		}
 		CheckAllCollisions();
 
 		//ゲームクリアに突入
@@ -196,8 +240,8 @@ void GameScene::Update() {
 		railCamera_->Update();
 
 		//デバッグ用表示
-		debugText_->SetPos(50, 110);
-		debugText_->Printf("Time limit :%d", playerTimer);
+		/*debugText_->SetPos(50, 110);
+		debugText_->Printf("Time limit :%d", targetChange);*/
 
 		break;
 	case SceneNo::Clear: //クリア
@@ -230,6 +274,13 @@ void GameScene::Update() {
 		break;
 	}
 
+	if (!enemys_.empty())
+	{
+		debugText_->SetPos(10, 30);
+		debugText_->Printf("%f:%f:%f", enemys_.front().get()->GetWorldPosition().x, enemys_.front().get()->GetWorldPosition().y, enemys_.front().get()->GetWorldPosition().z);
+	}
+	debugText_->SetPos(10, 80);
+	debugText_->Printf("%d", targetMax);
 	//デバッグ用表示
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
@@ -286,6 +337,9 @@ void GameScene::Draw() {
 		//弾更新
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->Draw(railCamera_->GetViewProjection());
+		}
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->Draw(railCamera_->GetViewProjection());
 		}
 		break;
 	case SceneNo::Clear: //クリア
@@ -387,6 +441,10 @@ void GameScene::CheckAllCollisions() {
 			if (cd <= playerBulletRadius + enemyRadius) {
 				//敵キャラの衝突時コールバックを呼び出す
 				enemy_->OnCollision();
+				if (enemy_->GetId() == targetChange) {
+					/*targetChange = enemy_->GetId() + 1;*/
+					goThrough++;
+				}
 				enemyDefeat++;
 				//自弾の衝突時コールバックを呼び出す
 				bullet->OnCollision();
@@ -427,6 +485,12 @@ void GameScene::CheckAllCollisions() {
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet) {
 	//リストに登録する
 	enemybullets_.push_back(std::move(enemyBullet));
+}
+
+void GameScene::AddEffect(std::unique_ptr<Effect>& efect)
+{
+	//リストに登録する
+	effects_.push_back(std::move(efect));
 }
 
 void GameScene::LoadEnemyPopData() {
@@ -486,7 +550,13 @@ void GameScene::UpdataEnemyPopCommands() {
 			std::getline(line_stream, word, ',');
 			float z = static_cast<float>(std::atof(word.c_str()));
 
-			GenerEnemy(Vector3(x, y, z));
+			//ID
+			std::getline(line_stream, word, ',');
+			int ID = static_cast<int>(std::atof(word.c_str()));
+
+			targetMax = ID;
+
+			GenerEnemy(Vector3(x, y, z), ID);
 		}
 		// WAITコマンド
 		else if (word.find("WAIT") == 0) {
@@ -505,7 +575,7 @@ void GameScene::UpdataEnemyPopCommands() {
 	}
 }
 
-void GameScene::GenerEnemy(Vector3 EnemyPos) {
+void GameScene::GenerEnemy(Vector3 EnemyPos, int ID) {
 	//敵キャラの生成
 	std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 	//敵キャラの初期化
@@ -513,6 +583,8 @@ void GameScene::GenerEnemy(Vector3 EnemyPos) {
 
 	//敵キャラにアドレスを渡す
 	newEnemy->SetPlayer(player_);
+
+	newEnemy->SetID(ID);
 
 	//リストに登録する
 	enemys_.push_back(std::move(newEnemy));
@@ -540,11 +612,13 @@ void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance
 	  targetPos.z + unitvecPlayerTarget.z};
 
 	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
+
 	float len = 50.0f;
 	Vector3 cameraPos = {
 	  playerPos.x - PosNorm.x * len, (playerPos.y - PosNorm.y * len) + 11.0f,
 	  playerPos.z - PosNorm.z * len};
 	lastEnemyPos = cameraPos;
+
 
 	//カメラの位置制御
 	railCamera_->GetViewProjection().eye = cameraPos;

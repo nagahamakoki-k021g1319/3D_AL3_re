@@ -1,5 +1,5 @@
 #pragma once
-#include "math/Vector3.h"
+#include "Vector3.h"
 #include <Model.h>
 #include "ViewProjection.h"
 #include <Model.h>
@@ -7,8 +7,9 @@
 #include <cassert>
 #include <affin.h>
 
+class Player;
 class EnemyBullet {
-  public:
+public:
 	///< summary>
 	///初期化
 	///</summary>
@@ -30,11 +31,13 @@ class EnemyBullet {
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-
-   public:
 	bool InDead() const { return isDead_; }
 
-  private:
+	void SetPlayer(Player* player) { player_ = player; }
+
+private:
+
+
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル
@@ -50,5 +53,9 @@ class EnemyBullet {
 	int32_t deathTimer_ = kLifeTime;
 	//デスフラグ
 	bool isDead_ = false;
-	
+
+	Player* player_;
+
+	//誘導タイマー
+	int inductionTimer = 30;
 };

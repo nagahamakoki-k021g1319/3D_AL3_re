@@ -2,7 +2,11 @@
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
 
-	//ワールドトランスフォームの初期設定
+	//ShowCursor(FALSE);
+	
+	viewProjection_.farZ = 2500;
+
+
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
 	//ワールド変換の初期化

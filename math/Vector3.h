@@ -24,6 +24,13 @@ class Vector3 {
 	float dot(const Vector3& v) const;     //内積を求める
 	Vector3 cross(const Vector3& v) const; //外積を求める
 
+	// 球面線形補間関数
+	// out   : 補間ベクトル（出力）
+	// start : 開始ベクトル
+	// end : 終了ベクトル
+	// t : 補間値（0～1）
+	Vector3 SphereLinear(Vector3& out, Vector3& start, Vector3& end, float t);
+
 
 	// 単項演算子オーバーロード
 	Vector3 operator+() const;
