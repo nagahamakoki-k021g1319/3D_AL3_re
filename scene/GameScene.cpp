@@ -4,13 +4,13 @@
 #include <fstream>
 #include <random>
 
-
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
 	delete modelSkydome_;
+	delete modelGround_;
 	delete debugCamera_;
 	delete railCamera_;
 }
@@ -33,6 +33,11 @@ void GameScene::Initialize() {
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 	model_ = Model::Create();
+
+	//レティクルのテクスチャ
+	uint32_t texture = TextureManager::Load("RedReticle2.png");
+	spriterock.reset(
+	  Sprite::Create(texture, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -70,6 +75,13 @@ void GameScene::Initialize() {
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
 
+	//地面の生成
+	ground_ = new Ground();
+	// 3Dモデルの生成
+	modelGround_ = Model::CreateFromOBJ("Ground", true);
+	//地面の初期化
+	ground_->Initialize(modelGround_);
+
 	//レールカメラ
 	railCamera_ = new RailCamera();
 	//レールカメラの初期化
@@ -87,7 +99,6 @@ void GameScene::Initialize() {
 
 	audio_ = Audio::GetInstance();
 	bgmHandle = audio_->LoadWave("fanfare.wav");
-
 }
 
 void GameScene::Update() {
@@ -123,7 +134,6 @@ void GameScene::Update() {
 
 		playerTimer--; //自機のHPタイマー
 
-
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
 		player_->Update(railCamera_->GetViewProjection());
@@ -137,6 +147,8 @@ void GameScene::Update() {
 			enemy_->SetGameScene(this);
 			enemy_->Update();
 			EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
+			
+
 
 			cameraFlag_ = 1;
 		}
@@ -144,14 +156,12 @@ void GameScene::Update() {
 		if (cameraFlag_ == 0) {
 			Vector3 p = player_->GetWorldPosition2();
 			Vector3 e = lastEnemyPos;
-			Vector3 playerTarget = {e.x - p.x,e.y - p.y,e.z - p.z };
-
+			Vector3 playerTarget = {e.x - p.x, e.y - p.y, e.z - p.z};
 
 			Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
 			float len = 30.0f;
-			Vector3 cameraPos = { p.x - PosNorm.x * len,
-				(p.y - PosNorm.y * len) + 6.0f  ,
-				p.z - PosNorm.z * len };
+			Vector3 cameraPos = {
+			  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 6.0f, p.z - PosNorm.z * len};
 
 			//カメラの位置制御
 			railCamera_->GetViewProjection().eye = cameraPos;
@@ -170,9 +180,9 @@ void GameScene::Update() {
 		}
 
 		////ゲームオーバーに突入
-		//if (playerTimer <= 0) {
+		// if (playerTimer <= 0) {
 		//	sceneNo_ = SceneNo::Over;
-		//}
+		// }
 
 		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
 
@@ -182,7 +192,6 @@ void GameScene::Update() {
 		//デバッグ用表示
 		debugText_->SetPos(50, 110);
 		debugText_->Printf("Time limit :%d", playerTimer);
-
 
 		break;
 	case SceneNo::Clear: //クリア
@@ -218,7 +227,7 @@ void GameScene::Update() {
 	//デバッグ用表示
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-		"up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
+	  "up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
 #pragma endregion
 }
 
@@ -249,6 +258,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	skydome_->Draw(railCamera_->GetViewProjection());
+
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		title_->Draw(viewProjection_);
@@ -259,6 +270,7 @@ void GameScene::Draw() {
 		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
+		ground_->Draw(railCamera_->GetViewProjection());
 		player_->Draw(railCamera_->GetViewProjection());
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->Draw(railCamera_->GetViewProjection());
@@ -279,8 +291,6 @@ void GameScene::Draw() {
 		break;
 	}
 
-	skydome_->Draw(railCamera_->GetViewProjection());
-
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -298,6 +308,9 @@ void GameScene::Draw() {
 		break;
 	case SceneNo::Game: //射撃
 		player_->DrawUI();
+		if (enemys_.size() >= 1) {
+			spriterock->Draw();
+		}
 		break;
 	case SceneNo::Clear: //クリア
 		break;
@@ -324,11 +337,9 @@ void GameScene::CheckAllCollisions() {
 	//敵弾リストの取得
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = GetBullets();
 
-
 #pragma region 自キャラと敵弾の当たり判定
 	//自キャラの座標
 	posA = player_->GetWorldPosition2();
-
 
 	//自キャラと敵弾すべての当たり判定
 	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
@@ -415,7 +426,7 @@ void GameScene::LoadEnemyPopData() {
 
 	//ファイルを開く
 	std::ifstream file;
-	file.open("Resources/enemyPop2.csv");
+	file.open("Resources/enemyPop.csv");
 
 	assert(file.is_open());
 
@@ -481,7 +492,7 @@ void GameScene::UpdataEnemyPopCommands() {
 			isStand_ = true;
 			standTime_ = waitTime;
 
-			//ループを抜ける
+			//抜ける
 			break;
 		}
 	}
@@ -506,29 +517,32 @@ void GameScene::EnemyReset() {
 	LoadEnemyPopData();
 }
 
-
-void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance)
-{
+void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance) {
 
 	//単位ベクトルの取得
-	Vector3 playerTarget = { targetPos.x - playerPos.x,targetPos.y - playerPos.y,targetPos.z - playerPos.z };
-	float length = sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
-	Vector3 unitvecPlayerTarget = { playerTarget.x / length,playerTarget.y / length,playerTarget.z / length };
+	Vector3 playerTarget = {
+	  targetPos.x - playerPos.x, targetPos.y - playerPos.y, targetPos.z - playerPos.z};
+	float length =
+	  sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
+	Vector3 unitvecPlayerTarget = {
+	  playerTarget.x / length, playerTarget.y / length, playerTarget.z / length};
 
 	//注視点取得
-	railCamera_->GetViewProjection().target = { targetPos.x + unitvecPlayerTarget.x,targetPos.y + unitvecPlayerTarget.y,targetPos.z + unitvecPlayerTarget.z };
-
+	railCamera_->GetViewProjection().target = {
+	  targetPos.x + unitvecPlayerTarget.x, targetPos.y + unitvecPlayerTarget.y,
+	  targetPos.z + unitvecPlayerTarget.z};
 
 	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
 	float len = 30.0f;
-	Vector3 cameraPos = { playerPos.x - PosNorm.x * len,
-		(playerPos.y - PosNorm.y * len) + 6.0f  ,
-		playerPos.z - PosNorm.z * len };
+	Vector3 cameraPos = {
+	  playerPos.x - PosNorm.x * len, (playerPos.y - PosNorm.y * len) + 6.0f,
+	  playerPos.z - PosNorm.z * len};
 	lastEnemyPos = cameraPos;
 
 	//カメラの位置制御
 	railCamera_->GetViewProjection().eye = cameraPos;
 }
+
 
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }

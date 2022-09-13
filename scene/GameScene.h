@@ -21,7 +21,7 @@
 #include "push.h"
 #include "GameClear.h"
 #include "GameOver.h"
-
+#include "Ground.h"
 
 
 /// <summary>
@@ -97,9 +97,6 @@ class GameScene {
 
 	void EnemyTarget(Vector3 targetPos,Vector3 playerPos,float distance);
 
-	
-
-
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -115,6 +112,7 @@ class GameScene {
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 	uint32_t textureHandle2_ = 0;
+	uint32_t textureHandle1_ = 0;
 	//ボタンを押せ!!
 	uint32_t textureHandle0_ = 0;
 	push* push_ = nullptr;
@@ -159,11 +157,12 @@ class GameScene {
 	//3Dモデル
 	Model* modelSkydome_ = nullptr;
 
+	//地面
+	Ground* ground_ = nullptr;
+	Model* modelGround_ = nullptr;
+
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
-
-	
-
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
@@ -183,6 +182,10 @@ class GameScene {
 	int cameraFlag_ = 0;
 	Vector3 lastEnemyPos;
 	
+	
+	// 2Dレティクル用スプライト
+	std::unique_ptr<Sprite> spriterock;
+
 	
 
 };
