@@ -37,7 +37,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		});
 
 	//キャラクターの移動ベクトル
-	Vector3 move = {0, 0, 0};
+	Vector3 move = { 0, 0, 0 };
 	//キャラクターの移動の速さ
 	const float kCharacterSpeed = 0.8f;
 	const float kCharacterSpeed2 = 0.3f;
@@ -51,7 +51,7 @@ void Player::Update(ViewProjection viewProjection_) {
 			isPlayerChange = 1;
 			controlAngleX = 0.0f;
 			controlAngleY = 0.0f;
-			
+
 		}
 		else {
 			isPlayerChange = 0;
@@ -73,7 +73,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		angleVelocity = 0.0f;
 		if (isPlayerChange != oldPlayerChangeMode) {
 			//押した方向で移動ベクトルを変更
-			
+
 			if (input_->PushKey(DIK_W)) {
 				speedUpParam.z = kSpeedParamVel;
 				isInitAngleMode = 1;
@@ -117,10 +117,10 @@ void Player::Update(ViewProjection viewProjection_) {
 			speedUpParam.z += kAdjustSpeed;
 		}
 
-		
+
 		isPushTrans = false;
 		float kControlSpeed = 0.03f;
-	
+
 		/*
 			if (input_->PushKey(DIK_W) && input_->IsTriggerMouse(0)) {
 				isPushTrans = true;
@@ -153,8 +153,8 @@ void Player::Update(ViewProjection viewProjection_) {
 			}*/
 
 
-		
-		
+
+
 		Vector3 v2 = { 0,primaryAngle,0 };
 
 		/*const float kCharacterRotateSpeed = 0.05f;
@@ -168,7 +168,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		worldTransform_.rotation_ = v2;
 
 
-		Vector3 v3 = { speedUpParam.x + boostVelX,speedUpParam.y,speedUpParam.z};
+		Vector3 v3 = { speedUpParam.x + boostVelX,speedUpParam.y,speedUpParam.z };
 
 		/*float kMinusSpeed = 0.1f;
 		if (speedUpParam.x > 0.0f) {
@@ -189,29 +189,33 @@ void Player::Update(ViewProjection viewProjection_) {
 			boostCount++;
 			if (boostCount <= 7) {
 				float kRotSpeed = 0.1f * PI;
-				if (isInitAngleMode == 3) {
-					speedUpParam.x = -5.0f;
-					speedUpParam.y = -0.6f;
-					speedUpParam.z = 3.0f;
-				
-					turnAngle -= kRotSpeed;
-					worldTransform_.rotation_.z += turnAngle;
-				}else if (isInitAngleMode == 4) {
-					speedUpParam.x = 5.0f;
-					speedUpParam.y = -0.6f;
-					speedUpParam.z = 3.0f;
-					
-					turnAngle += kRotSpeed;
-					worldTransform_.rotation_.z += turnAngle;
-				}else if (isInitAngleMode == 1) {
+
+				if (isInitAngleMode == 1) {
 					speedUpParam.z = 5.0f;
-					
+
 					turnAngle += kRotSpeed;
 					worldTransform_.rotation_.x += turnAngle;
-				}else if (isInitAngleMode == 2) {
+				}
+				else if (isInitAngleMode == 2) {
 					speedUpParam.z = -5.0f;
 					turnAngle -= kRotSpeed;
 					worldTransform_.rotation_.x += turnAngle;
+				}
+				else if (isInitAngleMode == 3) {
+					speedUpParam.x = -5.0f;
+					speedUpParam.y = -0.6f;
+					speedUpParam.z = 3.0f;
+
+					turnAngle -= kRotSpeed;
+					worldTransform_.rotation_.z += turnAngle;
+				}
+				else if (isInitAngleMode == 4) {
+					speedUpParam.x = 5.0f;
+					speedUpParam.y = -0.6f;
+					speedUpParam.z = 3.0f;
+
+					turnAngle += kRotSpeed;
+					worldTransform_.rotation_.z += turnAngle;
 				}
 			}
 			else {
@@ -225,10 +229,10 @@ void Player::Update(ViewProjection viewProjection_) {
 			}
 		}
 
-		
+
 
 		/*if (isPushTrans == true) {
-			
+
 		}
 		else {
 		}*/
