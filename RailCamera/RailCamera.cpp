@@ -1,33 +1,34 @@
 #include "RailCamera.h"
 
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
-	//// ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚Ì”ñ•\¦
+
 	//ShowCursor(FALSE);
 	
 	viewProjection_.farZ = 2500;
 
-	//ƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‚Ì‰Šúİ’è
+
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“‚Ì‰Šú‰»
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–
 	viewProjection_.Initialize();
 }
 
 void RailCamera::Update() {
 	
-	////ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®ƒxƒNƒgƒ‹
+
+	////ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«
 	//Vector3 move = {0, 0, 0};
 	//Vector3 rotate = {0, 0, 0};
-	////ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®‚Ì‘¬‚³
+	////ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ã®é€Ÿã•
 	//const float kCharacterSpeed = 0.2f;
 
-	////‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
+	////æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
 	//if (input_->PushKey(DIK_UP)) {
 	//	move = {0, kCharacterSpeed, 0};
 	//} else if (input_->PushKey(DIK_DOWN)) {
@@ -41,10 +42,10 @@ void RailCamera::Update() {
 
 	//worldTransform_.translation_ += move;
 
-	////‰ñ“]
+	////å›è»¢
 	//const float kChestRotSpeed = 0.02f;
 
-	////‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
+	////æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
 	//if (input_->PushKey(DIK_U)) {
 	//	rotate = {0, kChestRotSpeed, 0};
 	//} else if (input_->PushKey(DIK_I)) {
@@ -52,30 +53,33 @@ void RailCamera::Update() {
 	//}
 	//worldTransform_.rotation_ += rotate;
 
-	////s—ñXV
+	////è¡Œåˆ—æ›´æ–°
 	//AffinTrans::affin(worldTransform_);
 
 	//worldTransform_.TransferMatrix();
 
 	//viewProjection_.eye = worldTransform_.translation_;
-	////ƒ[ƒ‹ƒh‘O•ûƒxƒNƒgƒ‹
+	////ãƒ¯ãƒ¼ãƒ«ãƒ‰å‰æ–¹ãƒ™ã‚¯ãƒˆãƒ«
 	//Vector3 forward(0, 0, 1);
-	////ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ğ”½‰f
+	////ãƒ¬ãƒ¼ãƒ«ã‚«ãƒ¡ãƒ©ã®å›è»¢ã‚’åæ˜ 
 	//forward = AffinTrans::MatVector(forward, worldTransform_.matWorld_);
-	//////‹“_‚©‚ç‘O•û‚É“K“–‚È‹——£i‚ñ‚¾ˆÊ’u‚ª’‹“_
+	//////è¦–ç‚¹ã‹ã‚‰å‰æ–¹ã«é©å½“ãªè·é›¢é€²ã‚“ã ä½ç½®ãŒæ³¨è¦–ç‚¹
 	//viewProjection_.target.x = viewProjection_.eye.x + forward.x;
 	//viewProjection_.target.y = viewProjection_.eye.y + forward.y;
 	//viewProjection_.target.z = viewProjection_.eye.z + forward.z;
 	
+	
 
+	
 
-	//ƒ[ƒ‹ƒhã•ûƒxƒNƒgƒ‹
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰ä¸Šæ–¹ãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 up(0, 1, 0);
-	//ƒŒ[ƒ‹ƒJƒƒ‰‚Ì‰ñ“]‚ğ”½‰f
+	//ãƒ¬ãƒ¼ãƒ«ã‚«ãƒ¡ãƒ©ã®å›è»¢ã‚’åæ˜ 
 	viewProjection_.up = AffinTrans::MatVector(up, worldTransform_.matWorld_);
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“‚ğXV
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ›´æ–°
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
+
 
 }
 

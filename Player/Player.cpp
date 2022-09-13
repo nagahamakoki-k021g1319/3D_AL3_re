@@ -2,60 +2,360 @@
 
 using namespace MathUtility;
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
-	//NULLƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN
+void Player::Initialize(Model* jikiNormal, Model* model, uint32_t textureHandle) {
+	//NULLãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯
 	assert(model);
 	model_ = model;
+	modelNormal_ = jikiNormal;
 	textureHandle_ = textureHandle;
-	
-	//ƒVƒ“ƒOƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	//3DƒŒƒeƒBƒNƒ‹—pƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€‰Šú‰»
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ åˆæœŸåŒ–
 	worldTransform3DReticle_.Initialize();
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, 0, 40};
+	worldTransform_.translation_ = { 0, 0, 0 };
 
-	//ƒŒƒeƒBƒNƒ‹—pƒeƒNƒXƒ`ƒƒæ“¾
+	//ãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£å–å¾—
 	uint32_t textureReticle = TextureManager::Load("tage.png");
-	//ƒXƒvƒ‰ƒCƒg¶¬
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆç”Ÿæˆ
 	sprite2DReticle_.reset(
-	  Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+		Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 
 }
 
 void Player::Update(ViewProjection viewProjection_) {
-	
-	//ƒfƒXƒtƒ‰ƒO‚Ì—§‚Á‚½’e‚Ìíœ
-	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) { 
-		return bullet->IsDead();  
-	});
 
-	
-	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®ƒxƒNƒgƒ‹
+	//ãƒ‡ã‚¹ãƒ•ãƒ©ã‚°ã®ç«‹ã£ãŸå¼¾ã®å‰Šé™¤
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«
 	Vector3 move = {0, 0, 0};
-	//ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÚ“®‚Ì‘¬‚³
-	const float kCharacterSpeed = 0.2f;
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ç§»å‹•ã®é€Ÿã•
+	const float kCharacterSpeed = 0.8f;
+	const float kCharacterSpeed2 = 0.3f;
 
-	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
-	if (input_->PushKey(DIK_W)) {
-		move = {0, kCharacterSpeed, 0};
-	} else if (input_->PushKey(DIK_S)) {
-		move = {0, -kCharacterSpeed, 0};
+
+	// MSã¨å¤‰å½¢æ©Ÿã®ãƒã‚§ãƒ³ã‚¸
+	oldPlayerChangeMode = isPlayerChange;	//å‰ãƒ•ãƒ¬ãƒ¼ãƒ å‡¦ç†
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+		if (isPlayerChange == 0) {
+			isPlayerChange = 1;
+			controlAngleX = 0.0f;
+			controlAngleY = 0.0f;
+			
+		}
+		else {
+			isPlayerChange = 0;
+			controlAngleX = 0.0f;
+			controlAngleY = 0.0f;
+			isFly = 1;
+			isModeChangeBoost = true;
+			gravityVel = 0.0f;
+		}
 	}
-	if (input_->PushKey(DIK_A)) {
-		move = {-kCharacterSpeed, 0, 0};
-	} else if (input_->PushKey(DIK_D)) {
-		move = {kCharacterSpeed, 0, 0};
+
+
+	Vector3 v1;
+	v1 = worldTransform_.translation_ - viewProjection_.eye;
+	v1 = MathUtility::Vector3Normalize(v1);
+	float atanAngle = atan2f(v1.x, v1.z);
+
+	if (isPlayerChange == 0) {
+		angleVelocity = 0.0f;
+		if (isPlayerChange != oldPlayerChangeMode) {
+			//æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
+			
+			if (input_->PushKey(DIK_W)) {
+				speedUpParam.z = kSpeedParamVel;
+				isInitAngleMode = 1;
+			}
+			else if (input_->PushKey(DIK_S)) {
+				speedUpParam.z = -kSpeedParamVel;
+				isInitAngleMode = 2;
+			}
+			else if (input_->PushKey(DIK_A)) {
+				speedUpParam.x = -kSpeedParamVel;
+				speedUpParam.z = 0.3f;
+				isInitAngleMode = 3;
+			}
+			else if (input_->PushKey(DIK_D)) {
+				speedUpParam.x = kSpeedParamVel;
+				speedUpParam.z = 0.3f;
+				isInitAngleMode = 4;
+
+			}
+			primaryAngle = atanAngle + angleVelocity;
+		}
+
+		//ã‚¹ãƒ”ãƒ¼ãƒ‰èª¿æ•´
+		float kAdjustSpeed = 0.08f;
+		if (speedUpParam.x > kSpeedParamVel) {
+			speedUpParam.x -= kAdjustSpeed;
+		}
+		else if (speedUpParam.x < -kSpeedParamVel) {
+			speedUpParam.x += kAdjustSpeed;
+		}
+		if (speedUpParam.y > kSpeedParamVel) {
+			speedUpParam.y -= kAdjustSpeed;
+		}
+		else if (speedUpParam.y < -kSpeedParamVel) {
+			speedUpParam.y += kAdjustSpeed;
+		}
+		if (speedUpParam.z > kSpeedParamVel) {
+			speedUpParam.z -= kAdjustSpeed;
+		}
+		else if (speedUpParam.z < -kSpeedParamVel) {
+			speedUpParam.z += kAdjustSpeed;
+		}
+
+		
+		isPushTrans = false;
+		float kControlSpeed = 0.03f;
+	
+		/*
+			if (input_->PushKey(DIK_W) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 0.0f;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+			else if (input_->PushKey(DIK_S) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 1.0f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+
+			if (input_->PushKey(DIK_A) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = -0.5f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+			else if (input_->PushKey(DIK_D) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 0.5f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}*/
+
+
+		
+		
+		Vector3 v2 = { 0,primaryAngle,0 };
+
+		/*const float kCharacterRotateSpeed = 0.05f;
+		if (input_->PushKey(DIK_Q)) {
+			rotation = { 0, kCharacterRotateSpeed, 0 };
+		}
+		else if (input_->PushKey(DIK_E)) {
+			rotation = { 0, -kCharacterRotateSpeed, 0 };
+		}*/
+
+		worldTransform_.rotation_ = v2;
+
+
+		Vector3 v3 = { speedUpParam.x + boostVelX,speedUpParam.y,speedUpParam.z};
+
+		/*float kMinusSpeed = 0.1f;
+		if (speedUpParam.x > 0.0f) {
+			speedUpParam.x -= kMinusSpeed;
+		}
+		if (speedUpParam.y > 0.0f) {
+			speedUpParam.y -= kMinusSpeed;
+		}
+		if (speedUpParam.z > 0.0f) {
+			speedUpParam.z -= kMinusSpeed;
+		}*/
+
+		v3 = bVelocity(v3, worldTransform_);
+
+		worldTransform_.translation_ += v3;
+
+		if (isModeChangeBoost == true) {
+			boostCount++;
+			if (boostCount <= 7) {
+				float kRotSpeed = 0.1f * PI;
+				if (isInitAngleMode == 3) {
+					speedUpParam.x = -4.0f;
+				
+					turnAngle += kRotSpeed;
+					worldTransform_.rotation_.z += turnAngle;
+				}else if (isInitAngleMode == 4) {
+					speedUpParam.x = 4.0f;
+					
+					turnAngle -= kRotSpeed;
+					worldTransform_.rotation_.z += turnAngle;
+				}else if (isInitAngleMode == 1) {
+					speedUpParam.z = 4.0f;
+					
+					turnAngle += kRotSpeed;
+					worldTransform_.rotation_.x += turnAngle;
+				}else if (isInitAngleMode == 2) {
+					speedUpParam.z = -4.0f;
+					turnAngle -= kRotSpeed;
+					worldTransform_.rotation_.x += turnAngle;
+				}
+			}
+			else {
+				isModeChangeBoost = 0;
+				turnAngle = 0.0f;
+				worldTransform_.rotation_.x = 0;
+				worldTransform_.rotation_.z = 0;
+				boostCount = 0;
+				boostVelZ = 0.0f;
+				boostVelX = 0.0f;
+			}
+		}
+
+		
+
+		/*if (isPushTrans == true) {
+			
+		}
+		else {
+		}*/
+#pragma region é‡åŠ›
+		if (isFly == 1) {
+			if (gravityVel >= -4.0f) {
+				float kGlavityVel = 0.03f;
+				gravityVel -= kGlavityVel;
+			}
+			if (worldTransform_.matWorld_.m[3][1] > 0.0f) {
+				worldTransform_.translation_.y += gravityVel;
+			}
+			else if (worldTransform_.matWorld_.m[3][1] <= 0.0f) {
+				worldTransform_.matWorld_.m[3][1] = 0.0f;
+				isFly = 0;
+				gravityVel = 0.0f;
+			}
+		}
+		else {	//tyakuti
+			float kAdjustVel = 0.03f;
+			if (speedUpParam.x > 0) {
+				speedUpParam.x -= kAdjustVel;
+			}
+			else if (speedUpParam.x < 0) {
+				speedUpParam.x += kAdjustVel;
+			}
+
+			if (speedUpParam.y > 0) {
+				speedUpParam.y -= kAdjustVel;
+			}
+			else if (speedUpParam.y < 0) {
+				speedUpParam.y += kAdjustVel;
+			}
+
+			if (speedUpParam.z > 0) {
+				speedUpParam.z -= kAdjustVel;
+			}
+			else if (speedUpParam.z < 0) {
+				speedUpParam.z += kAdjustVel;
+			}
+		}
+#pragma endregion
 	}
+	else if (isPlayerChange == 1) {
+		if (isPlayerChange != oldPlayerChangeMode) {
 
-	worldTransform_.translation_ += move;
+			//æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
+			if (input_->PushKey(DIK_W)) {
+				angleVelocity = 0.0f;
+			}
+			else if (input_->PushKey(DIK_S)) {
 
-	//s—ñXV
+
+				angleVelocity = 1.0f * PI;
+			}
+			if (input_->PushKey(DIK_A)) {
+
+
+				angleVelocity = -0.5f * PI;
+			}
+			else if (input_->PushKey(DIK_D)) {
+
+
+				angleVelocity = 0.5f * PI;
+
+
+			}
+
+
+		}
+		primaryAngle = atanAngle + angleVelocity;
+		isPushTrans = false;
+		float kControlSpeed = 0.03f;
+		//æŠ¼ã—ãŸæ–¹å‘ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã‚’å¤‰æ›´
+		if (input_->PushKey(DIK_W)) {
+			isPushTrans = true;
+			controlAngleX -= kControlSpeed;
+		}
+		else if (input_->PushKey(DIK_S)) {
+			isPushTrans = true;
+			controlAngleX += kControlSpeed;
+		}
+		else {
+			if (controlAngleX > 0.0f) {
+				controlAngleX -= kControlSpeed;
+			}
+			if (controlAngleX < 0.0f) {
+				controlAngleX += kControlSpeed;
+			}
+		}
+		if (input_->PushKey(DIK_A)) {
+			isPushTrans = true;
+			controlAngleY -= kControlSpeed;
+		}
+		else if (input_->PushKey(DIK_D)) {
+			isPushTrans = true;
+			controlAngleY += kControlSpeed;
+
+		}
+		else {
+			if (controlAngleY > 0.0f) {
+				controlAngleY -= kControlSpeed;
+			}
+			if (controlAngleY < 0.0f) {
+				controlAngleY += kControlSpeed;
+			}
+		}
+		Vector3 v2 = { controlAngleX,primaryAngle + controlAngleY,0 };
+
+		/*const float kCharacterRotateSpeed = 0.05f;
+		if (input_->PushKey(DIK_Q)) {
+			rotation = { 0, kCharacterRotateSpeed, 0 };
+		}
+		else if (input_->PushKey(DIK_E)) {
+			rotation = { 0, -kCharacterRotateSpeed, 0 };
+		}*/
+
+		worldTransform_.rotation_ = v2;
+
+		Vector3 v3 = { 0,0.1f,1.5f };
+
+		v3 = bVelocity(v3, worldTransform_);
+
+		worldTransform_.translation_ += v3;
+	}
+	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
+	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
+	//move = { cos(atanAngle), 0, sin(atanAngle) };
+	//worldTransform_.translation_ += v3;
+
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform_);
 
 	//worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
@@ -63,125 +363,120 @@ void Player::Update(ViewProjection viewProjection_) {
 	worldTransform_.TransferMatrix();
 
 
-	const float kMoveLimitX = 35;
-	const float kMoveLimitY = 18;
+	/*const float kMoveLimitX = 35;
+	const float kMoveLimitY = 18;*/
 
-	//”ÍˆÍ‚ğ’´‚¦‚È‚¢ˆ—
-	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
-	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
-	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+	////ç¯„å›²ã‚’è¶…ãˆãªã„å‡¦ç†
+	//worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	//worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
+	//worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
+	//worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
 	const float kChestRotSpeed = 0.05f;
 
-	//‰Ÿ‚µ‚½•ûŒü‚ÅˆÚ“®ƒxƒNƒgƒ‹‚ğ•ÏX
-	if (input_->PushKey(DIK_J)) {
-		worldTransform_.rotation_.y -= kChestRotSpeed;
-	} else if (input_->PushKey(DIK_K)) {
-		worldTransform_.rotation_.y += kChestRotSpeed;
-	}
 
-	//’e”­Ëˆ—
+	//å¼¾ç™ºå°„å‡¦ç†
 	Attack();
 
-	//’eXV
-	//•¡”
+	//å¼¾æ›´æ–°
+	//è¤‡æ•°
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Update();
 	}
 
-	//’P”­
+	//å˜ç™º
 	/*if (bullet_) {
 		bullet_->Update();
 	}*/
 
-	//---------©‹@‚Ìƒ[ƒ‹ƒhÀ•W‚©‚ç3DƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒhÀ•W‚ğŒvZ-----------//
-	
-	//©‹@‚©‚ç3DƒŒƒeƒBƒNƒ‹‚Ö‚Ì‹——£
+	//---------è‡ªæ©Ÿã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‹ã‚‰3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’è¨ˆç®—-----------//
+
+	//è‡ªæ©Ÿã‹ã‚‰3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã¸ã®è·é›¢
 	const float kDistancePlayerTo3DReticle = 60.0f;
-	//©‹@‚©‚ç3DƒŒƒeƒBƒNƒ‹‚Ö‚ÌƒIƒtƒZƒbƒg(Z+Œü‚«)
-	Vector3 offset = {0, 0, 1.0f};
-	//©‹@‚Ìƒ[ƒ‹ƒhÀ•W‚Ì‰ñ“]‚ğ”½‰f
-	offset = AffinTrans::MatVector(offset,worldTransform_.matWorld_);
-	//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ®‚¦‚é
+	//è‡ªæ©Ÿã‹ã‚‰3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã¸ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ(Z+å‘ã)
+	Vector3 offset = { 0, 0, 2.0f };
+	//è‡ªæ©Ÿã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã®å›è»¢ã‚’åæ˜ 
+	offset = AffinTrans::MatVector(offset, worldTransform_.matWorld_);
+	//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’æ•´ãˆã‚‹
 	offset = Vector3Normalize(offset) * kDistancePlayerTo3DReticle;
-	//3DƒŒƒeƒBƒNƒ‹À•Wİ’è
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«åº§æ¨™è¨­å®š
 	worldTransform3DReticle_.translation_ =
-	  offset + Vector3(
-		  worldTransform_.matWorld_.m[3][0], 
-		  worldTransform_.matWorld_.m[3][1],
-	      worldTransform_.matWorld_.m[3][2]
-	  );
-	//s—ñXV
+		offset + Vector3(
+			worldTransform_.matWorld_.m[3][0],
+			worldTransform_.matWorld_.m[3][1],
+			worldTransform_.matWorld_.m[3][2]
+		);
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform3DReticle_);
 	worldTransform3DReticle_.TransferMatrix();
-	
+
 	/////////////////////////////////////////////////////////////////
 
 
-	//----------3DƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒhÀ•W‚©‚ç2DƒŒƒeƒBƒNƒ‹‚ÌƒXƒNƒŠ[ƒ“À•W‚ğŒvZ-------//
+	//----------3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‹ã‚‰2Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã‚’è¨ˆç®—-------//
 
 	Vector3 positionReticle = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_);
 
 	Vector2 windowWH =
-	  Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
+		Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
 
-	//ƒrƒ…[ƒ|[ƒgs—ñ
+	//ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—
 	Matrix4 Viewport = {
-	   windowWH.x / 2,				  0,  0,  0, 
-					0,	-windowWH.y / 2,  0,  0, 
-				    0,				  0,  1,  0, 
+	   windowWH.x / 2,				  0,  0,  0,
+					0,	-windowWH.y / 2,  0,  0,
+					0,				  0,  1,  0,
 	   windowWH.x / 2,	 windowWH.y / 2,  0,  1
 	};
-	  
-	//ƒrƒ…[s—ñ‚ÆƒvƒƒWƒFƒNƒVƒ‡ƒ“s—ñAƒrƒ…[ƒ|[ƒgs—ñ‚ğ‡¬‚·‚é
+
+	//ãƒ“ãƒ¥ãƒ¼è¡Œåˆ—ã¨ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³è¡Œåˆ—ã€ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—ã‚’åˆæˆã™ã‚‹
 	Matrix4 matViewProjectionViewport = viewProjection_.matView * viewProjection_.matProjection * Viewport;
 
-	//ƒ[ƒ‹ƒh¨ƒXƒNƒŠ[ƒ“À•W•ÏŠ·(‚±‚±‚©‚ç3D‚©‚ç2D‚É‚È‚é)
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰â†’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™å¤‰æ›(ã“ã“ã‹ã‚‰3Dã‹ã‚‰2Dã«ãªã‚‹)
 	positionReticle = AffinTrans::wDivision(positionReticle, matViewProjectionViewport);
 
-	//ƒXƒvƒ‰ƒCƒg‚ÌƒŒƒeƒBƒNƒ‹‚ÉÀ•Wİ’è
+	//ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã®ãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã«åº§æ¨™è¨­å®š
 	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
 
 	////////////////////////////////////////////////////////////////////////////////
 
-	//----------ƒXƒNƒŠ[ƒ“À•W‚©‚ç2DƒŒƒeƒBƒNƒ‹‚Ìƒ[ƒ‹ƒhÀ•W‚ğŒvZ-------//
+	//----------ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã‹ã‚‰2Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’è¨ˆç®—-------//
 
 	POINT mousePosition;
-	//ƒ}ƒEƒXÀ•W(ƒXƒNƒŠ[ƒ“À•W)‚ğæ“¾‚·‚é
+	//ãƒã‚¦ã‚¹åº§æ¨™(ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™)ã‚’å–å¾—ã™ã‚‹
 	GetCursorPos(&mousePosition);
 
-	//ƒNƒ‰ƒCƒAƒ“ƒgƒGƒŠƒAÀ•W‚É•ÏŠ·‚·‚é
+	//ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆã‚¨ãƒªã‚¢åº§æ¨™ã«å¤‰æ›ã™ã‚‹
 	HWND hwnd = WinApp::GetInstance()->GetHwnd();
 	ScreenToClient(hwnd, &mousePosition);
 
 	sprite2DReticle_->SetPosition(Vector2(mousePosition.x, mousePosition.y));
 
-	//ƒrƒ…[ƒvƒƒWƒFƒNƒVƒ‡ƒ“ƒrƒ…[ƒ|[ƒg‡¬
+	//ãƒ“ãƒ¥ãƒ¼ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ã‚·ãƒ§ãƒ³ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆåˆæˆ
 	Matrix4 matVPV = viewProjection_.matView * viewProjection_.matProjection * Viewport;
 
-	//‡¬s—ñ‚Ì‹ts—ñ‚ğŒvZ‚·‚é
+	//åˆæˆè¡Œåˆ—ã®é€†è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹
 	Matrix4 matInverseVPV = MathUtility::Matrix4Inverse(matVPV);
-	//ƒXƒNƒŠ[ƒ“À•W
+	//ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™
 	Vector3 posNear = Vector3(mousePosition.x, mousePosition.y, 0);
 	Vector3 posFar = Vector3(mousePosition.x, mousePosition.y, 1);
 
-	//ƒXƒNƒŠ[ƒ“À•WŒn‚©‚çƒ[ƒ‹ƒhÀ•WŒn‚Ö
+	//ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ç³»ã‹ã‚‰ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»ã¸
 	posNear = AffinTrans::wDivision(posNear, matInverseVPV);
 	posFar = AffinTrans::wDivision(posFar, matInverseVPV);
 
-	//ƒ}ƒEƒXƒŒƒC‚Ì•ûŒü
+	//ãƒã‚¦ã‚¹ãƒ¬ã‚¤ã®æ–¹å‘
 	Vector3 mouseDirection = posFar - posNear;
 	mouseDirection = Vector3Normalize(mouseDirection);
-	//ƒJƒƒ‰‚©‚çÆ€ƒIƒuƒWƒFƒNƒg‚Ì‹——£
-	const float kDistanceTestObject = 222.0f;
+	//ã‚«ãƒ¡ãƒ©ã‹ã‚‰ç…§æº–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è·é›¢
+	const float kDistanceTestObject = 100.0f;
 	worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
 
-	//s—ñXV
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform3DReticle_);
 	worldTransform3DReticle_.TransferMatrix();
 
 	/////////////////////////////////////////////////////////////
+
 
 	/*debugText_->SetPos(50, 150);
 	debugText_->Printf(
@@ -198,101 +493,110 @@ void Player::Update(ViewProjection viewProjection_) {
 	DebugText::GetInstance()->Printf(
 	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
 	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
-
-
+	  //ãƒ‡ãƒãƒƒã‚°ç”¨è¡¨ç¤º
+	debugText_->SetPos(50, 150);
+	debugText_->Printf("Change:%d", isPlayerChange);
 }
 
-void Player::Draw(ViewProjection viewProjection_) { 
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-	
-	//’eXV
-	//•¡”
+void Player::Draw(ViewProjection viewProjection_) {
+	if (isPlayerChange == 1) {
+		model_->Draw(worldTransform_, viewProjection_);
+	}
+	else if (isPlayerChange == 0) {
+		modelNormal_->Draw(worldTransform_, viewProjection_);
+	}
+
+	//å¼¾æ›´æ–°
+	//è¤‡æ•°
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
 	}
 
-	//3DƒŒƒeƒBƒNƒ‹‚ğ•`‰æ
-	model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
+
+	////3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ã‚’æç”»
+	//model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
 
 
-	//’P”­
+
+
+	//å˜ç™º
 	/*if (bullet_) {
 		bullet_->Draw(viewProjection_);
 	}*/
 }
 
-void Player::Attack() { 
+void Player::Attack() {
 	if (input_->IsTriggerMouse(0)) {
-		//’e‚Ì‘¬“x
-		const float kBulletSpeed = 1.0f;
+		//å¼¾ã®é€Ÿåº¦
+		const float kBulletSpeed = 3.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
-		//‘¬“xƒxƒNƒgƒ‹‚ğ©‹@‚ÌŒü‚«‚É‡‚í‚¹‚Ä‰ñ“]‚³‚¹‚é
+		//é€Ÿåº¦ãƒ™ã‚¯ãƒˆãƒ«ã‚’è‡ªæ©Ÿã®å‘ãã«åˆã‚ã›ã¦å›è»¢ã•ã›ã‚‹
 		velocity = bVelocity(velocity, worldTransform_);
 
-		//©‹@‚©‚ç•W€ƒIƒuƒWƒFƒNƒg‚Ö‚ÌƒxƒNƒgƒ‹
+		//è‡ªæ©Ÿã‹ã‚‰æ¨™æº–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒ™ã‚¯ãƒˆãƒ«
 		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
 		velocity = Vector3Normalize(velocity) * kBulletSpeed;
 
-		//’e‚ğ¶¬‚µ‰Šú‰»
-		//•¡”
+		//å¼¾ã‚’ç”Ÿæˆã—åˆæœŸåŒ–
+		//è¤‡æ•°
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 
-		//’P”­
+		//å˜ç™º
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
 		newBullet->Initialize(model_, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
 
-		 //’e‚Ì“o˜^
-		//•¡”
+		//å¼¾ã®ç™»éŒ²
+	   //è¤‡æ•°
 		bullets_.push_back(std::move(newBullet));
 
-		//’P”­
+		//å˜ç™º
 		/*bullet_.reset(newBullet);*/
 	}
 
 }
 
-void Player::DrawUI() { 
+void Player::DrawUI() {
 	sprite2DReticle_->Draw();
 
 }
 
-Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) { 
-	
-	Vector3 result = {0, 0, 0};
+Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) {
 
-	
+	Vector3 result = { 0, 0, 0 };
+
+
 	result.x = velocity.x * worldTransform.matWorld_.m[0][0] +
-	           velocity.y * worldTransform.matWorld_.m[1][0] +
-	           velocity.z * worldTransform.matWorld_.m[2][0];
+		velocity.y * worldTransform.matWorld_.m[1][0] +
+		velocity.z * worldTransform.matWorld_.m[2][0];
 
 	result.y = velocity.x * worldTransform.matWorld_.m[0][1] +
-	           velocity.y * worldTransform.matWorld_.m[1][1] +
-	           velocity.z * worldTransform.matWorld_.m[2][1];
+		velocity.y * worldTransform.matWorld_.m[1][1] +
+		velocity.z * worldTransform.matWorld_.m[2][1];
 
 	result.z = velocity.x * worldTransform.matWorld_.m[0][2] +
-	           velocity.y * worldTransform.matWorld_.m[1][2] +
-	           velocity.z * worldTransform.matWorld_.m[2][2];
+		velocity.y * worldTransform.matWorld_.m[1][2] +
+		velocity.z * worldTransform.matWorld_.m[2][2];
 
 
 	return result;
 }
 
 Vector3 Player::GetWorldPosition2() {
-	//ƒ[ƒ‹ƒhÀ•W‚ğ“ü‚ê‚é•Ï”
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	Vector3 worldPos;
-	//ƒ[ƒ‹ƒhs—ñ‚Ì•½sˆÚ“®¬•ª
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®å¹³è¡Œç§»å‹•æˆåˆ†
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
-	return worldPos; 
+	return worldPos;
 }
 
 void Player::OnCollision() {}
 
-void Player::setparent(WorldTransform* worldTransform) { 
-	worldTransform_.parent_ = worldTransform; 
+void Player::setparent(WorldTransform* worldTransform) {
+	worldTransform_.parent_ = worldTransform;
 }
 
 

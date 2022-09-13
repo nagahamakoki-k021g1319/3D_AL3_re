@@ -15,68 +15,99 @@
 class Player {
   public:
 	///<summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* jikiNormal,Model* model, uint32_t textureHandle);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Update(ViewProjection viewProjection_);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Attack();
 
 	///< summary>
-	/// UI•`‰æ
+	/// UIæç”»
 	///</summary>
 	void DrawUI();
 
 
-	//ƒLƒƒƒ‰‚ÌŒü‚«‚É‰‚¶‚½•ûŒü‚É‹…‚ğ‚¾‚·
+	//ã‚­ãƒ£ãƒ©ã®å‘ãã«å¿œã˜ãŸæ–¹å‘ã«çƒã‚’ã ã™
 	Vector3 bVelocity(Vector3& velocity, WorldTransform& worldTransform);
 
-	//ƒ[ƒ‹ƒhÀ•W‚ğæ“¾
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å–å¾—
 	Vector3 GetWorldPosition2();
 
-	//Õ“Ë‚ğŒŸo‚µ‚½‚çŒÄ‚Ño‚³‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//è¡çªã‚’æ¤œå‡ºã—ãŸã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	void OnCollision();
 
 	void setparent(WorldTransform* worldTransform);
 
 
 
-	//’eƒŠƒXƒg‚ğæ“¾
+	//å¼¾ãƒªã‚¹ãƒˆã‚’å–å¾—
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
 	
 
   private:
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform worldTransform_;
-	//3DƒŒƒeƒBƒNƒ‹—pƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
 	WorldTransform worldTransform3DReticle_;
-	//ƒ‚ƒfƒ‹
+	//ãƒ¢ãƒ‡ãƒ«
 	Model* model_ = nullptr;
-	//ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+	Model* modelNormal_ = nullptr;
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒ³ãƒ‰ãƒ«
 	uint32_t textureHandle_ = 0u;
 	
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
 
-	//’e
-	//•¡” 
+	//å¼¾
+	//è¤‡æ•° 
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
-	//2DƒŒƒeƒBƒNƒ‹—pƒXƒvƒ‰ƒCƒg
+	//2Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	std::unique_ptr<Sprite> sprite2DReticle_;
 
+
+	// MSã¨å¤‰å½¢æ©Ÿã®ãƒã‚§ãƒ³ã‚¸
+	int isPlayerChange = 1;
+	int oldPlayerChangeMode = 0;
+
+	const float kSpeedParamVel = 1.0f;
+	bool isModeChangeBoost = false;
+	int boostCount = 0;
+	float turnAngle = 0.0f; //å¤‰å½¢å…ã®æ—‹å›
+	float boostVelX = 0.0f;
+	float boostVelZ = 0.0f;
+
+	bool isPushTrans = false;
+
+	//ã‚¢ãƒ³ã‚°ãƒ«ç”¨
+	float primaryAngle = 0.0f;
+	float controlAngleX = 0.0f;
+	float controlAngleY = 0.0f;
+	float angleVelocity = 0.0f;
+
+	//é€šå¸¸æºå¸¯æ™‚ã®ã¿ã§ä½¿ã†â†“
+	//å…¥åŠ›æ™‚ã®hogehoge
+	int isInitAngleMode = 0;
+	
+	//ã‚¹ãƒ”ãƒ¼ãƒ‰ã®å¯å¤‰å€¤
+	Vector3 speedUpParam = {0.0f,0.0f,0.0f};
+	
+	//é£›ã‚“ã§ã„ã‚‹ã‹å¦ã‹
+	float gravityVel = 0.0f;
+	bool isFly;
 };

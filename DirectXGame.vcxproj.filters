@@ -137,6 +137,13 @@
     </ClCompile>
     <ClCompile Include="scene\EnemyReticle.cpp">
       <Filter>ソース ファイル\scene</Filter>
+
+    <ClCompile Include="FPS.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Ground.cpp">
+      <Filter>ソース ファイル</Filter>
+
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -254,11 +261,22 @@
     <ClInclude Include="scene\Title.h">
       <Filter>ヘッダー ファイル\scene</Filter>
     </ClInclude>
+
     <ClInclude Include="Effect\Effect.h">
       <Filter>ヘッダー ファイル\Effect</Filter>
     </ClInclude>
     <ClInclude Include="scene\EnemyReticle.h">
       <Filter>ヘッダー ファイル\scene</Filter>
+
+    <ClInclude Include="FPS.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorException.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Ground.h">
+      <Filter>ヘッダー ファイル</Filter>
+
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

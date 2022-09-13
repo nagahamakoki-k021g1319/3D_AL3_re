@@ -1,9 +1,14 @@
 #include "Vector3.h"
 #include <cmath>
+
 //#include "MathUtility.h"
 //
 //using namespace MathUtility;
 float Vector3::length() const { return std::sqrt(x * x + y * y + z * z); }
+
+
+
+
 
 Vector3& Vector3::normalize() {
 	float len = length();
@@ -39,18 +44,18 @@ Vector3 Vector3::SphereLinear(Vector3& out, Vector3& start, Vector3& end, float 
 	s = start;
 	e = end;
 
-	// 2ƒxƒNƒgƒ‹ŠÔ‚ÌŠp“xi‰sŠp‘¤j
+	// 2ãƒ™ã‚¯ãƒˆãƒ«é–“ã®è§’åº¦ï¼ˆé‹­è§’å´ï¼‰
 	float angle = 0.0f;
 	angle = acos(s.dot(e));
 	float SinTh = sin(angle);
 
-	// •âŠÔŒW”
+	// è£œé–“ä¿‚æ•°
 	float Ps = sin(angle * (1 - t));
 	float Pe = sin(angle * t);
 
 	/*out = (s * Ps+ Pe * e) / SinTh;*/
 	out = { (s.x * Ps) + (e.x * Ps),(s.y * Ps) + (e.y * Ps),(s.z * Ps) + (e.z * Ps) };
-	// ˆê‰³‹K‰»‚µ‚Ä‹…–ÊüŒ`•âŠÔ‚É
+	// ä¸€å¿œæ­£è¦åŒ–ã—ã¦çƒé¢ç·šå½¢è£œé–“ã«
 	out.normalize();
 
 	return out;
@@ -58,8 +63,8 @@ Vector3 Vector3::SphereLinear(Vector3& out, Vector3& start, Vector3& end, float 
 }
 
 
-// Vector2 ƒNƒ‰ƒX‚É‘®‚³‚È‚¢ŠÖ”ŒQ
-// 2€‰‰Zq
+// Vector2 ã‚¯ãƒ©ã‚¹ã«å±ã•ãªã„é–¢æ•°ç¾¤
+// 2é …æ¼”ç®—å­
 const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
 	Vector3 temp(v1);
 	return temp += v2;

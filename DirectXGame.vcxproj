@@ -100,6 +100,8 @@
     <ClCompile Include="Effect\Effect.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\EnemyBullet.cpp" />
+    <ClCompile Include="FPS.cpp" />
+    <ClCompile Include="Ground.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\Vector3.cpp" />
     <ClCompile Include="Player\Player.cpp" />
@@ -138,6 +140,9 @@
     <ClInclude Include="Effect\Effect.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\EnemyBullet.h" />
+    <ClInclude Include="ErrorException.h" />
+    <ClInclude Include="FPS.h" />
+    <ClInclude Include="Ground.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\MathUtility.h" />
     <ClInclude Include="math\Matrix4.h" />

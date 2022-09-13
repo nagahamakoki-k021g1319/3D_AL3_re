@@ -8,8 +8,10 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete modelPlayer1_;
 	delete player_;
 	delete modelSkydome_;
+	delete modelGround_;
 	delete debugCamera_;
 	delete railCamera_;
 }
@@ -29,10 +31,20 @@ void GameScene::Initialize() {
 	textureHandle0_ = TextureManager::Load("kuriku.png");
 	textureHandle4_ = TextureManager::Load("claer.png");
 	textureHandle5_ = TextureManager::Load("over.png");
+
 	textureHandleEnemyReticle_ = TextureManager::Load("RedReticle.png");
+
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
+
 	model_ = Model::Create();
+	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
+	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
+
+	//レティクルのテクスチャ
+	uint32_t texture = TextureManager::Load("RedReticle2.png");
+	spriterock.reset(
+	  Sprite::Create(texture, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -40,7 +52,7 @@ void GameScene::Initialize() {
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(modelPlayer2_, modelPlayer1_, textureHandle_);
 	player_->setparent(railCamera_->GetWorldPosition());
 
 	//タイトルの生成
@@ -67,13 +79,21 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	// 3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
+
+	//地面の生成
+	ground_ = new Ground();
+	// 3Dモデルの生成
+	modelGround_ = Model::CreateFromOBJ("Ground", true);
+	//地面の初期化
+	ground_->Initialize(modelGround_);
 
 	//レールカメラ
 	railCamera_ = new RailCamera();
 	//レールカメラの初期化
-	railCamera_->Initialize(Vector3(0, 0, 20), Vector3(0, 0, 0));
+	railCamera_->Initialize(Vector3(0, 10, 30), Vector3(0, 0, 0));
 
 	//敵弾リストの取得
 	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = GetBullets();
@@ -84,6 +104,9 @@ void GameScene::Initialize() {
 
 	//ファイルの読み込み
 	LoadEnemyPopData();
+
+	audio_ = Audio::GetInstance();
+	bgmHandle = audio_->LoadWave("fanfare.wav");
 }
 
 void GameScene::Update() {
@@ -99,6 +122,7 @@ void GameScene::Update() {
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
 
+
 	//デスフラグの立った敵の削除
 	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
 
@@ -106,17 +130,23 @@ void GameScene::Update() {
 	case SceneNo::Title: //タイトル
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
 			sceneNo_ = SceneNo::Game;
-			Initialize();
+			EnemyReset();
+			playerTimer = 1000;
+			enemyDefeat = 0;
 		}
 		title_->Update();
+
 		push_->Update();
 		EnemyReset();
 		playerTimer = 1000;
 		enemyDefeat = 0;
+
 		break;
 	case SceneNo::Game: //射撃
+
 						//自機のHPタイマー
 		playerTimer--;
+
 
 
 
@@ -131,10 +161,15 @@ void GameScene::Update() {
 			targetChange++;
 		}
 		noEnemy = 0;
+
+		cameraFlag_ = 0;
+
 		//敵の更新
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+
 			enemy_->SetGameScene(this);
 			enemy_->Update();
+
 			//デバッグ用表示
 
 			if (targetChange > targetMax || goThrough == 1) {
@@ -157,6 +192,28 @@ void GameScene::Update() {
 		}
 		debugText_->SetPos(50, 110);
 		debugText_->Printf("Time limit :%d", targetChange);
+
+			EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
+			
+
+
+			cameraFlag_ = 1;
+		}
+
+		if (cameraFlag_ == 0) {
+			Vector3 p = player_->GetWorldPosition2();
+			Vector3 e = lastEnemyPos;
+			Vector3 playerTarget = {e.x - p.x, e.y - p.y, e.z - p.z};
+
+			Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
+			float len = 50.0f;
+			Vector3 cameraPos = {
+			  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 10.0f, p.z - PosNorm.z * len};
+
+			//カメラの位置制御
+			railCamera_->GetViewProjection().eye = cameraPos;
+		}
+
 		//弾更新
 		//複数
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
@@ -171,10 +228,11 @@ void GameScene::Update() {
 		if (enemyDefeat >= 4) {
 			sceneNo_ = SceneNo::Clear;
 		}
+
 		////ゲームオーバーに突入
-		//if (playerTimer <= 0) {
+		// if (playerTimer <= 0) {
 		//	sceneNo_ = SceneNo::Over;
-		//}
+		// }
 
 		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
 
@@ -196,6 +254,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
+
 		gameClear_->Update();
 		push_->Update();
 		break;
@@ -209,6 +268,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
+
 		gameOver_->Update();
 		push_->Update();
 		break;
@@ -222,9 +282,9 @@ void GameScene::Update() {
 	debugText_->SetPos(10, 80);
 	debugText_->Printf("%d", targetMax);
 	//デバッグ用表示
-	/*debugText_->SetPos(50, 90);
+	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-	  "up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);*/
+	  "up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
 #pragma endregion
 }
 
@@ -255,13 +315,21 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	skydome_->Draw(railCamera_->GetViewProjection());
+
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		title_->Draw(viewProjection_);
 		push_->Draw(viewProjection_);
+		if (audio_->IsPlaying(soundHandle) == 0 || soundHandle == -1) {
+			soundHandle = audio_->PlayWave(bgmHandle, true, 0.5f);
+		}
 		break;
 	case SceneNo::Game: //射撃
+		audio_->StopWave(soundHandle);
+		ground_->Draw(railCamera_->GetViewProjection());
 		player_->Draw(railCamera_->GetViewProjection());
+
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->Draw(railCamera_->GetViewProjection());
 		}
@@ -284,8 +352,6 @@ void GameScene::Draw() {
 		break;
 	}
 
-	skydome_->Draw(railCamera_->GetViewProjection());
-
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -303,6 +369,9 @@ void GameScene::Draw() {
 		break;
 	case SceneNo::Game: //射撃
 		player_->DrawUI();
+		if (enemys_.size() >= 1) {
+			spriterock->Draw();
+		}
 		break;
 	case SceneNo::Clear: //クリア
 		break;
@@ -428,7 +497,7 @@ void GameScene::LoadEnemyPopData() {
 
 	//ファイルを開く
 	std::ifstream file;
-	file.open("Resources/enemyPop2.csv");
+	file.open("Resources/enemyPop.csv");
 
 	assert(file.is_open());
 
@@ -500,7 +569,7 @@ void GameScene::UpdataEnemyPopCommands() {
 			isStand_ = true;
 			standTime_ = waitTime;
 
-			//ループを抜ける
+			//抜ける
 			break;
 		}
 	}
@@ -527,26 +596,35 @@ void GameScene::EnemyReset() {
 	LoadEnemyPopData();
 }
 
-void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance)
-{
+void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance) {
+
 	//単位ベクトルの取得
-	Vector3 playerTarget = { targetPos.x - playerPos.x,targetPos.y - playerPos.y,targetPos.z - playerPos.z };
-	float length = sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
-	Vector3 unitvecPlayerTarget = { playerTarget.x / length,playerTarget.y / length,playerTarget.z / length };
+	Vector3 playerTarget = {
+	  targetPos.x - playerPos.x, targetPos.y - playerPos.y, targetPos.z - playerPos.z};
+	float length =
+	  sqrtf(powf(playerTarget.x, 2.0f) + powf(playerTarget.y, 2.0f) + powf(playerTarget.z, 2.0f));
+	Vector3 unitvecPlayerTarget = {
+	  playerTarget.x / length, playerTarget.y / length, playerTarget.z / length};
 
 	//注視点取得
-	railCamera_->GetViewProjection().target = { targetPos.x + unitvecPlayerTarget.x,targetPos.y + unitvecPlayerTarget.y,targetPos.z + unitvecPlayerTarget.z };
-
+	railCamera_->GetViewProjection().target = {
+	  targetPos.x + unitvecPlayerTarget.x, targetPos.y + unitvecPlayerTarget.y,
+	  targetPos.z + unitvecPlayerTarget.z};
 
 	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
-	float len = 30.0f;
-	Vector3 cameraPos = { playerPos.x - PosNorm.x * len,
-		playerPos.y + 10.0f ,
-		playerPos.z - PosNorm.z * len };
+
+	float len = 50.0f;
+	Vector3 cameraPos = {
+	  playerPos.x - PosNorm.x * len, (playerPos.y - PosNorm.y * len) + 11.0f,
+	  playerPos.z - PosNorm.z * len};
+	lastEnemyPos = cameraPos;
+
 
 	//カメラの位置制御
 	railCamera_->GetViewProjection().eye = cameraPos;
 }
+
+
 
 Vector3 GameScene::vector3(float x, float y, float z) { return Vector3(x, y, z); }
 

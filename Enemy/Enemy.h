@@ -15,39 +15,40 @@ class GameScene;
 class Enemy {
   public:
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Initialize(Model* model, uint32_t textureHandle, Vector3 vector3);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Update();
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
+
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Fire();
 
-	//”­ËŠu—£
+	//ç™ºå°„éš”é›¢
 	static const int kFireInterval = 60;
 
-	//Ú‹ßƒtƒF[ƒY‰Šú‰»
+	//æ¥è¿‘ãƒ•ã‚§ãƒ¼ã‚ºåˆæœŸåŒ–
 	void Approach();
 	
 	void SetPlayer(Player* player) { player_ = player;}
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
-	////ƒ[ƒ‹ƒhÀ•W‚ğæ“¾
+	////ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å–å¾—
 	Vector3 GetWorldPosition();
 
-	//Õ“Ë‚ğŒŸo‚µ‚½‚çŒÄ‚Ño‚³‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//è¡çªã‚’æ¤œå‡ºã—ãŸã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	void OnCollision();
 
 	bool IsDead() const { return isDead_; }
@@ -56,36 +57,42 @@ class Enemy {
 
 	void SetID(int ID) { enemyId = ID; }
 
+
   private:
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform worldTransform_;
 
-	//	ƒGƒtƒFƒNƒg—pƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//	ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform effectWorldTransform_;
 
-	//ƒ‚ƒfƒ‹
+	//ãƒ¢ãƒ‡ãƒ«
 	Model* model_ = nullptr;
 
 	Model* bulletModel_ = nullptr;
 
 	Model* effectModel_ = nullptr;
-	//ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒ³ãƒ‰ãƒ«
 	uint32_t textureHandle_ = 0u;
 
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
-	//©ƒLƒƒƒ‰
+	//è‡ªã‚­ãƒ£ãƒ©
 	Player* player_ = nullptr;
 
-	//ƒfƒXƒtƒ‰ƒO
+	//ãƒ‡ã‚¹ãƒ•ãƒ©ã‚°
 	bool isDead_ = false;
 
-	//”­Ëƒ^ƒCƒ}[
+	//ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼
 	int32_t shotTimer = 0;
 
-	//ƒQ[ƒ€ƒV[ƒ“
+	//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³
 	GameScene* gameScene_ = nullptr;
 
+
 	int enemyId = 0;
+
+	//æ–¹å‘è»¢æ›ã®ãƒ•ãƒ©ã‚°
+	int isChangeFlag = 0;
+
 };

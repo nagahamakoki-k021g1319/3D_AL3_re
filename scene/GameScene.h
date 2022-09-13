@@ -21,7 +21,12 @@
 #include "push.h"
 #include "GameClear.h"
 #include "GameOver.h"
+
 #include "Effect.h"
+
+#include "Ground.h"
+
+
 
 /// <summary>
 /// ゲームシーン
@@ -99,19 +104,25 @@ class GameScene {
 
 	void EnemyReset();
 
+
 	void EnemyTarget(Vector3 targetPos,Vector3 playerPos,float distance);
 
-	
 
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
+	//音
 	Audio* audio_ = nullptr;
+	uint32_t bgmHandle = 0;
+	int soundHandle = -1;
+
+
 	DebugText* debugText_ = nullptr;
 
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0;
 	uint32_t textureHandle2_ = 0;
+	uint32_t textureHandle1_ = 0;
 	//ボタンを押せ!!
 	uint32_t textureHandle0_ = 0;
 	push* push_ = nullptr;
@@ -162,11 +173,16 @@ class GameScene {
 	//3Dモデル
 	Model* modelSkydome_ = nullptr;
 
+	//地面
+	Ground* ground_ = nullptr;
+	Model* modelGround_ = nullptr;
+
+
+	Model* modelPlayer1_ = nullptr;
+	Model* modelPlayer2_ = nullptr;
+
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
-
-	
-
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
@@ -181,6 +197,15 @@ class GameScene {
 	int standTime_ = 0;
 
 	SceneNo sceneNo_ = SceneNo::Title;
+	
+	//ロックオンカメラのフラグ
+	int cameraFlag_ = 0;
+	Vector3 lastEnemyPos;
+	
+	
+	// 2Dレティクル用スプライト
+	std::unique_ptr<Sprite> spriterock;
+
 
 	int targetChange = 0;
 
@@ -189,5 +214,6 @@ class GameScene {
 	int goThrough = 0;
 	
 	int noEnemy = 0;
+
 
 };
