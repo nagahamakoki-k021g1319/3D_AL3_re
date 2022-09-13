@@ -9,7 +9,7 @@ void Skydome::Initialize(Model* model) {
 	worldTransform_.Initialize();
 
 
-	worldTransform_.scale_ = Vector3(300, 600, 2000);
+	worldTransform_.scale_ = Vector3(600, 600, 600);
 
 	worldTransform_.matWorld_ *= AffinTrans::Scale(worldTransform_.scale_);
 	//行列の転送

@@ -8,7 +8,7 @@ void Ground::Initialize(Model* model) {
 	worldTransform_.Initialize();
 
 	worldTransform_.translation_ = Vector3(0, -0.05f, 0);
-	worldTransform_.scale_ = Vector3(600, 100, 600);
+	worldTransform_.scale_ = Vector3(200, 1, 600);
 	worldTransform_.matWorld_ *= AffinTrans::Move(worldTransform_.translation_);
 	worldTransform_.matWorld_ *= AffinTrans::Scale(worldTransform_.scale_);
 	//çsóÒÇÃì]ëó

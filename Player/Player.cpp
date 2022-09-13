@@ -18,7 +18,7 @@ void Player::Initialize(Model* jikiNormal, Model* model, uint32_t textureHandle)
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = { 0, 0, 0 };
+	worldTransform_.translation_ = { 0, 0, -100.0f };
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
@@ -309,14 +309,14 @@ void Player::Update(ViewProjection viewProjection_) {
 			isPushTrans = true;
 			controlAngleX += kControlSpeed;
 		}
-		else {
+		/*else {
 			if (controlAngleX > 0.0f) {
 				controlAngleX -= kControlSpeed;
 			}
 			if (controlAngleX < 0.0f) {
 				controlAngleX += kControlSpeed;
 			}
-		}
+		}*/
 		if (input_->PushKey(DIK_A)) {
 			isPushTrans = true;
 			controlAngleY -= kControlSpeed;
@@ -326,14 +326,14 @@ void Player::Update(ViewProjection viewProjection_) {
 			controlAngleY += kControlSpeed;
 
 		}
-		else {
+		/*else {
 			if (controlAngleY > 0.0f) {
 				controlAngleY -= kControlSpeed;
 			}
 			if (controlAngleY < 0.0f) {
 				controlAngleY += kControlSpeed;
 			}
-		}
+		}*/
 		Vector3 v2 = { controlAngleX,primaryAngle + controlAngleY,0 };
 
 		/*const float kCharacterRotateSpeed = 0.05f;
