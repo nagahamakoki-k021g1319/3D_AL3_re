@@ -193,26 +193,26 @@ void GameScene::Update() {
 		debugText_->SetPos(50, 110);
 		debugText_->Printf("Time limit :%d", targetChange);
 
-			EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
-			
+		//	EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
+		//	
 
 
-			cameraFlag_ = 1;
-		}
+		//	cameraFlag_ = 1;
+		//}
 
-		if (cameraFlag_ == 0) {
-			Vector3 p = player_->GetWorldPosition2();
-			Vector3 e = lastEnemyPos;
-			Vector3 playerTarget = {e.x - p.x, e.y - p.y, e.z - p.z};
+		//if (cameraFlag_ == 0) {
+		//	Vector3 p = player_->GetWorldPosition2();
+		//	Vector3 e = lastEnemyPos;
+		//	Vector3 playerTarget = {e.x - p.x, e.y - p.y, e.z - p.z};
 
-			Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
-			float len = 50.0f;
-			Vector3 cameraPos = {
-			  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 10.0f, p.z - PosNorm.z * len};
+		//	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
+		//	float len = 50.0f;
+		//	Vector3 cameraPos = {
+		//	  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 10.0f, p.z - PosNorm.z * len};
 
-			//カメラの位置制御
-			railCamera_->GetViewProjection().eye = cameraPos;
-		}
+		//	//カメラの位置制御
+		//	railCamera_->GetViewProjection().eye = cameraPos;
+		//}
 
 		//弾更新
 		//複数
