@@ -158,7 +158,8 @@ class GameScene {
 	Skydome* skydome_ = nullptr;
 	//3Dモデル
 	Model* modelSkydome_ = nullptr;
-
+	Model* modelPlayer1_ = nullptr;
+	Model* modelPlayer2_ = nullptr;
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
 

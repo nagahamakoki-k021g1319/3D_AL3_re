@@ -26,7 +26,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 void Enemy::Update() {
 
 	//敵の移動の速さ
-	 float kCharacterSpeed = 0.1f;
+	 float kCharacterSpeed = 0.0f;
 
 	 float kCharacterSpeedX = 0.0f;
 	 float kCharacterSpeedX2 = 0.0f;
