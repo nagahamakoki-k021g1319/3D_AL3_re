@@ -190,13 +190,15 @@ void Player::Update(ViewProjection viewProjection_) {
 			if (boostCount <= 7) {
 				float kRotSpeed = 0.1f * PI;
 				if (isInitAngleMode == 3) {
-					speedUpParam.x = -4.0f;
+					speedUpParam.x = -5.0f;
+					speedUpParam.y = -0.6f;
 					speedUpParam.z = 3.0f;
 				
 					turnAngle -= kRotSpeed;
 					worldTransform_.rotation_.z += turnAngle;
 				}else if (isInitAngleMode == 4) {
-					speedUpParam.x = 4.0f;
+					speedUpParam.x = 5.0f;
+					speedUpParam.y = -0.6f;
 					speedUpParam.z = 3.0f;
 					
 					turnAngle += kRotSpeed;
