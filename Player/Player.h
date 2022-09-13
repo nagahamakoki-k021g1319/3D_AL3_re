@@ -17,7 +17,7 @@ class Player {
 	///<summary>
 	///初期化
 	///</summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* jikiNormal,Model* model, uint32_t textureHandle);
 
 	///< summary>
 	///初期化
@@ -65,6 +65,7 @@ class Player {
 	WorldTransform worldTransform3DReticle_;
 	//モデル
 	Model* model_ = nullptr;
+	Model* modelNormal_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	
@@ -81,9 +82,25 @@ class Player {
 
 
 	// MSと変形機のチェンジ
-	int isPlayerChange = 0;
+	int isPlayerChange = 1;
+	int oldPlayerChangeMode = 0;
 
 	bool isPushTrans = false;
 
+	//アングル用
+	float primaryAngle = 0.0f;
+	float controlAngleX = 0.0f;
+	float controlAngleY = 0.0f;
+	float angleVelocity = 0.0f;
 
+	//通常携帯時のみで使う↓
+	//入力時のhogehoge
+	int isInitAngleMode = 0;
+	
+	//スピードの可変値
+	Vector3 speedUpParam = {0.0f,0.0f,0.0f};
+	
+	//飛んでいるか否か
+	float gravityVel = 0.0f;
+	bool isFly;
 };
