@@ -29,6 +29,7 @@ class Enemy {
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
+
 	///< summary>
 	///初期化
 	///</summary>
@@ -51,6 +52,8 @@ class Enemy {
 	void OnCollision();
 
 	bool IsDead() const { return isDead_; }
+
+
 
   private:
 	//ワールド変換データ

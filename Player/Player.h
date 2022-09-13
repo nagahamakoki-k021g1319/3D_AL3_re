@@ -15,71 +15,75 @@
 class Player {
   public:
 	///<summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Initialize(Model* model, uint32_t textureHandle);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Update(ViewProjection viewProjection_);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Draw(ViewProjection viewProjection_);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Attack();
 
 	///< summary>
-	/// UI•`‰æ
+	/// UIæç”»
 	///</summary>
 	void DrawUI();
 
 
-	//ƒLƒƒƒ‰‚ÌŒü‚«‚É‰‚¶‚½•ûŒü‚É‹…‚ğ‚¾‚·
+	//ã‚­ãƒ£ãƒ©ã®å‘ãã«å¿œã˜ãŸæ–¹å‘ã«çƒã‚’ã ã™
 	Vector3 bVelocity(Vector3& velocity, WorldTransform& worldTransform);
 
-	//ƒ[ƒ‹ƒhÀ•W‚ğæ“¾
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å–å¾—
 	Vector3 GetWorldPosition2();
 
-	//Õ“Ë‚ğŒŸo‚µ‚½‚çŒÄ‚Ño‚³‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//è¡çªã‚’æ¤œå‡ºã—ãŸã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	void OnCollision();
 
 	void setparent(WorldTransform* worldTransform);
 
 
 
-	//’eƒŠƒXƒg‚ğæ“¾
+	//å¼¾ãƒªã‚¹ãƒˆã‚’å–å¾—
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
 	
 
   private:
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform worldTransform_;
-	//3DƒŒƒeƒBƒNƒ‹—pƒ[ƒ‹ƒhƒgƒ‰ƒ“ƒXƒtƒH[ƒ€
+	//3Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ 
 	WorldTransform worldTransform3DReticle_;
-	//ƒ‚ƒfƒ‹
+	//ãƒ¢ãƒ‡ãƒ«
 	Model* model_ = nullptr;
-	//ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒ³ãƒ‰ãƒ«
 	uint32_t textureHandle_ = 0u;
 	
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
 
-	//’e
-	//•¡” 
+	//å¼¾
+	//è¤‡æ•° 
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
 
-	//2DƒŒƒeƒBƒNƒ‹—pƒXƒvƒ‰ƒCƒg
+	//2Dãƒ¬ãƒ†ã‚£ã‚¯ãƒ«ç”¨ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 	std::unique_ptr<Sprite> sprite2DReticle_;
 
-	// MS‚Æ•ÏŒ`‹@‚Ìƒ`ƒFƒ“ƒW
+
+	// MSã¨å¤‰å½¢æ©Ÿã®ãƒã‚§ãƒ³ã‚¸
 	int isPlayerChange = 0;
+
+	bool isPushTrans = false;
+
 
 };

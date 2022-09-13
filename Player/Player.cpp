@@ -41,57 +41,71 @@ void Player::Update(ViewProjection viewProjection_) {
 	const float kCharacterSpeed = 0.8f;
 	const float kCharacterSpeed2 = 0.3f;
 
-
 	// MSと変形機のチェンジ
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (isPlayerChange == 0) {
 			isPlayerChange = 1;
-		} else {
+		}
+		else {
 			isPlayerChange = 0;
 		}
 	}
 
 
+	
+
+	Vector3 v1;
+	v1 = worldTransform_.translation_ - viewProjection_.eye;
+	v1 = MathUtility::Vector3Normalize(v1);
+	float atanAngle = atan2f(v1.x, v1.z);
+
+
+	isPushTrans = false;
 
 	//押した方向で移動ベクトルを変更
-	if (isPlayerChange == 0) {
-		if (input_->PushKey(DIK_W)) {
-			move = {0, 0, kCharacterSpeed};
-		} else if (input_->PushKey(DIK_S)) {
-			move = {0, 0, -kCharacterSpeed};
-		}
-		if (input_->PushKey(DIK_A)) {
-			move = {-kCharacterSpeed, 0, 0};
-		} else if (input_->PushKey(DIK_D)) {
-			move = {kCharacterSpeed, 0, 0};
-		}
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_U)) {
-			move = {0, kCharacterSpeed, 0};
-		} else if (input_->PushKey(DIK_I)) {
-			move = {0, -kCharacterSpeed, 0};
-		}
-	}else if (isPlayerChange == 1) {
-		if (input_->PushKey(DIK_W)) {
-			move = {0, 0, kCharacterSpeed2};
-		} else if (input_->PushKey(DIK_S)) {
-			move = {0, 0, -kCharacterSpeed2};
-		}
-		if (input_->PushKey(DIK_A)) {
-			move = {-kCharacterSpeed2, 0, 0};
-		} else if (input_->PushKey(DIK_D)) {
-			move = {kCharacterSpeed2, 0, 0};
-		}
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_U)) {
-			move = {0, kCharacterSpeed2, 0};
-		} else if (input_->PushKey(DIK_I)) {
-			move = {0, -kCharacterSpeed2, 0};
-		}
+	if (input_->PushKey(DIK_W)) {
+		isPushTrans = true;
 	}
-	worldTransform_.translation_ += move;
+	else if (input_->PushKey(DIK_S)) {
+		isPushTrans = true;
+		atanAngle += 1.0f * PI;
+	}
+	if (input_->PushKey(DIK_A)) {
+		isPushTrans = true;
+		atanAngle -= 0.5f * PI;
+	}
+	else if (input_->PushKey(DIK_D)) {
+		isPushTrans = true;
+		atanAngle += 0.5f * PI;
+
+	}
+	Vector3 v2 = { 0,atanAngle,0 };
+
+	/*const float kCharacterRotateSpeed = 0.05f;
+	if (input_->PushKey(DIK_Q)) {
+		rotation = { 0, kCharacterRotateSpeed, 0 };
+	}
+	else if (input_->PushKey(DIK_E)) {
+		rotation = { 0, -kCharacterRotateSpeed, 0 };
+	}*/
+
+
+	worldTransform_.rotation_ = v2;
+
+
+	Vector3 v3 = { 0,0,0.3f };
+
+	v3 = bVelocity(v3, worldTransform_);
+
+	if (isPushTrans == true) {
+		worldTransform_.translation_ += v3;
+	}
+	else {}
+
+	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
+	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
+	//move = { cos(atanAngle), 0, sin(atanAngle) };
+	//worldTransform_.translation_ += v3;
 
 	//行列更新
 	AffinTrans::affin(worldTransform_);
@@ -112,7 +126,7 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	const float kChestRotSpeed = 0.05f;
 
-	
+
 	//弾発射処理
 	Attack();
 
@@ -128,26 +142,26 @@ void Player::Update(ViewProjection viewProjection_) {
 	}*/
 
 	//---------自機のワールド座標から3Dレティクルのワールド座標を計算-----------//
-	
+
 	//自機から3Dレティクルへの距離
 	const float kDistancePlayerTo3DReticle = 60.0f;
 	//自機から3Dレティクルへのオフセット(Z+向き)
-	Vector3 offset = {0, 0, 1.0f};
+	Vector3 offset = { 0, 0, 2.0f };
 	//自機のワールド座標の回転を反映
-	offset = AffinTrans::MatVector(offset,worldTransform_.matWorld_);
+	offset = AffinTrans::MatVector(offset, worldTransform_.matWorld_);
 	//ベクトルの長さを整える
 	offset = Vector3Normalize(offset) * kDistancePlayerTo3DReticle;
 	//3Dレティクル座標設定
 	worldTransform3DReticle_.translation_ =
-	  offset + Vector3(
-		  worldTransform_.matWorld_.m[3][0], 
-		  worldTransform_.matWorld_.m[3][1],
-	      worldTransform_.matWorld_.m[3][2]
-	  );
+		offset + Vector3(
+			worldTransform_.matWorld_.m[3][0],
+			worldTransform_.matWorld_.m[3][1],
+			worldTransform_.matWorld_.m[3][2]
+		);
 	//行列更新
 	AffinTrans::affin(worldTransform3DReticle_);
 	worldTransform3DReticle_.TransferMatrix();
-	
+
 	/////////////////////////////////////////////////////////////////
 
 
@@ -156,16 +170,16 @@ void Player::Update(ViewProjection viewProjection_) {
 	Vector3 positionReticle = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_);
 
 	Vector2 windowWH =
-	  Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
+		Vector2(WinApp::GetInstance()->kWindowWidth, WinApp::GetInstance()->kWindowHeight);
 
 	//ビューポート行列
 	Matrix4 Viewport = {
-	   windowWH.x / 2,				  0,  0,  0, 
-					0,	-windowWH.y / 2,  0,  0, 
-				    0,				  0,  1,  0, 
+	   windowWH.x / 2,				  0,  0,  0,
+					0,	-windowWH.y / 2,  0,  0,
+					0,				  0,  1,  0,
 	   windowWH.x / 2,	 windowWH.y / 2,  0,  1
 	};
-	  
+
 	//ビュー行列とプロジェクション行列、ビューポート行列を合成する
 	Matrix4 matViewProjectionViewport = viewProjection_.matView * viewProjection_.matProjection * Viewport;
 
@@ -206,7 +220,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	Vector3 mouseDirection = posFar - posNear;
 	mouseDirection = Vector3Normalize(mouseDirection);
 	//カメラから照準オブジェクトの距離
-	const float kDistanceTestObject = 222.0f;
+	const float kDistanceTestObject = 100.0f;
 	worldTransform3DReticle_.translation_ = AffinTrans::AddVector(posNear, mouseDirection * kDistanceTestObject);
 
 	//行列更新
@@ -231,11 +245,9 @@ void Player::Update(ViewProjection viewProjection_) {
 	DebugText::GetInstance()->Printf(
 	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
 	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
-	//デバッグ用表示
+	  //デバッグ用表示
 	debugText_->SetPos(50, 150);
 	debugText_->Printf("Change:%d", isPlayerChange);
-
-
 }
 
 void Player::Draw(ViewProjection viewProjection_) { 
@@ -247,8 +259,8 @@ void Player::Draw(ViewProjection viewProjection_) {
 		bullet->Draw(viewProjection_);
 	}
 
-	//3Dレティクルを描画
-	model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
+	////3Dレティクルを描画
+	//model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
 
 
 	//単発
@@ -263,8 +275,8 @@ void Player::Attack() {
 		const float kBulletSpeed = 3.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
-		////速度ベクトルを自機の向きに合わせて回転させる
-		//velocity = bVelocity(velocity, worldTransform_);
+		//速度ベクトルを自機の向きに合わせて回転させる
+		velocity = bVelocity(velocity, worldTransform_);
 
 		//自機から標準オブジェクトへのベクトル
 		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);

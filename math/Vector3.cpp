@@ -2,7 +2,9 @@
 #include <cmath>
 
 
-float Vector3::length() const { return std::sqrt(x * x + y * y + z * z); }
+float Vector3::length() const { 
+	return std::sqrt(x * x + y * y + z * z); 
+}
 
 Vector3& Vector3::normalize() {
 	float len = length();

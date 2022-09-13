@@ -4,38 +4,41 @@
 #include <cmath>
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
-	// NULLƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN
+	// NULLãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯
 	assert(model);
 	model_ = model;
 	textureHandle_ = textureHandle;
 
-	//ƒVƒ“ƒOƒ‹ƒCƒ“ƒXƒ^ƒ“ƒX‚ğæ“¾‚·‚é
+	//ã‚·ãƒ³ã‚°ãƒ«ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã™ã‚‹
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 
-	//‰ŠúÀ•W‚ğƒZƒbƒg
+	//åˆæœŸåº§æ¨™ã‚’ã‚»ãƒƒãƒˆ
 	worldTransform_.translation_ = vector3;
 
 	/*Fire();*/
 	Approach();
+
+
 }
 
 void Enemy::Update() {
 
-	//“G‚ÌˆÚ“®‚Ì‘¬‚³
+	//æ•µã®ç§»å‹•ã®é€Ÿã•
 	 float kCharacterSpeed = 0.1f;
-	 float kCharacterSpeedX = 0.1f;
-	 float kCharacterSpeedX2 = 0.6f;
-	
-	 //s—ñXV
+
+	 float kCharacterSpeedX = 0.0f;
+	 float kCharacterSpeedX2 = 0.0f;
+	//è¡Œåˆ—æ›´æ–°
+
 	AffinTrans::affin(worldTransform_);
 
 	worldTransform_.TransferMatrix();
 
-	//ˆÚ“®(ƒxƒNƒgƒ‹‚ğ‰ÁZ)
+	//ç§»å‹•(ãƒ™ã‚¯ãƒˆãƒ«ã‚’åŠ ç®—)
 	if (isChangeFlag == 0) {
 		if (worldTransform_.translation_.x > 30.0f) {
 			isChangeFlag = 1;
@@ -52,13 +55,13 @@ void Enemy::Update() {
 	}
 	worldTransform_.translation_ += {kCharacterSpeedX, 0, -kCharacterSpeed};
 
-	//”­Ëƒ^ƒCƒ}[ƒJƒEƒ“ƒgƒ_ƒEƒ“
+	//ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³
 	shotTimer--;
 
 	if (shotTimer == 0) {
-		//’e”­Ë
+		//å¼¾ç™ºå°„
 		Fire();
-		//”­Ëƒ^ƒCƒ}[‰Šú‰»
+		//ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼åˆæœŸåŒ–
 		shotTimer = kFireInterval;
 	}
 
@@ -73,49 +76,49 @@ void Enemy::Fire() {
 
 	assert(player_);
 
-	//’e‚Ì‘¬“x
+	//å¼¾ã®é€Ÿåº¦
 	const float kBulletSpeed = 15.0f;
 	Vector3 velocity(0, 0, kBulletSpeed);
 
-	//ƒvƒŒƒCƒ„[‚Ìƒ[ƒ‹ƒhÀ•W‚Ìæ“¾
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã®å–å¾—
 	Vector3 playerPosition;
 	playerPosition = player_->GetWorldPosition2();
-	//“G‚Ìƒ[ƒ‹ƒhÀ•W‚ğæ“¾
+	//æ•µã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å–å¾—
 	Vector3 enemyPosition;
 	enemyPosition = GetWorldPosition();
-	//·•ªƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+	//å·®åˆ†ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 	Vector3 A_BVec = Vector3(
 	  playerPosition.x - enemyPosition.x, playerPosition.y - enemyPosition.y,
 	  playerPosition.z - enemyPosition.z);
-	//ƒxƒNƒgƒ‹³‹K‰»
+	//ãƒ™ã‚¯ãƒˆãƒ«æ­£è¦åŒ–
 	float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
-	//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ‘¬‚³‚É‡‚í‚¹‚é
+	//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’é€Ÿã•ã«åˆã‚ã›ã‚‹
 	A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
 	
 	A_BVec *= kBulletSpeed;
 
 
-	//’e‚ğ¶¬‚µ‰Šú‰»
-	//•¡”
+	//å¼¾ã‚’ç”Ÿæˆã—åˆæœŸåŒ–
+	//è¤‡æ•°
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-	//’P”­
+	//å˜ç™º
 	/*PlayerBullet* newBullet = new PlayerBullet();*/
 	newBullet->Initialize(model_, worldTransform_.translation_, A_BVec);
 	
-	//’e‚ğ“o˜^‚·‚é
+	//å¼¾ã‚’ç™»éŒ²ã™ã‚‹
 	gameScene_->AddEnemyBullet(newBullet);
 	
 }
 
 void Enemy::Approach() { 
-	//”­Ëƒ^ƒCƒ}[‚ğ‰Šú‰»
+	//ç™ºå°„ã‚¿ã‚¤ãƒãƒ¼ã‚’åˆæœŸåŒ–
 	shotTimer = kFireInterval;
 }
 
 Vector3 Enemy::GetWorldPosition() { 
-	//ƒ[ƒ‹ƒhÀ•W‚ğ“ü‚ê‚é•Ï”
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	Vector3 worldPos;
-	//ƒ[ƒ‹ƒhs—ñ‚Ì•½sˆÚ“®¬•ª
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®å¹³è¡Œç§»å‹•æˆåˆ†
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
@@ -126,3 +129,5 @@ Vector3 Enemy::GetWorldPosition() {
 void Enemy::OnCollision() { 
 	isDead_ = true; 
 }
+
+
