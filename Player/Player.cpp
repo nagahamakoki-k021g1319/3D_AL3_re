@@ -130,6 +130,7 @@ void Player::Update(ViewProjection viewProjection_) {
 				speedUpParam = { 0,0,1.0f };
 			}
 
+
 		
 		
 		Vector3 v2 = { 0,primaryAngle,0 };
