@@ -192,12 +192,12 @@ void Player::Update(ViewProjection viewProjection_) {
 				if (isInitAngleMode == 3) {
 					speedUpParam.x = -4.0f;
 				
-					turnAngle += kRotSpeed;
+					turnAngle -= kRotSpeed;
 					worldTransform_.rotation_.z += turnAngle;
 				}else if (isInitAngleMode == 4) {
 					speedUpParam.x = 4.0f;
 					
-					turnAngle -= kRotSpeed;
+					turnAngle += kRotSpeed;
 					worldTransform_.rotation_.z += turnAngle;
 				}else if (isInitAngleMode == 1) {
 					speedUpParam.z = 4.0f;
@@ -349,6 +349,10 @@ void Player::Update(ViewProjection viewProjection_) {
 		v3 = bVelocity(v3, worldTransform_);
 
 		worldTransform_.translation_ += v3;
+	}
+
+	if (worldTransform_.matWorld_.m[3][1] < 0.0f) {	//地面に潜らない
+		worldTransform_.translation_.y = 0.0f;;
 	}
 	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
 	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
