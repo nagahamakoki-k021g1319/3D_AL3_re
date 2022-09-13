@@ -51,7 +51,7 @@ class Player {
 
 	void setparent(WorldTransform* worldTransform);
 
-
+	void ResetPlayer();
 
 	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }

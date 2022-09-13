@@ -605,4 +605,15 @@ void Player::setparent(WorldTransform* worldTransform) {
 	worldTransform_.parent_ = worldTransform;
 }
 
+void Player::ResetPlayer()
+{
+	//デスフラグの立った弾の削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
+		bullet->OnCollision();
+	}
+}
+
 

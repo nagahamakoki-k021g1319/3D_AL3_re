@@ -3,12 +3,15 @@
 void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
 
 	//ShowCursor(FALSE);
-	
+
 	viewProjection_.farZ = 2500;
 
 
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_ = rota;
+
+	resetWorldTransform.translation_ = position;
+	resetWorldTransform.rotation_ = rota;
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
 
@@ -20,7 +23,7 @@ void RailCamera::Initialize(const Vector3 position, const Vector3 rota) {
 }
 
 void RailCamera::Update() {
-	
+
 
 	////キャラクターの移動ベクトル
 	//Vector3 move = {0, 0, 0};
@@ -67,10 +70,10 @@ void RailCamera::Update() {
 	//viewProjection_.target.x = viewProjection_.eye.x + forward.x;
 	//viewProjection_.target.y = viewProjection_.eye.y + forward.y;
 	//viewProjection_.target.z = viewProjection_.eye.z + forward.z;
-	
-	
 
-	
+
+
+
 
 	//ワールド上方ベクトル
 	Vector3 up(0, 1, 0);
@@ -83,12 +86,12 @@ void RailCamera::Update() {
 
 }
 
-ViewProjection& RailCamera::GetViewProjection() { 
-	return viewProjection_; 
+ViewProjection& RailCamera::GetViewProjection() {
+	return viewProjection_;
 }
 
-WorldTransform* RailCamera::GetWorldPosition() { 
-    
+WorldTransform* RailCamera::GetWorldPosition() {
+
 
 	return &worldTransform_;
 }
@@ -96,6 +99,21 @@ WorldTransform* RailCamera::GetWorldPosition() {
 void RailCamera::SetWorldPos(Vector3 vec)
 {
 	worldTransform_.translation_ += vec;
+
+}
+
+void RailCamera::ResetRailCamera()
+{
+	worldTransform_.translation_ = { 0,0,0 };
+	worldTransform_.rotation_ = { 0,0,0 };
+	viewProjection_.eye = { 0,0,-50.0f };
+
+	AffinTrans::affin(worldTransform_);
+	worldTransform_.TransferMatrix();
+	//ビュープロジェクションを更新
+	viewProjection_.UpdateMatrix();
+	viewProjection_.TransferMatrix();
+
 	
 }
 

@@ -28,9 +28,14 @@ class RailCamera {
 	//セッター
 	void SetWorldPos(Vector3 vec);
 
+	void ResetRailCamera();
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
+
+	WorldTransform resetWorldTransform;
+
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 

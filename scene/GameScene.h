@@ -90,6 +90,8 @@ class GameScene {
 	//弾リストを取得
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemybullets_; }
 
+
+
 	//エフェクトリストを取得
 	const std::list<std::unique_ptr<Effect>>& GetEffect() { return effects_; }
 
@@ -174,6 +176,9 @@ class GameScene {
 	int enemyDefeat = 0;
 	//弾 複数
 	std::list<std::unique_ptr<EnemyBullet>> enemybullets_;
+
+	//自弾リストの取得
+	std::list<std::unique_ptr<PlayerBullet>> playerBullets;
 	//エフェクト 複数
 	std::list<std::unique_ptr<Effect>> effects_;
 
