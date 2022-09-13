@@ -47,6 +47,9 @@ void Enemy::Update() {
 		shotTimer = kFireInterval;
 	}
 
+
+	debugText_->SetPos(10, 50);
+	debugText_->Printf("%d", enemyId);
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {

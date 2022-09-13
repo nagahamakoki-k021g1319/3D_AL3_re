@@ -80,7 +80,7 @@ class GameScene {
 	/// <summary>
 	/// 敵の発生
 	/// </summary>
-	void GenerEnemy(Vector3 EnemyPos);
+	void GenerEnemy(Vector3 EnemyPos,int ID);
 
 	//弾リストを取得
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemybullets_; }
@@ -182,5 +182,12 @@ class GameScene {
 
 	SceneNo sceneNo_ = SceneNo::Title;
 
+	int targetChange = 0;
+
+	int targetMax = 0;
+
+	int goThrough = 0;
+	
+	int noEnemy = 0;
 
 };

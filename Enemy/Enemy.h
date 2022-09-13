@@ -52,6 +52,10 @@ class Enemy {
 
 	bool IsDead() const { return isDead_; }
 
+	int GetId() { return enemyId; }
+
+	void SetID(int ID) { enemyId = ID; }
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -82,4 +86,6 @@ class Enemy {
 
 	//ゲームシーン
 	GameScene* gameScene_ = nullptr;
+
+	int enemyId = 0;
 };
