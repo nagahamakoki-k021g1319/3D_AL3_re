@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 
 	//レティクルのテクスチャ
-	uint32_t texture = TextureManager::Load("RedReticle2.png");
+	uint32_t texture = TextureManager::Load("RedReticle3.png");
 	spriterock.reset(
 	  Sprite::Create(texture, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
@@ -106,7 +106,10 @@ void GameScene::Initialize() {
 	LoadEnemyPopData();
 
 	audio_ = Audio::GetInstance();
-	bgmHandle = audio_->LoadWave("fanfare.wav");
+	bgmHandle = audio_->LoadWave("title.wav");
+	bgmHandle2 = audio_->LoadWave("battle.wav");
+	bgmHandle3 = audio_->LoadWave("clear.wav");
+	bgmHandle4 = audio_->LoadWave("over.wav");
 }
 
 void GameScene::Update() {
@@ -146,9 +149,6 @@ void GameScene::Update() {
 
 						//自機のHPタイマー
 		playerTimer--;
-
-
-
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
@@ -319,14 +319,20 @@ void GameScene::Draw() {
 
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
-		title_->Draw(viewProjection_);
-		push_->Draw(viewProjection_);
+		audio_->StopWave(soundHandle3);
+		audio_->StopWave(soundHandle4);
 		if (audio_->IsPlaying(soundHandle) == 0 || soundHandle == -1) {
 			soundHandle = audio_->PlayWave(bgmHandle, true, 0.5f);
 		}
+		title_->Draw(viewProjection_);
+		push_->Draw(viewProjection_);
+		
 		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
+		if (audio_->IsPlaying(soundHandle2) == 0 || soundHandle2 == -1) {
+			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.5f);
+		}
 		ground_->Draw(railCamera_->GetViewProjection());
 		player_->Draw(railCamera_->GetViewProjection());
 
@@ -343,10 +349,18 @@ void GameScene::Draw() {
 		}
 		break;
 	case SceneNo::Clear: //クリア
+		audio_->StopWave(soundHandle2);
+		if (audio_->IsPlaying(soundHandle3) == 0 || soundHandle3 == -1) {
+			soundHandle3 = audio_->PlayWave(bgmHandle3, true, 0.5f);
+		}
 		gameClear_->Draw(viewProjection_);
 		push_->Draw(viewProjection_);
 		break;
 	case SceneNo::Over: //オーバー
+		audio_->StopWave(soundHandle2);
+		if (audio_->IsPlaying(soundHandle4) == 0 || soundHandle4 == -1) {
+			soundHandle4 = audio_->PlayWave(bgmHandle4, true, 0.5f);
+		}
 		gameOver_->Draw(viewProjection_);
 		push_->Draw(viewProjection_);
 		break;

@@ -113,9 +113,18 @@ class GameScene {
 	Input* input_ = nullptr;
 	//音
 	Audio* audio_ = nullptr;
+	//タイトル
 	uint32_t bgmHandle = 0;
 	int soundHandle = -1;
-
+	//戦闘
+	uint32_t bgmHandle2 = 0;
+	int soundHandle2 = -1;
+	//クリア
+	uint32_t bgmHandle3 = 0;
+	int soundHandle3 = -1;
+	//オーバー
+	uint32_t bgmHandle4 = 0;
+	int soundHandle4 = -1;
 
 	DebugText* debugText_ = nullptr;
 
