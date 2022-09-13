@@ -8,6 +8,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete modelPlayer1_;
 	delete player_;
 	delete modelSkydome_;
 	delete modelGround_;
@@ -30,9 +31,13 @@ void GameScene::Initialize() {
 	textureHandle0_ = TextureManager::Load("kuriku.png");
 	textureHandle4_ = TextureManager::Load("claer.png");
 	textureHandle5_ = TextureManager::Load("over.png");
+
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
+
 	model_ = Model::Create();
+	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
+	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle2.png");
@@ -45,7 +50,7 @@ void GameScene::Initialize() {
 	//自キャラの生成
 	player_ = new Player();
 	//自キャラの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(modelPlayer2_, modelPlayer1_, textureHandle_);
 	player_->setparent(railCamera_->GetWorldPosition());
 
 	//タイトルの生成
@@ -72,6 +77,7 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	// 3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
 
@@ -272,6 +278,7 @@ void GameScene::Draw() {
 		audio_->StopWave(soundHandle);
 		ground_->Draw(railCamera_->GetViewProjection());
 		player_->Draw(railCamera_->GetViewProjection());
+
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->Draw(railCamera_->GetViewProjection());
 		}

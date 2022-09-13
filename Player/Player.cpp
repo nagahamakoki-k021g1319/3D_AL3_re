@@ -2,12 +2,13 @@
 
 using namespace MathUtility;
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
+void Player::Initialize(Model* jikiNormal, Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
 	assert(model);
 	model_ = model;
+	modelNormal_ = jikiNormal;
 	textureHandle_ = textureHandle;
-	
+
 	//シングルインスタンスを取得する
 	input_ = Input::GetInstance();
 	debugText_ = DebugText::GetInstance();
@@ -17,23 +18,23 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, -12, 0};
+	worldTransform_.translation_ = { 0, 20, 0 };
 
 	//レティクル用テクスチャ取得
 	uint32_t textureReticle = TextureManager::Load("tage.png");
 	//スプライト生成
 	sprite2DReticle_.reset(
-	  Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+		Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 
 }
 
 void Player::Update(ViewProjection viewProjection_) {
-	
+
 	//デスフラグの立った弾の削除
-	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) { 
-		return bullet->IsDead();  
-	});
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
 
 	//キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
@@ -41,67 +42,230 @@ void Player::Update(ViewProjection viewProjection_) {
 	const float kCharacterSpeed = 0.8f;
 	const float kCharacterSpeed2 = 0.3f;
 
+
 	// MSと変形機のチェンジ
+	oldPlayerChangeMode = isPlayerChange;	//前フレーム処理
+
 	if (input_->TriggerKey(DIK_SPACE)) {
 		if (isPlayerChange == 0) {
 			isPlayerChange = 1;
+			controlAngleX = 0.0f;
+			controlAngleY = 0.0f;
+			
 		}
 		else {
 			isPlayerChange = 0;
+			controlAngleX = 0.0f;
+			controlAngleY = 0.0f;
+			isFly = 1;
 		}
 	}
 
-
-	
 
 	Vector3 v1;
 	v1 = worldTransform_.translation_ - viewProjection_.eye;
 	v1 = MathUtility::Vector3Normalize(v1);
 	float atanAngle = atan2f(v1.x, v1.z);
 
+	if (isPlayerChange == 0) {
+		angleVelocity = 0.0f;
+		if (isPlayerChange != oldPlayerChangeMode) {
+			//押した方向で移動ベクトルを変更
+			if (input_->PushKey(DIK_W)) {
+				speedUpParam.z = 1.0f;
+				isInitAngleMode = 1;
+			}
+			else if (input_->PushKey(DIK_S)) {
+				speedUpParam.z = -1.0f;
+				isInitAngleMode = 2;
+			}
+			else if (input_->PushKey(DIK_A)) {
+				speedUpParam.x = -1.0f;
+				speedUpParam.z = 0.3f;
+				isInitAngleMode = 3;
+			}
+			else if (input_->PushKey(DIK_D)) {
+				speedUpParam.x = 1.0f;
+				speedUpParam.z = 0.3f;
+				isInitAngleMode = 4;
 
-	isPushTrans = false;
+			}
+			primaryAngle = atanAngle + angleVelocity;
+		}
 
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_W)) {
-		isPushTrans = true;
+		
+		isPushTrans = false;
+		float kControlSpeed = 0.03f;
+	
+		
+			if (input_->PushKey(DIK_W) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 0.0f;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+			else if (input_->PushKey(DIK_S) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 1.0f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+
+			if (input_->PushKey(DIK_A) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = -0.5f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+			else if (input_->PushKey(DIK_D) && input_->IsTriggerMouse(0)) {
+				isPushTrans = true;
+				angleVelocity = 0.5f * PI;
+				isFly = true;
+				primaryAngle = atanAngle + angleVelocity;
+				speedUpParam = { 0,0,1.0f };
+			}
+
+
+		
+		
+		Vector3 v2 = { 0,primaryAngle,0 };
+
+		/*const float kCharacterRotateSpeed = 0.05f;
+		if (input_->PushKey(DIK_Q)) {
+			rotation = { 0, kCharacterRotateSpeed, 0 };
+		}
+		else if (input_->PushKey(DIK_E)) {
+			rotation = { 0, -kCharacterRotateSpeed, 0 };
+		}*/
+
+		worldTransform_.rotation_ = v2;
+
+
+		Vector3 v3 = { speedUpParam.x,speedUpParam.y,speedUpParam.z};
+
+		/*float kMinusSpeed = 0.1f;
+		if (speedUpParam.x > 0.0f) {
+			speedUpParam.x -= kMinusSpeed;
+		}
+		if (speedUpParam.y > 0.0f) {
+			speedUpParam.y -= kMinusSpeed;
+		}
+		if (speedUpParam.z > 0.0f) {
+			speedUpParam.z -= kMinusSpeed;
+		}*/
+
+		v3 = bVelocity(v3, worldTransform_);
+
+		worldTransform_.translation_ += v3;
+
+
+		/*if (isPushTrans == true) {
+			
+		}
+		else {
+		}*/
+#pragma region 重力
+		if (isFly == 1) {
+			if (gravityVel >= -2.5f) {
+				float kGlavityVel = 0.05f;
+				gravityVel -= kGlavityVel;
+			}
+			if (worldTransform_.matWorld_.m[3][1] > 0.0f) {
+				worldTransform_.translation_.y += gravityVel;
+			}
+			else if (worldTransform_.matWorld_.m[3][1] <= 0.0f) {
+				worldTransform_.matWorld_.m[3][1] = 0.0f;
+				isFly = 0;
+				gravityVel = 0.0f;
+			}
+		}
+#pragma endregion
 	}
-	else if (input_->PushKey(DIK_S)) {
-		isPushTrans = true;
-		atanAngle += 1.0f * PI;
-	}
-	if (input_->PushKey(DIK_A)) {
-		isPushTrans = true;
-		atanAngle -= 0.5f * PI;
-	}
-	else if (input_->PushKey(DIK_D)) {
-		isPushTrans = true;
-		atanAngle += 0.5f * PI;
+	else if (isPlayerChange == 1) {
+		if (isPlayerChange != oldPlayerChangeMode) {
 
-	}
-	Vector3 v2 = { 0,atanAngle,0 };
-
-	/*const float kCharacterRotateSpeed = 0.05f;
-	if (input_->PushKey(DIK_Q)) {
-		rotation = { 0, kCharacterRotateSpeed, 0 };
-	}
-	else if (input_->PushKey(DIK_E)) {
-		rotation = { 0, -kCharacterRotateSpeed, 0 };
-	}*/
+			//押した方向で移動ベクトルを変更
+			if (input_->PushKey(DIK_W)) {
+				angleVelocity = 0.0f;
+			}
+			else if (input_->PushKey(DIK_S)) {
 
 
-	worldTransform_.rotation_ = v2;
+				angleVelocity = 1.0f * PI;
+			}
+			if (input_->PushKey(DIK_A)) {
 
 
-	Vector3 v3 = { 0,0,0.3f };
+				angleVelocity = -0.5f * PI;
+			}
+			else if (input_->PushKey(DIK_D)) {
 
-	v3 = bVelocity(v3, worldTransform_);
 
-	if (isPushTrans == true) {
+				angleVelocity = 0.5f * PI;
+
+
+			}
+
+
+		}
+		primaryAngle = atanAngle + angleVelocity;
+		isPushTrans = false;
+		float kControlSpeed = 0.03f;
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_W)) {
+			isPushTrans = true;
+			controlAngleX -= kControlSpeed;
+		}
+		else if (input_->PushKey(DIK_S)) {
+			isPushTrans = true;
+			controlAngleX += kControlSpeed;
+		}
+		else {
+			if (controlAngleX > 0.0f) {
+				controlAngleX -= kControlSpeed;
+			}
+			if (controlAngleX < 0.0f) {
+				controlAngleX += kControlSpeed;
+			}
+		}
+		if (input_->PushKey(DIK_A)) {
+			isPushTrans = true;
+			controlAngleY -= kControlSpeed;
+		}
+		else if (input_->PushKey(DIK_D)) {
+			isPushTrans = true;
+			controlAngleY += kControlSpeed;
+
+		}
+		else {
+			if (controlAngleY > 0.0f) {
+				controlAngleY -= kControlSpeed;
+			}
+			if (controlAngleY < 0.0f) {
+				controlAngleY += kControlSpeed;
+			}
+		}
+		Vector3 v2 = { controlAngleX,primaryAngle + controlAngleY,0 };
+
+		/*const float kCharacterRotateSpeed = 0.05f;
+		if (input_->PushKey(DIK_Q)) {
+			rotation = { 0, kCharacterRotateSpeed, 0 };
+		}
+		else if (input_->PushKey(DIK_E)) {
+			rotation = { 0, -kCharacterRotateSpeed, 0 };
+		}*/
+
+		worldTransform_.rotation_ = v2;
+
+		Vector3 v3 = { 0,0,0.5f };
+
+		v3 = bVelocity(v3, worldTransform_);
+
 		worldTransform_.translation_ += v3;
 	}
-	else {}
-
 	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
 	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
 	//move = { cos(atanAngle), 0, sin(atanAngle) };
@@ -115,14 +279,14 @@ void Player::Update(ViewProjection viewProjection_) {
 	worldTransform_.TransferMatrix();
 
 
-	const float kMoveLimitX = 35;
-	const float kMoveLimitY = 18;
+	/*const float kMoveLimitX = 35;
+	const float kMoveLimitY = 18;*/
 
-	//範囲を超えない処理
-	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
-	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
-	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+	////範囲を超えない処理
+	//worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	//worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
+	//worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
+	//worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
 	const float kChestRotSpeed = 0.05f;
 
@@ -250,17 +414,25 @@ void Player::Update(ViewProjection viewProjection_) {
 	debugText_->Printf("Change:%d", isPlayerChange);
 }
 
-void Player::Draw(ViewProjection viewProjection_) { 
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
-	
+void Player::Draw(ViewProjection viewProjection_) {
+	if (isPlayerChange == 1) {
+		model_->Draw(worldTransform_, viewProjection_);
+	}
+	else if (isPlayerChange == 0) {
+		modelNormal_->Draw(worldTransform_, viewProjection_);
+	}
+
 	//弾更新
 	//複数
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
 	}
 
+
 	////3Dレティクルを描画
 	//model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
+
+
 
 
 	//単発
@@ -269,7 +441,7 @@ void Player::Draw(ViewProjection viewProjection_) {
 	}*/
 }
 
-void Player::Attack() { 
+void Player::Attack() {
 	if (input_->IsTriggerMouse(0)) {
 		//弾の速度
 		const float kBulletSpeed = 3.0f;
@@ -290,8 +462,8 @@ void Player::Attack() {
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
 		newBullet->Initialize(model_, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
 
-		 //弾の登録
-		//複数
+		//弾の登録
+	   //複数
 		bullets_.push_back(std::move(newBullet));
 
 		//単発
@@ -300,27 +472,27 @@ void Player::Attack() {
 
 }
 
-void Player::DrawUI() { 
+void Player::DrawUI() {
 	sprite2DReticle_->Draw();
 
 }
 
-Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) { 
-	
-	Vector3 result = {0, 0, 0};
+Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) {
 
-	
+	Vector3 result = { 0, 0, 0 };
+
+
 	result.x = velocity.x * worldTransform.matWorld_.m[0][0] +
-	           velocity.y * worldTransform.matWorld_.m[1][0] +
-	           velocity.z * worldTransform.matWorld_.m[2][0];
+		velocity.y * worldTransform.matWorld_.m[1][0] +
+		velocity.z * worldTransform.matWorld_.m[2][0];
 
 	result.y = velocity.x * worldTransform.matWorld_.m[0][1] +
-	           velocity.y * worldTransform.matWorld_.m[1][1] +
-	           velocity.z * worldTransform.matWorld_.m[2][1];
+		velocity.y * worldTransform.matWorld_.m[1][1] +
+		velocity.z * worldTransform.matWorld_.m[2][1];
 
 	result.z = velocity.x * worldTransform.matWorld_.m[0][2] +
-	           velocity.y * worldTransform.matWorld_.m[1][2] +
-	           velocity.z * worldTransform.matWorld_.m[2][2];
+		velocity.y * worldTransform.matWorld_.m[1][2] +
+		velocity.z * worldTransform.matWorld_.m[2][2];
 
 
 	return result;
@@ -334,13 +506,13 @@ Vector3 Player::GetWorldPosition2() {
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
-	return worldPos; 
+	return worldPos;
 }
 
 void Player::OnCollision() {}
 
-void Player::setparent(WorldTransform* worldTransform) { 
-	worldTransform_.parent_ = worldTransform; 
+void Player::setparent(WorldTransform* worldTransform) {
+	worldTransform_.parent_ = worldTransform;
 }
 
 
