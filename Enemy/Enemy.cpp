@@ -56,7 +56,7 @@ void Enemy::Draw(ViewProjection viewProjection_) {
 
 void Enemy::Fire() {
 
-	/*assert(player_);*/
+	assert(player_);
 
 	//’e‚Ì‘¬“x
 	const float kBulletSpeed = 2.0f;
