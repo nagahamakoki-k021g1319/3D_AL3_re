@@ -191,7 +191,7 @@ void GameScene::Update() {
 			targetChange++;
 		}
 		debugText_->SetPos(50, 110);
-		debugText_->Printf("Time limit :%d", targetChange);
+		debugText_->Printf("targetNum :%d", targetMax);
 
 		//	EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 		//	
@@ -497,7 +497,7 @@ void GameScene::LoadEnemyPopData() {
 
 	//ファイルを開く
 	std::ifstream file;
-	file.open("Resources/enemyPop.csv");
+	file.open("Resources/enemyPop2.csv");
 
 	assert(file.is_open());
 
