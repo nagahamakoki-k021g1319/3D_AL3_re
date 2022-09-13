@@ -32,6 +32,7 @@ void EnemyBullet::Update() {
 		player_->GetWorldPosition2().y - worldTransform_.translation_.y,
 		player_->GetWorldPosition2().z - worldTransform_.translation_.z
 		};
+
 		//ƒxƒNƒgƒ‹‚ğ³‹K‰»‚·‚é
 		toPlayer.normalize();
 		velocity_.normalize();
