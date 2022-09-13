@@ -40,7 +40,7 @@ void Enemy::Update() {
 	//発射タイマーカウントダウン
 	shotTimer--;
 
-	if (shotTimer == 0) {
+	if (shotTimer <= 0) {
 		//弾発射
 		Fire();
 		//発射タイマー初期化
