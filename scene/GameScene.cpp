@@ -147,6 +147,7 @@ void GameScene::Update() {
 		//自機のHPタイマー
 		playerTimer--;
 
+
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
 		player_->Update(railCamera_->GetViewProjection());
