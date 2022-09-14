@@ -36,6 +36,8 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
+	modelField1_ = Model::CreateFromOBJ("field1", true);
+	enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
@@ -60,6 +62,14 @@ void GameScene::Initialize() {
 	//UI
 	uint32_t ui = TextureManager::Load("UI.png");
 	spriteUI.reset(Sprite::Create(ui, Vector2(1130, 570), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	
+	//GO
+	uint32_t goText1 = TextureManager::Load("GO1.png");
+	uint32_t goText2 = TextureManager::Load("GO2.png");
+	spriteGO1.reset(
+		Sprite::Create(goText1, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	spriteGO2.reset(
+		Sprite::Create(goText2, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -79,6 +89,10 @@ void GameScene::Initialize() {
 	
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
+
+	//フィールド生成
+	fieldObj_ = new FieldObj();
+	fieldObj_->Initialize(modelField1_);
 
 	//地面の生成
 	ground_ = new Ground();
@@ -105,11 +119,20 @@ void GameScene::Initialize() {
 	bgmHandle2 = audio_->LoadWave("battle.wav");
 	bgmHandle3 = audio_->LoadWave("clear.wav");
 	bgmHandle4 = audio_->LoadWave("over.wav");
+
 	bgmDecision = audio_->LoadWave("decision.wav");
 	bgmRock = audio_->LoadWave("rock.wav");
+
+
+
+	goTexPosX = 2.0f;
+
 }
 
 void GameScene::Update() {
+	
+	spriteGO1->SetPosition(Vector2(-goTexPosX + 600, 360.0f));
+	spriteGO2->SetPosition(Vector2(goTexPosX + 600, 360.0f));
 	//スプライトの今の座標を取得
 	// XMFLOAT2 position = sprite->GetPosition();
 	//座標を｛２，０｝移動
@@ -117,7 +140,9 @@ void GameScene::Update() {
 	// position.y += 1.0f;
 
 	//デスフラグの立った弾の削除
-	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->InDead(); });
+	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+	//デスフラグの立った弾の削除
+	playerBullets.remove_if([](std::unique_ptr<PlayerBullet>& playerbullet) { return playerbullet->IsDead(); });
 
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
@@ -145,6 +170,7 @@ void GameScene::Update() {
 		
 		playerTimer = 1000;
 		enemyDefeat = 0;
+		
 
 		break;
 	case SceneNo::Operate: //操作説明(チュートリアル)
@@ -321,7 +347,22 @@ void GameScene::Update() {
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->OnCollision();
 		}
+
 		EnemyReset2();
+
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
+			sceneNo_ = SceneNo::Title;
+		}
+
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->effectDead();
+		}
+		player_->ResetPlayer();
+		railCamera_->ResetRailCamera();
+		/*gameClear_->Update();
+		push_->Update();*/
+
+
 		break;
 	case SceneNo::Over: //オーバー
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
@@ -334,8 +375,24 @@ void GameScene::Update() {
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->OnCollision();
 		}
+
 		
 		EnemyReset2();
+
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
+			sceneNo_ = SceneNo::Title;
+		}
+
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->effectDead();
+		}
+
+		player_->ResetPlayer();
+		railCamera_->ResetRailCamera();
+		/*gameOver_->Update();
+		push_->Update();*/
+
+
 		break;
 	}
 
@@ -413,10 +470,15 @@ void GameScene::Draw() {
 		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
+
 		if (audio_->IsPlaying(soundHandle2) == 0 || soundHandle2 == -1) {
 			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.5f);
 		}
-		ground_->Draw(railCamera_->GetViewProjection());
+
+
+		//ground_->Draw(railCamera_->GetViewProjection());
+		fieldObj_->Draw(railCamera_->GetViewProjection());
+
 		player_->Draw(railCamera_->GetViewProjection());
 
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
@@ -474,6 +536,12 @@ void GameScene::Draw() {
 			spriterock->Draw();
 		}
 		spriteUI->Draw();
+		goTexPosX *= 1.2;
+		if (goTexPosX < 800) {
+			spriteGO1->Draw();	//GO
+			spriteGO2->Draw();
+		}
+
 		break;
 	case SceneNo::Clear: //クリア
 		spriteClear->Draw();
@@ -763,7 +831,7 @@ void GameScene::GenerEnemy(Vector3 EnemyPos, int ID) {
 	//敵キャラの生成
 	std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 	//敵キャラの初期化
-	newEnemy->Initialize(model_, textureHandle2_, EnemyPos);
+	newEnemy->Initialize(enemyBox_, textureHandle2_, EnemyPos);
 
 	//敵キャラにアドレスを渡す
 	newEnemy->SetPlayer(player_);

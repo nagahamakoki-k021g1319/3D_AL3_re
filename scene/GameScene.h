@@ -17,6 +17,10 @@
 #include "RailCamera.h"
 #include "EnemyBullet.h"
 #include <sstream>
+#include "push.h"
+#include "FieldObj.h"
+
+
 #include "Effect.h"
 
 #include "Ground.h"
@@ -89,6 +93,8 @@ class GameScene {
 	//弾リストを取得
 	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemybullets_; }
 
+
+
 	//エフェクトリストを取得
 	const std::list<std::unique_ptr<Effect>>& GetEffect() { return effects_; }
 
@@ -152,6 +158,9 @@ class GameScene {
 	std::unique_ptr<Sprite> enemy2DReticle_;
 	// 赤ロック
 	std::unique_ptr<Sprite> spriterock;
+	//Go
+	std::unique_ptr<Sprite> spriteGO1;
+	std::unique_ptr<Sprite> spriteGO2;
 
 
 	// 3Dモデル
@@ -167,18 +176,21 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
-	int playerRadius = 1;
+	int playerRadius = 14;
 	int playerBulletRadius = 1;
 	//自機のの撃破カウント
 	int playerTimer = 1000;
 	//敵キャラ
 	std::list<std::unique_ptr<Enemy>> enemys_;
 	int enemyRadius = 1;
-	int enemyBulletRadius = 1;
+	int enemyBulletRadius = 3;
 	//敵の撃破カウント
 	int enemyDefeat = 0;
 	//弾 複数
 	std::list<std::unique_ptr<EnemyBullet>> enemybullets_;
+
+	//自弾リストの取得
+	std::list<std::unique_ptr<PlayerBullet>> playerBullets;
 	//エフェクト 複数
 	std::list<std::unique_ptr<Effect>> effects_;
 
@@ -188,12 +200,15 @@ class GameScene {
 	Model* modelSkydome_ = nullptr;
 
 	//地面
+	FieldObj* fieldObj_ = nullptr;
 	Ground* ground_ = nullptr;
 	Model* modelGround_ = nullptr;
 
 
 	Model* modelPlayer1_ = nullptr;
 	Model* modelPlayer2_ = nullptr;
+	Model* modelField1_ = nullptr;
+	Model* enemyBox_ = nullptr;
 
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
@@ -233,5 +248,5 @@ class GameScene {
 	
 	int noEnemy = 0;
 
-
+	float goTexPosX = -40.0f;	//textureGo
 };

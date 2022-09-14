@@ -26,8 +26,18 @@
     <ClCompile Include="RailCamera\RailCamera.cpp" />
     <ClCompile Include="scene\affin.cpp" />
     <ClCompile Include="scene\EnemyReticle.cpp" />
+
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="Skydome\Skydome.cpp" />
+
+    <ClCompile Include="scene\GameClear.cpp" />
+    <ClCompile Include="scene\GameOver.cpp" />
+    <ClCompile Include="scene\GameScene.cpp" />
+    <ClCompile Include="scene\push.cpp" />
+    <ClCompile Include="scene\Title.cpp" />
+    <ClCompile Include="Skydome\Skydome.cpp" />
+    <ClCompile Include="FieldObj.cpp" />
+
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2d\DebugText.h" />
@@ -69,6 +79,13 @@
     <ClInclude Include="scene\EnemyReticle.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="Skydome\Skydome.h" />
+    <ClInclude Include="scene\GameClear.h" />
+    <ClInclude Include="scene\GameOver.h" />
+    <ClInclude Include="scene\GameScene.h" />
+    <ClInclude Include="scene\push.h" />
+    <ClInclude Include="scene\Title.h" />
+    <ClInclude Include="Skydome\Skydome.h" />
+    <ClInclude Include="FieldObj.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Obj.hlsli" />

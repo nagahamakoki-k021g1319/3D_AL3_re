@@ -31,7 +31,7 @@ public:
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	bool InDead() const { return isDead_; }
+	bool IsDead() const { return isDead_; }
 
 	void SetPlayer(Player* player) { player_ = player; }
 
@@ -57,5 +57,5 @@ private:
 	Player* player_;
 
 	//誘導タイマー
-	int inductionTimer = 30;
+	int inductionTimer = 60;
 };
