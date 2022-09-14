@@ -37,8 +37,7 @@ void GameScene::Initialize() {
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
-	enemyBox_ = Model::CreateFromOBJ("Jiki", true);
-	/*enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);*/
+	enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
@@ -323,7 +322,7 @@ void GameScene::Update() {
 		CheckAllCollisions();
 
 		//ゲームクリアに突入
-		if (enemyDefeat >= 4) {
+		if (enemyDefeat >= 8) {
 			sceneNo_ = SceneNo::Clear;
 		}
 

@@ -122,7 +122,7 @@ class Player {
 	bool isFly = false;
 
 
-	int playerHp = 15;
+	int playerHp = 10;
 
 	int playerInvincible = 0;
 

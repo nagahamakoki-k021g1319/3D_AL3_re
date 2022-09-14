@@ -753,7 +753,7 @@ void Player::ResetPlayer()
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->OnCollision();
 	}
-	playerHp = 15;
+	playerHp = 10;
 	isDead_ = false;
 	playerInvincible = 0;
 }
