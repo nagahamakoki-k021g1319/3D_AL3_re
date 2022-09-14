@@ -17,10 +17,7 @@
 #include "RailCamera.h"
 #include "EnemyBullet.h"
 #include <sstream>
-#include "Title.h"
 #include "push.h"
-#include "GameClear.h"
-#include "GameOver.h"
 #include "FieldObj.h"
 
 
