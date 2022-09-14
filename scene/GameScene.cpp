@@ -33,7 +33,7 @@ void GameScene::Initialize() {
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 
-	model_ = Model::Create();
+	model_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
@@ -395,7 +395,7 @@ void GameScene::Draw() {
 		spriteTitle->Draw();
 		break;
 	case SceneNo::Game: //射撃
-		player_->DrawUI();
+		/*player_->DrawUI();*/
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}
