@@ -181,6 +181,7 @@ void GameScene::Update() {
 			}
 
 			if (enemy_->GetId() == targetChange) {
+				player_->setEnemyPos(enemy_->GetWorldPosition());
 				EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 				noEnemy++;
 			}
@@ -263,8 +264,6 @@ void GameScene::Update() {
 		}
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
-		gameClear_->Update();
-		push_->Update();
 
 		break;
 	case SceneNo::Over: //オーバー
@@ -284,8 +283,6 @@ void GameScene::Update() {
 
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
-		gameOver_->Update();
-		push_->Update();
 
 		break;
 	}

@@ -56,7 +56,7 @@ class Player {
 	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
-	
+	void setEnemyPos(Vector3 enemyPos) { enemyPos_ = enemyPos; }
 
   private:
 	//ワールド変換データ
@@ -72,6 +72,7 @@ class Player {
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
+	Vector3 enemyPos_ = { 0,0,0 };
 
 	//弾
 	//複数 
