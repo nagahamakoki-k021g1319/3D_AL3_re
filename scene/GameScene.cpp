@@ -27,12 +27,8 @@ void GameScene::Initialize() {
 
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	textureHandle2_ = TextureManager::Load("enemy.jpg");
-	textureHandle3_ = TextureManager::Load("title.png");
-	textureHandle0_ = TextureManager::Load("kuriku.png");
-	textureHandle4_ = TextureManager::Load("claer.png");
-	textureHandle5_ = TextureManager::Load("over.png");
-
-	textureHandleEnemyReticle_ = TextureManager::Load("RedReticle.png");
+	
+	
 
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
@@ -40,11 +36,31 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
+	modelField1_ = Model::CreateFromOBJ("field1", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
 	spriterock.reset(
 	  Sprite::Create(texture, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
+	//タイトルのテクスチャ
+	uint32_t title = TextureManager::Load("title.png");
+	spriteTitle.reset(
+	  Sprite::Create(title, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
+	//クリアのテクスチャ
+	uint32_t clear = TextureManager::Load("clear.png");
+	spriteClear.reset(
+	  Sprite::Create(clear, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
+	//タイトルのテクスチャ
+	uint32_t over = TextureManager::Load("over.png");
+	spriteOver.reset(
+	  Sprite::Create(over, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
+	//UI
+	uint32_t ui = TextureManager::Load("UI.png");
+	spriteUI.reset(Sprite::Create(ui, Vector2(1130, 570), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -55,25 +71,7 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer2_, modelPlayer1_, textureHandle_);
 	player_->setparent(railCamera_->GetWorldPosition());
 
-	//タイトルの生成
-	title_ = new Title();
-	//タイトルの初期化
-	title_->Initialize(model_, textureHandle3_);
-
-	//クリックの生成
-	push_ = new push();
-	//クリックの初期化
-	push_->Initialize(model_, textureHandle0_);
-
-	//ゲームクリアの生成
-	gameClear_ = new GameClear();
-	//ゲームクリアの初期化
-	gameClear_->Initialize(model_, textureHandle4_);
-
-	//ゲームオーバーの生成
-	gameOver_ = new GameOver();
-	//ゲームオーバーの初期化
-	gameOver_->Initialize(model_, textureHandle5_);
+	
 
 	//スカイドームの生成
 	skydome_ = new Skydome();
@@ -82,6 +80,10 @@ void GameScene::Initialize() {
 	
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
+
+	//フィールド生成
+	fieldObj_ = new FieldObj();
+	fieldObj_->Initialize(modelField1_);
 
 	//地面の生成
 	ground_ = new Ground();
@@ -110,6 +112,7 @@ void GameScene::Initialize() {
 	bgmHandle2 = audio_->LoadWave("battle.wav");
 	bgmHandle3 = audio_->LoadWave("clear.wav");
 	bgmHandle4 = audio_->LoadWave("over.wav");
+
 }
 
 void GameScene::Update() {
@@ -128,7 +131,7 @@ void GameScene::Update() {
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
 
 
-	//デスフラグの立った敵の削除
+	//デスフラグの立ったエフェクトの削除
 	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
 
 	switch (sceneNo_) {
@@ -139,12 +142,10 @@ void GameScene::Update() {
 			playerTimer = 1000;
 			enemyDefeat = 0;
 		}
-		title_->Update();
-
-		push_->Update();
 		EnemyReset();
 		playerTimer = 1000;
 		enemyDefeat = 0;
+		
 
 		break;
 	case SceneNo::Game: //射撃
@@ -256,6 +257,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
+
 		for (std::unique_ptr<Effect>& effect : effects_) {
 			effect->effectDead();
 		}
@@ -263,6 +265,7 @@ void GameScene::Update() {
 		railCamera_->ResetRailCamera();
 		gameClear_->Update();
 		push_->Update();
+
 		break;
 	case SceneNo::Over: //オーバー
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
@@ -274,6 +277,7 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
+
 		for (std::unique_ptr<Effect>& effect : effects_) {
 			effect->effectDead();
 		}
@@ -282,6 +286,7 @@ void GameScene::Update() {
 		railCamera_->ResetRailCamera();
 		gameOver_->Update();
 		push_->Update();
+
 		break;
 	}
 
@@ -335,16 +340,19 @@ void GameScene::Draw() {
 		if (audio_->IsPlaying(soundHandle) == 0 || soundHandle == -1) {
 			soundHandle = audio_->PlayWave(bgmHandle, true, 0.5f);
 		}
-		title_->Draw(viewProjection_);
-		push_->Draw(viewProjection_);
 		
 		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
+
 		if (audio_->IsPlaying(soundHandle2) == 0 || soundHandle2 == -1) {
 			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.5f);
 		}
-		ground_->Draw(railCamera_->GetViewProjection());
+
+
+		//ground_->Draw(railCamera_->GetViewProjection());
+		fieldObj_->Draw(railCamera_->GetViewProjection());
+
 		player_->Draw(railCamera_->GetViewProjection());
 
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
@@ -364,16 +372,12 @@ void GameScene::Draw() {
 		if (audio_->IsPlaying(soundHandle3) == 0 || soundHandle3 == -1) {
 			soundHandle3 = audio_->PlayWave(bgmHandle3, true, 0.5f);
 		}
-		gameClear_->Draw(viewProjection_);
-		push_->Draw(viewProjection_);
 		break;
 	case SceneNo::Over: //オーバー
 		audio_->StopWave(soundHandle2);
 		if (audio_->IsPlaying(soundHandle4) == 0 || soundHandle4 == -1) {
 			soundHandle4 = audio_->PlayWave(bgmHandle4, true, 0.5f);
 		}
-		gameOver_->Draw(viewProjection_);
-		push_->Draw(viewProjection_);
 		break;
 	}
 
@@ -391,16 +395,20 @@ void GameScene::Draw() {
 
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
+		spriteTitle->Draw();
 		break;
 	case SceneNo::Game: //射撃
 		player_->DrawUI();
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}
+		spriteUI->Draw();
 		break;
 	case SceneNo::Clear: //クリア
+		spriteClear->Draw();
 		break;
 	case SceneNo::Over: //オーバー
+		spriteOver->Draw();
 		break;
 	}
 
