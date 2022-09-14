@@ -5,17 +5,17 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	assert(model);
 
 	model_ = model;
-	//ƒeƒNƒXƒ`ƒƒ“Ç‚İ‚İ
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£èª­ã¿è¾¼ã¿
 	textureHandle_ = TextureManager::Load("eb.png");
 
-	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ã®åˆæœŸåŒ–
 	worldTransform_.Initialize();
 
-	//ˆø”‚Åó‚¯æ‚Á‚½‰ŠúÀ•W‚ğƒZƒbƒg
+	//å¼•æ•°ã§å—ã‘å–ã£ãŸåˆæœŸåº§æ¨™ã‚’ã‚»ãƒƒãƒˆ
 	worldTransform_.scale_ = { 4.0f,4.0f,2.0f };
 	worldTransform_.translation_ = position;
 
-	//ˆø”‚Åó‚¯æ‚Á‚½‘¬“x‚ğƒƒ“ƒo•Ï”‚É‘ã“ü
+	//å¼•æ•°ã§å—ã‘å–ã£ãŸé€Ÿåº¦ã‚’ãƒ¡ãƒ³ãƒå¤‰æ•°ã«ä»£å…¥
 	velocity_ = velocity;
 
 	
@@ -26,36 +26,38 @@ void EnemyBullet::Update() {
 
 	if (inductionTimer > 0) {
 		inductionTimer--;
-		//“G’e‚©‚ç©ƒLƒƒƒ‰‚Ö‚ÌƒxƒNƒgƒ‹‚ğŒvZ
+		//æ•µå¼¾ã‹ã‚‰è‡ªã‚­ãƒ£ãƒ©ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
 		Vector3 toPlayer =
 		{
 		player_->GetWorldPosition2().x - worldTransform_.translation_.x,
 		player_->GetWorldPosition2().y - worldTransform_.translation_.y,
 		player_->GetWorldPosition2().z - worldTransform_.translation_.z
 		};
-		//ƒxƒNƒgƒ‹‚ğ³‹K‰»‚·‚é
+		//ãƒ™ã‚¯ãƒˆãƒ«ã‚’æ­£è¦åŒ–ã™ã‚‹
 		toPlayer.normalize();
 		velocity_.normalize();
-		//‹…–ÊüŒ`•âŠÔ‚É‚æ‚èA¡‚Ì‘¬“x‚Æ©ƒLƒƒƒ‰‚Ö‚ÌƒxƒNƒgƒ‹‚ğ“à‘}‚µAV‚½‚È‘¬“x‚Æ‚·‚é
+		//çƒé¢ç·šå½¢è£œé–“ã«ã‚ˆã‚Šã€ä»Šã®é€Ÿåº¦ã¨è‡ªã‚­ãƒ£ãƒ©ã¸ã®ãƒ™ã‚¯ãƒˆãƒ«ã‚’å†…æŒ¿ã—ã€æ–°ãŸãªé€Ÿåº¦ã¨ã™ã‚‹
 		velocity_ = velocity_.SphereLinear(velocity_, velocity_, toPlayer, 0.5f);
+
 		float kBulSpeed = 1.2f;
 		velocity_ = { velocity_.x * kBulSpeed,velocity_.y * kBulSpeed ,velocity_.z * kBulSpeed };
+
 	}
-		//is•ûŒü‚ÉŒ©‚½–Ú‚Ì‰ñ“]‚ğ‡‚í‚¹‚é
+		//é€²è¡Œæ–¹å‘ã«è¦‹ãŸç›®ã®å›è»¢ã‚’åˆã‚ã›ã‚‹
 		worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
 		Vector3 temp = velocity_;
 		temp.y = 0.0f;
 		worldTransform_.rotation_.x = std::atan2(-velocity_.y, temp.length());
 	
-	//À•W‚ğˆÚ“®
+	//åº§æ¨™ã‚’ç§»å‹•
 	worldTransform_.translation_ += velocity_;
 
-	//s—ñXV
+	//è¡Œåˆ—æ›´æ–°
 	AffinTrans::affin(worldTransform_);
 
 	worldTransform_.TransferMatrix();
 
-	//ŠÔŒo‰ß‚ÅƒfƒX
+	//æ™‚é–“çµŒéã§ãƒ‡ã‚¹
 	if (--deathTimer_ <= 0) {
 		isDead_ = true;
 	}
@@ -67,9 +69,9 @@ void EnemyBullet::Draw(const ViewProjection& viewProjection) {
 }
 
 Vector3 EnemyBullet::GetWorldPosition() { 
-	//ƒ[ƒ‹ƒhÀ•W‚ğ“ü‚ê‚é•Ï”
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å…¥ã‚Œã‚‹å¤‰æ•°
 	Vector3 worldPos;
-	//ƒ[ƒ‹ƒhs—ñ‚Ì•½sˆÚ“®¬•ª
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã®å¹³è¡Œç§»å‹•æˆåˆ†
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
@@ -79,6 +81,6 @@ Vector3 EnemyBullet::GetWorldPosition() {
 
 void EnemyBullet::OnCollision() {
 
-	//ƒfƒXƒtƒ‰ƒO
+	//ãƒ‡ã‚¹ãƒ•ãƒ©ã‚°
 	isDead_ = true;
 }

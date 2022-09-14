@@ -56,7 +56,9 @@ class Player {
 	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
-	
+	void setEnemyPos(Vector3 enemyPos) { enemyPos_ = enemyPos; }
+
+	bool ReturnDead() { return isDead_; }
 
   private:
 	//ワールド変換データ
@@ -71,7 +73,12 @@ class Player {
 	
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
+
+
+	Vector3 enemyPos_ = { 0,0,0 };
+
 	Model* bulletModel = nullptr;
+
 
 	//弾
 	//複数 
@@ -112,11 +119,19 @@ class Player {
 	float gravityVel = 0.0f;
 	bool isFly = 0;
 
+
+	int playerHp = 15;
+
+	int playerInvincible = 0;
+
+	bool isDead_ = false;
+
 	//クールタイム
 	int keyCoolTimeNormal = 0;
 	int keyCoolTimeExtend = 0;
 	int keyCoolTimeModeChange = 0;
 	const int coolTime = 20;
+
 
 
 };

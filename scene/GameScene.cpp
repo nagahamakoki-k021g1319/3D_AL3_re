@@ -33,7 +33,7 @@ void GameScene::Initialize() {
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 
-	model_ = Model::Create();
+	model_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
@@ -270,6 +270,7 @@ void GameScene::Update() {
 			}
 
 			if (enemy_->GetId() == targetChange) {
+				player_->setEnemyPos(enemy_->GetWorldPosition());
 				EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 				noEnemy++;
 			}
@@ -321,10 +322,10 @@ void GameScene::Update() {
 			sceneNo_ = SceneNo::Clear;
 		}
 
-		////ゲームオーバーに突入
-		// if (playerTimer <= 0) {
-		//	sceneNo_ = SceneNo::Over;
-		// }
+		//ゲームオーバーに突入
+		 if (player_->ReturnDead()){
+			sceneNo_ = SceneNo::Over;
+		 }
 
 		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
 
@@ -359,8 +360,10 @@ void GameScene::Update() {
 		}
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
+
 		/*gameClear_->Update();
 		push_->Update();*/
+
 
 
 		break;
@@ -389,8 +392,10 @@ void GameScene::Update() {
 
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
+
 		/*gameOver_->Update();
 		push_->Update();*/
+
 
 
 		break;
@@ -531,7 +536,7 @@ void GameScene::Draw() {
 		spriteUI->Draw();
 		break;
 	case SceneNo::Game: //射撃
-		player_->DrawUI();
+		/*player_->DrawUI();*/
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}

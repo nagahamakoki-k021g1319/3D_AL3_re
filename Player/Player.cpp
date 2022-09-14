@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Enemy.h"
 
 using namespace MathUtility;
 
@@ -38,6 +39,12 @@ void Player::Update(ViewProjection viewProjection_) {
 	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
 		return bullet->IsDead();
 		});
+
+	playerInvincible--;
+
+	if (playerHp <= 0) {
+		isDead_ = true;
+	}
 
 	//キャラクターの移動ベクトル
 	Vector3 move = { 0, 0, 0 };
@@ -590,6 +597,12 @@ void Player::Update(ViewProjection viewProjection_) {
 	  //デバッグ用表示
 	debugText_->SetPos(50, 150);
 	debugText_->Printf("Change:%d", isPlayerChange);
+
+	debugText_->SetPos(50, 170);
+	debugText_->Printf("PlayerHp:%d", playerHp);
+
+	debugText_->SetPos(50, 190);
+	debugText_->Printf("PlayerHp:%d", playerInvincible);
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
@@ -621,31 +634,60 @@ void Player::Draw(ViewProjection viewProjection_) {
 
 void Player::Attack() {
 	if (input_->IsTriggerMouse(0)) {
-		//弾の速度
-		const float kBulletSpeed = 3.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
+		if (isPlayerChange == 0) {
+			//弾の速度
+			const float kBulletSpeed = 20.0f;
+			Vector3 velocity(0, 0, kBulletSpeed);
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		velocity = bVelocity(velocity, worldTransform_);
+			//速度ベクトルを自機の向きに合わせて回転させる
+			velocity = bVelocity(velocity, worldTransform_);
 
-		//自機から標準オブジェクトへのベクトル
-		velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
-		velocity = Vector3Normalize(velocity) * kBulletSpeed;
+			////自機から標準オブジェクトへのベクトル
+			//velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
+			//velocity = Vector3Normalize(velocity) * kBulletSpeed;
 
-		//弾を生成し初期化
-		//複数
-		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+			//	//弾の速度
+			//const float kBulletSpeed = 15.0f;
+
+			//Vector3 velocity(0, 0, kBulletSpeed);
+
+			//プレイヤーのワールド座標の取得
+			Vector3 playerPosition;
+			playerPosition = GetWorldPosition2();
+			//敵のワールド座標を取得
+			//差分ベクトルを求める
+			Vector3 A_BVec = Vector3(
+				enemyPos_.x - playerPosition.x, enemyPos_.y - playerPosition.y,
+				enemyPos_.z - playerPosition.z);
+			//ベクトル正規化
+			float nomalize = sqrt(A_BVec.x * A_BVec.x + A_BVec.y * A_BVec.y + A_BVec.z * A_BVec.z) * 10;
+			//ベクトルの長さを速さに合わせる
+			A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
+
 
 		//単発
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
 		newBullet->Initialize(bulletModel, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
 
-		//弾の登録
-	   //複数
-		bullets_.push_back(std::move(newBullet));
 
-		//単発
-		/*bullet_.reset(newBullet);*/
+			A_BVec *= kBulletSpeed;
+
+
+			//弾を生成し初期化
+			//複数
+			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+
+			//単発
+			/*PlayerBullet* newBullet = new PlayerBullet();*/
+			newBullet->Initialize(model_, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), A_BVec);
+
+			//弾の登録
+		   //複数
+			bullets_.push_back(std::move(newBullet));
+
+			//単発
+			/*bullet_.reset(newBullet);*/
+		}
 	}
 
 }
@@ -687,7 +729,13 @@ Vector3 Player::GetWorldPosition2() {
 	return worldPos;
 }
 
-void Player::OnCollision() {}
+void Player::OnCollision() {
+	if (playerInvincible < 0) {
+		playerHp--;
+		playerInvincible = 30;
+	}
+	
+}
 
 void Player::setparent(WorldTransform* worldTransform) {
 	worldTransform_.parent_ = worldTransform;
@@ -702,6 +750,9 @@ void Player::ResetPlayer()
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->OnCollision();
 	}
+	playerHp = 3;
+	isDead_ = false;
+	playerInvincible = 0;
 }
 
 
