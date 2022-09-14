@@ -75,11 +75,15 @@ class GameScene {
 	/// 敵発生データの読み込み
 	/// </summary>
 	void LoadEnemyPopData();
+	void LoadEnemyPopData2();
+
 
 	/// <summary>
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdataEnemyPopCommands();
+	void UpdataEnemyPopCommands2();
+
 
 	/// <summary>
 	/// 敵の発生
@@ -98,13 +102,14 @@ class GameScene {
 	//シーン切り替え
 	enum class SceneNo {
 		Title, //タイトル
+		Operate, //操作説明(チュートリアル)
 		Game,  //射撃
 		Clear, //ゲームクリア
 		Over   //ゲメオーバー
 	};
 
 	void EnemyReset();
-
+	void EnemyReset2();
 
 	void EnemyTarget(Vector3 targetPos,Vector3 playerPos,float distance);
 
@@ -126,6 +131,11 @@ class GameScene {
 	//オーバー
 	uint32_t bgmHandle4 = 0;
 	int soundHandle4 = -1;
+	// UI音
+	uint32_t bgmDecision = 0;
+	uint32_t bgmRock = 0;
+
+
 
 	DebugText* debugText_ = nullptr;
 
@@ -148,6 +158,9 @@ class GameScene {
 	std::unique_ptr<Sprite> enemy2DReticle_;
 	// 赤ロック
 	std::unique_ptr<Sprite> spriterock;
+	//Go
+	std::unique_ptr<Sprite> spriteGO1;
+	std::unique_ptr<Sprite> spriteGO2;
 
 
 	// 3Dモデル
@@ -163,14 +176,14 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
-	int playerRadius = 1;
+	int playerRadius = 14;
 	int playerBulletRadius = 1;
 	//自機のの撃破カウント
 	int playerTimer = 1000;
 	//敵キャラ
 	std::list<std::unique_ptr<Enemy>> enemys_;
 	int enemyRadius = 1;
-	int enemyBulletRadius = 1;
+	int enemyBulletRadius = 3;
 	//敵の撃破カウント
 	int enemyDefeat = 0;
 	//弾 複数
@@ -195,21 +208,27 @@ class GameScene {
 	Model* modelPlayer1_ = nullptr;
 	Model* modelPlayer2_ = nullptr;
 	Model* modelField1_ = nullptr;
+	Model* enemyBox_ = nullptr;
 
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
+	std::stringstream enemyPopCommands2;
 
 	Vector3 vector3(float x, float y, float z);
 	Vector4 vector4(int x, int y, int z, int w);
 
 	//待機中フラグ
 	bool isStand_ = false;
-
 	//待機タイマー
 	int standTime_ = 0;
+
+	//待機中フラグ
+	bool isStand2_ = false;
+	//待機タイマー
+	int standTime2_ = 0;
 
 	SceneNo sceneNo_ = SceneNo::Title;
 	
@@ -229,5 +248,5 @@ class GameScene {
 	
 	int noEnemy = 0;
 
-
+	float goTexPosX = -40.0f;	//textureGo
 };

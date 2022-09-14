@@ -11,24 +11,24 @@ class Player;
 class EnemyBullet {
 public:
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Update();
 
 	///< summary>
-	///‰Šú‰»
+	///åˆæœŸåŒ–
 	///</summary>
 	void Draw(const ViewProjection& viewProjection);
 
-	////ƒ[ƒ‹ƒhÀ•W‚ğæ“¾
+	////ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’å–å¾—
 	Vector3 GetWorldPosition();
 
-	//Õ“Ë‚ğŒŸo‚µ‚½‚çŒÄ‚Ño‚³‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
+	//è¡çªã‚’æ¤œå‡ºã—ãŸã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 	void OnCollision();
 
 	bool IsDead() const { return isDead_; }
@@ -38,24 +38,26 @@ public:
 private:
 
 
-	//ƒ[ƒ‹ƒh•ÏŠ·ƒf[ƒ^
+	//ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ãƒ‡ãƒ¼ã‚¿
 	WorldTransform worldTransform_;
-	//ƒ‚ƒfƒ‹
+	//ãƒ¢ãƒ‡ãƒ«
 	Model* model_ = nullptr;
-	//ƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹
+	//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒ³ãƒ‰ãƒ«
 	uint32_t textureHandle_ = 0u;
-	//‘¬“x
+	//é€Ÿåº¦
 	Vector3 velocity_;
 
-	//õ–½
+	//å¯¿å‘½
 	static const int32_t kLifeTime = 60 * 5;
-	//ƒfƒX‘å–ƒ
+	//ãƒ‡ã‚¹å¤§éº»
 	int32_t deathTimer_ = kLifeTime;
-	//ƒfƒXƒtƒ‰ƒO
+	//ãƒ‡ã‚¹ãƒ•ãƒ©ã‚°
 	bool isDead_ = false;
 
 	Player* player_;
 
-	//—U“±ƒ^ƒCƒ}[
-	int inductionTimer = 300;
+	//èª˜å°ã‚¿ã‚¤ãƒãƒ¼
+
+	int inductionTimer = 60;
+
 };
