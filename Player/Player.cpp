@@ -46,6 +46,8 @@ void Player::Update(ViewProjection viewProjection_) {
 		isDead_ = true;
 	}
 
+	
+
 	//キャラクターの移動ベクトル
 	Vector3 move = { 0, 0, 0 };
 	//キャラクターの移動の速さ
@@ -751,7 +753,7 @@ void Player::ResetPlayer()
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->OnCollision();
 	}
-	playerHp = 3;
+	playerHp = 15;
 	isDead_ = false;
 	playerInvincible = 0;
 }

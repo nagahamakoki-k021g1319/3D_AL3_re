@@ -37,7 +37,8 @@ void GameScene::Initialize() {
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
-	enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);
+	enemyBox_ = Model::CreateFromOBJ("Jiki", true);
+	/*enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);*/
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
@@ -214,6 +215,7 @@ void GameScene::Update() {
 			}
 
 			if (enemy_->GetId() == targetChange) {
+				player_->setEnemyPos(enemy_->GetWorldPosition());
 				EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 				noEnemy++;
 			}
@@ -230,7 +232,7 @@ void GameScene::Update() {
 		for (std::unique_ptr<Effect>& effect : effects_) {
 			effect->Update();
 		}
-		CheckAllCollisions();
+		
 
 		//レールカメラの更新
 		railCamera_->Update();
@@ -245,7 +247,9 @@ void GameScene::Update() {
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
 		player_->Update(railCamera_->GetViewProjection());
-
+		if (input_->TriggerKey(DIK_G)) {
+			player_->RetirementGame();
+		}
 		//敵発生
 		UpdataEnemyPopCommands();
 

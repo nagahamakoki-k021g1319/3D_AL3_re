@@ -60,6 +60,8 @@ class Player {
 
 	bool ReturnDead() { return isDead_; }
 
+	void RetirementGame() { playerHp = 0; }
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
