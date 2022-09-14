@@ -37,7 +37,7 @@ void EnemyBullet::Update() {
 		velocity_.normalize();
 		//球面線形補間により、今の速度と自キャラへのベクトルを内挿し、新たな速度とする
 		velocity_ = velocity_.SphereLinear(velocity_, velocity_, toPlayer, 0.5f);
-		velocity_ = { velocity_.x * 0.1f,velocity_.y * 0.1f ,velocity_.z * 0.1f };
+		velocity_ = { velocity_.x * 2.0f,velocity_.y * 1.5f ,velocity_.z * 1.5f };
 	}
 		//進行方向に見た目の回転を合わせる
 		worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);

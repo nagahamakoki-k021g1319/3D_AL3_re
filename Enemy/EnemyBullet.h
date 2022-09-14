@@ -57,5 +57,5 @@ private:
 	Player* player_;
 
 	//誘導タイマー
-	int inductionTimer = 30;
+	int inductionTimer = 300;
 };
