@@ -113,14 +113,16 @@ void GameScene::Initialize() {
 		bullet->OnCollision();
 	}
 
-	//ファイルの読み込み
-	LoadEnemyPopData();
-
+	
 	audio_ = Audio::GetInstance();
 	bgmHandle = audio_->LoadWave("title.wav");
 	bgmHandle2 = audio_->LoadWave("battle.wav");
 	bgmHandle3 = audio_->LoadWave("clear.wav");
 	bgmHandle4 = audio_->LoadWave("over.wav");
+
+	bgmDecision = audio_->LoadWave("decision.wav");
+	bgmRock = audio_->LoadWave("rock.wav");
+
 
 
 	goTexPosX = 2.0f;
@@ -149,24 +151,95 @@ void GameScene::Update() {
 	//デスフラグの立ったエフェクトの削除
 	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
 
+	//ファイルの読み込み
+	if (sceneNo_ == SceneNo::Game) {
+		LoadEnemyPopData();
+	}
+	if (sceneNo_ == SceneNo::Operate) {
+		LoadEnemyPopData2();
+	}
+	
+
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
-			sceneNo_ = SceneNo::Game;
-			EnemyReset();
-			playerTimer = 1000;
-			enemyDefeat = 0;
+			audio_->PlayWave(bgmDecision, false, 0.4f);
+			sceneNo_ = SceneNo::Operate;
+			EnemyReset2();
 		}
-		EnemyReset();
+		
 		playerTimer = 1000;
 		enemyDefeat = 0;
 		
 
 		break;
+	case SceneNo::Operate: //操作説明(チュートリアル)
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Operate) {
+			EnemyReset();
+			for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			    enemy_->OnCollision();
+			}
+			enemyDefeat = 0;
+			audio_->PlayWave(bgmDecision, false, 0.4f);
+			sceneNo_ = SceneNo::Game;
+		}
+
+		//自キャラの更新
+		player_->setparent(railCamera_->GetWorldPosition());
+		player_->Update(railCamera_->GetViewProjection());
+
+		//敵発生
+		UpdataEnemyPopCommands2();
+
+		if (input_->TriggerKey(DIK_E)) {
+			audio_->PlayWave(bgmRock, false, 0.4f);
+			targetChange++;
+		}
+		noEnemy = 0;
+
+		cameraFlag_ = 0;
+
+		//敵の更新
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+
+			enemy_->SetGameScene(this);
+			enemy_->Update();
+
+			//デバッグ用表示
+
+			if (targetChange > targetMax || goThrough == 1) {
+				targetChange = enemy_->GetId();
+				goThrough = 0;
+			}
+
+			if (enemy_->GetId() == targetChange) {
+				EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
+				noEnemy++;
+			}
+		}
+		if (noEnemy == 0) {
+			targetChange++;
+		}
+		
+		//弾更新
+		//複数
+		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+			bullet->Update();
+		}
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->Update();
+		}
+		CheckAllCollisions();
+
+		//レールカメラの更新
+		railCamera_->Update();
+
+		break;
 	case SceneNo::Game: //射撃
 
-						//自機のHPタイマー
+		//自機のHPタイマー
 		playerTimer--;
+
 
 		//自キャラの更新
 		player_->setparent(railCamera_->GetWorldPosition());
@@ -176,6 +249,7 @@ void GameScene::Update() {
 		UpdataEnemyPopCommands();
 
 		if (input_->TriggerKey(DIK_E)) {
+			audio_->PlayWave(bgmRock, false, 0.4f);
 			targetChange++;
 		}
 		noEnemy = 0;
@@ -263,12 +337,19 @@ void GameScene::Update() {
 
 		break;
 	case SceneNo::Clear: //クリア
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
+			audio_->PlayWave(bgmDecision, false, 0.4f);
+			sceneNo_ = SceneNo::Title;
+		}
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->OnCollision();
 		}
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->OnCollision();
 		}
+
+		EnemyReset2();
+
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
@@ -281,14 +362,23 @@ void GameScene::Update() {
 		/*gameClear_->Update();
 		push_->Update();*/
 
+
 		break;
 	case SceneNo::Over: //オーバー
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
+			audio_->PlayWave(bgmDecision, false, 0.4f);
+			sceneNo_ = SceneNo::Title;
+		}
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->OnCollision();
 		}
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->OnCollision();
 		}
+
+		
+		EnemyReset2();
+
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
@@ -301,6 +391,7 @@ void GameScene::Update() {
 		railCamera_->ResetRailCamera();
 		/*gameOver_->Update();
 		push_->Update();*/
+
 
 		break;
 	}
@@ -357,6 +448,26 @@ void GameScene::Draw() {
 		}
 		
 		break;
+	case SceneNo::Operate: //射撃
+		audio_->StopWave(soundHandle);
+		if (audio_->IsPlaying(soundHandle2) == 0 || soundHandle2 == -1) {
+			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.5f);
+		}
+		ground_->Draw(railCamera_->GetViewProjection());
+		player_->Draw(railCamera_->GetViewProjection());
+
+		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
+			enemy_->Draw(railCamera_->GetViewProjection());
+		}
+
+		//弾更新
+		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+			bullet->Draw(railCamera_->GetViewProjection());
+		}
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->Draw(railCamera_->GetViewProjection());
+		}
+		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
 
@@ -411,6 +522,13 @@ void GameScene::Draw() {
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		spriteTitle->Draw();
+		break;
+	case SceneNo::Operate: //射撃
+		player_->DrawUI();
+		if (enemys_.size() >= 1) {
+			spriterock->Draw();
+		}
+		spriteUI->Draw();
 		break;
 	case SceneNo::Game: //射撃
 		player_->DrawUI();
@@ -562,6 +680,20 @@ void GameScene::LoadEnemyPopData() {
 	file.close();
 }
 
+void GameScene::LoadEnemyPopData2() {
+	//ファイルを開く
+	std::ifstream file;
+	file.open("Resources/enemyPop.csv");
+
+	assert(file.is_open());
+
+	//ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands2 << file.rdbuf();
+
+	//ファイルを閉じる
+	file.close();
+}
+
 void GameScene::UpdataEnemyPopCommands() {
 
 	//待機処理
@@ -629,6 +761,72 @@ void GameScene::UpdataEnemyPopCommands() {
 	}
 }
 
+void GameScene::UpdataEnemyPopCommands2() {
+	//待機処理
+	if (isStand2_) {
+		standTime2_--;
+		if (standTime2_ <= 0) {
+			//待機完了
+			isStand2_ = false;
+		}
+		return;
+	}
+	// 1行分の文字列を入れる変数
+	std::string line;
+
+	//コマンド実行ループ
+	while (getline(enemyPopCommands2, line)) {
+		// 1行分の文字数をストリームに変換して解折しやすくなる
+		std::istringstream line_stream(line);
+
+		std::string word;
+		//,区切りで行の先頭文字を取得
+		getline(line_stream, word, ',');
+
+		//"//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			//コメント行を飛ばす
+			continue;
+		}
+		// POPコマンド
+		if (word.find("POP") == 0) {
+			// X座標
+			std::getline(line_stream, word, ',');
+			float x = static_cast<float>(std::atof(word.c_str()));
+
+			// Y座標
+			std::getline(line_stream, word, ',');
+			float y = static_cast<float>(std::atof(word.c_str()));
+
+			// Z座標
+			std::getline(line_stream, word, ',');
+			float z = static_cast<float>(std::atof(word.c_str()));
+
+			// ID
+			std::getline(line_stream, word, ',');
+			int ID = static_cast<int>(std::atof(word.c_str()));
+
+			targetMax = ID;
+
+			GenerEnemy(Vector3(x, y, z), ID);
+		}
+		// WAITコマンド
+		else if (word.find("WAIT") == 0) {
+			std::getline(line_stream, word, ',');
+
+			//待ち時間
+			int32_t waitTime = std::atoi(word.c_str());
+
+			//待機開始
+			isStand2_ = true;
+			standTime2_ = waitTime;
+
+			//抜ける
+			break;
+		}
+	}
+}
+
 void GameScene::GenerEnemy(Vector3 EnemyPos, int ID) {
 	//敵キャラの生成
 	std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
@@ -648,6 +846,12 @@ void GameScene::EnemyReset() {
 	enemyPopCommands.str("");
 	enemyPopCommands.clear(std::stringstream::goodbit);
 	LoadEnemyPopData();
+}
+
+void GameScene::EnemyReset2() {
+	enemyPopCommands2.str("");
+	enemyPopCommands2.clear(std::stringstream::goodbit);
+	LoadEnemyPopData2();
 }
 
 void GameScene::EnemyTarget(Vector3 targetPos, Vector3 playerPos, float distance) {
