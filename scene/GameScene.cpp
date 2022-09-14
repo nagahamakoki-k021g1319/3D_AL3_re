@@ -107,7 +107,8 @@ void GameScene::Initialize() {
 	bgmHandle2 = audio_->LoadWave("battle.wav");
 	bgmHandle3 = audio_->LoadWave("clear.wav");
 	bgmHandle4 = audio_->LoadWave("over.wav");
-
+	bgmDecision = audio_->LoadWave("decision.wav");
+	bgmRock = audio_->LoadWave("rock.wav");
 }
 
 void GameScene::Update() {
@@ -130,10 +131,11 @@ void GameScene::Update() {
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Title) {
-			sceneNo_ = SceneNo::Game;
+			audio_->PlayWave(bgmDecision, false, 0.4f);
 			EnemyReset();
 			playerTimer = 1000;
 			enemyDefeat = 0;
+			sceneNo_ = SceneNo::Game;
 		}
 		EnemyReset();
 		playerTimer = 1000;
@@ -142,7 +144,7 @@ void GameScene::Update() {
 		break;
 	case SceneNo::Game: //射撃
 
-						//自機のHPタイマー
+		//自機のHPタイマー
 		playerTimer--;
 
 		//自キャラの更新
@@ -153,6 +155,7 @@ void GameScene::Update() {
 		UpdataEnemyPopCommands();
 
 		if (input_->TriggerKey(DIK_E)) {
+			audio_->PlayWave(bgmRock, false, 0.4f);
 			targetChange++;
 		}
 		noEnemy = 0;

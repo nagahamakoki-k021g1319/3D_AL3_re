@@ -120,6 +120,11 @@ class GameScene {
 	//オーバー
 	uint32_t bgmHandle4 = 0;
 	int soundHandle4 = -1;
+	// UI音
+	uint32_t bgmDecision = 0;
+	uint32_t bgmRock = 0;
+
+
 
 	DebugText* debugText_ = nullptr;
 
