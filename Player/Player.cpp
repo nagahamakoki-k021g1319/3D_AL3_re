@@ -580,8 +580,8 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	/////////////////////////////////////////////////////////////
 
-	debugText_->SetPos(50, 620);
-	debugText_->Printf("PlayerHp:%d", playerHp);
+	//debugText_->SetPos(50, 620);
+	//debugText_->Printf("PlayerHp:%d", playerHp);
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
@@ -697,9 +697,14 @@ void Player::ResetPlayer()
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->OnCollision();
 	}
-	playerHp = 15;
+	playerHp = 10;
 	isDead_ = false;
 	playerInvincible = 0;
+	worldTransform_.translation_ = { 0,0,0 };
+	worldTransform_.rotation_ = { 0,0,0 };
+	//行列更新
+	AffinTrans::affin(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
 }
 
 

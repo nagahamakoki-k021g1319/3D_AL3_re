@@ -164,7 +164,7 @@ class GameScene {
 	std::unique_ptr<Sprite> spriteGO1;
 	std::unique_ptr<Sprite> spriteGO2;
 
-
+	std::unique_ptr<Sprite> spriteHP[10];
 	// 3Dモデル
 	Model* model_ = nullptr;
 

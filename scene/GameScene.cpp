@@ -78,7 +78,13 @@ void GameScene::Initialize() {
 		Sprite::Create(goText1, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 	spriteGO2.reset(
 		Sprite::Create(goText2, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
-
+	uint32_t playerHpHert = TextureManager::Load("playerHp.png");
+	for (int i = 0; i < 5; i++) {
+		spriteHP[i].reset(Sprite::Create(playerHpHert, Vector2(50 + (20 * i), 600), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	}
+	for (int i = 0; i < 5; i++) {
+		spriteHP[i+5].reset(Sprite::Create(playerHpHert, Vector2(50 + (20 * i), 620), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	}
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
@@ -173,6 +179,12 @@ void GameScene::Update() {
 			EnemyReset();
 			for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			    enemy_->OnCollision();
+			}
+			for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
+				bullet->OnCollision();
+			}
+			for (std::unique_ptr<Effect>& effect : effects_) {
+				effect->effectDead();
 			}
 			enemyDefeat = 0;
 			audio_->PlayWave(bgmDecision, false, 0.4f);
@@ -277,8 +289,8 @@ void GameScene::Update() {
 		if (noEnemy == 0) {
 			targetChange++;
 		}
-		debugText_->SetPos(50, 110);
-		debugText_->Printf("targetNum :%d", targetMax);
+		//debugText_->SetPos(50, 110);
+		//debugText_->Printf("targetNum :%d", targetMax);
 
 		//弾更新
 		//複数
@@ -291,7 +303,7 @@ void GameScene::Update() {
 		CheckAllCollisions();
 
 		//ゲームクリアに突入
-		if (enemyDefeat >= 4) {
+		if (enemyDefeat >= 8) {
 			sceneNo_ = SceneNo::Clear;
 		}
 
@@ -474,7 +486,7 @@ void GameScene::Draw() {
 		spriteTitle->Draw();
 		break;
 	case SceneNo::Operate: //チュートリアル
-		player_->DrawUI();
+		/*player_->DrawUI();*/
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}
@@ -494,7 +506,11 @@ void GameScene::Draw() {
 			spriteGO2->Draw();
 		}
 		spriteG->Draw();
-
+		for (int i = 0; i < 10; i++) { 
+			if (i+1 <= player_->ReturnHp()) {
+				spriteHP[i]->Draw();
+			}
+		}
 		break;
 	case SceneNo::Clear: //クリア
 		spriteClear->Draw();

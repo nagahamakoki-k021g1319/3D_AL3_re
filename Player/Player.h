@@ -62,6 +62,8 @@ class Player {
 
 	void RetirementGame() { playerHp = 0; }
 
+	int ReturnHp() { return playerHp; }
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -122,7 +124,7 @@ class Player {
 	bool isFly = false;
 
 
-	int playerHp = 15;
+	int playerHp = 10;
 
 	int playerInvincible = 0;
 
