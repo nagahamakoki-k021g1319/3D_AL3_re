@@ -71,7 +71,7 @@ class Player {
 	
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
-
+	Model* bulletModel = nullptr;
 
 	//弾
 	//複数 
@@ -117,5 +117,6 @@ class Player {
 	int keyCoolTimeExtend = 0;
 	int keyCoolTimeModeChange = 0;
 	const int coolTime = 20;
+
 
 };

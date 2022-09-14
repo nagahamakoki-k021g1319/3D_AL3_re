@@ -26,6 +26,9 @@ void Player::Initialize(Model* jikiNormal, Model* model, uint32_t textureHandle)
 	sprite2DReticle_.reset(
 		Sprite::Create(textureReticle, Vector2(500, 350), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
+	bulletModel = Model::CreateFromOBJ("tamaX", true);
+	
+
 
 }
 
@@ -635,7 +638,7 @@ void Player::Attack() {
 
 		//単発
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
-		newBullet->Initialize(model_, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
+		newBullet->Initialize(bulletModel, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
 
 		//弾の登録
 	   //複数

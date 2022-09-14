@@ -6,6 +6,7 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	model_ = model;
 	//テクスチャ読み込み
 	textureHandle_ = TextureManager::Load("Black.png");
+	bulletColor = TextureManager::Load("eb.png");
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
@@ -37,7 +38,7 @@ void PlayerBullet::Update() {
 }
 
 void PlayerBullet::Draw(const ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	model_->Draw(worldTransform_, viewProjection, bulletColor);
 }
 
 Vector3 PlayerBullet::GetWorldPosition() { 
