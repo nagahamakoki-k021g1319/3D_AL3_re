@@ -23,6 +23,7 @@
 #include "GameOver.h"
 #include "FieldObj.h"
 
+
 #include "Effect.h"
 
 #include "Ground.h"
@@ -114,9 +115,18 @@ class GameScene {
 	Input* input_ = nullptr;
 	//音
 	Audio* audio_ = nullptr;
+	//タイトル
 	uint32_t bgmHandle = 0;
 	int soundHandle = -1;
-
+	//戦闘
+	uint32_t bgmHandle2 = 0;
+	int soundHandle2 = -1;
+	//クリア
+	uint32_t bgmHandle3 = 0;
+	int soundHandle3 = -1;
+	//オーバー
+	uint32_t bgmHandle4 = 0;
+	int soundHandle4 = -1;
 
 	DebugText* debugText_ = nullptr;
 
@@ -124,22 +134,22 @@ class GameScene {
 	uint32_t textureHandle_ = 0;
 	uint32_t textureHandle2_ = 0;
 	uint32_t textureHandle1_ = 0;
-	//ボタンを押せ!!
-	uint32_t textureHandle0_ = 0;
-	push* push_ = nullptr;
-	//タイトル
-	uint32_t textureHandle3_ = 0;
-	Title* title_ = nullptr;
+	// タイトル
+	std::unique_ptr<Sprite> spriteTitle;
 	//ゲームクリア
-	uint32_t textureHandle4_ = 0;
-	GameClear* gameClear_ = 0;
+	std::unique_ptr<Sprite> spriteClear;
 	//ゲームオーバー
-	uint32_t textureHandle5_ = 0;
-	GameOver* gameOver_ = 0;
+	std::unique_ptr<Sprite> spriteOver; 
+
+	//UI
+	std::unique_ptr<Sprite> spriteUI; 
 
 	//敵2Dレティクル用スプライト
 	uint32_t textureHandleEnemyReticle_ = 0;
 	std::unique_ptr<Sprite> enemy2DReticle_;
+	// 赤ロック
+	std::unique_ptr<Sprite> spriterock;
+
 
 	// 3Dモデル
 	Model* model_ = nullptr;
@@ -206,8 +216,7 @@ class GameScene {
 	Vector3 lastEnemyPos;
 	
 	
-	// 2Dレティクル用スプライト
-	std::unique_ptr<Sprite> spriterock;
+	
 
 
 	int targetChange = 0;
