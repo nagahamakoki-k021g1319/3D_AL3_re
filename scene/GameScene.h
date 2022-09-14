@@ -96,13 +96,14 @@ class GameScene {
 	//シーン切り替え
 	enum class SceneNo {
 		Title, //タイトル
+		Operate, //操作説明(チュートリアル)
 		Game,  //射撃
 		Clear, //ゲームクリア
 		Over   //ゲメオーバー
 	};
 
 	void EnemyReset();
-
+	void EnemyReset2();
 
 	void EnemyTarget(Vector3 targetPos,Vector3 playerPos,float distance);
 
@@ -199,15 +200,20 @@ class GameScene {
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
+	std::stringstream enemyPopCommands2;
 
 	Vector3 vector3(float x, float y, float z);
 	Vector4 vector4(int x, int y, int z, int w);
 
 	//待機中フラグ
 	bool isStand_ = false;
-
 	//待機タイマー
 	int standTime_ = 0;
+
+	//待機中フラグ
+	bool isStand2_ = false;
+	//待機タイマー
+	int standTime2_ = 0;
 
 	SceneNo sceneNo_ = SceneNo::Title;
 	
