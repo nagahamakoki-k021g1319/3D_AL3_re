@@ -126,6 +126,13 @@ void GameScene::Initialize() {
 
 
 	goTexPosX = 2.0f;
+	//ファイルの読み込み
+	if (sceneNo_ == SceneNo::Game) {
+		LoadEnemyPopData();
+	}
+	if (sceneNo_ == SceneNo::Operate) {
+		LoadEnemyPopData2();
+	}
 
 }
 
@@ -151,13 +158,7 @@ void GameScene::Update() {
 	//デスフラグの立ったエフェクトの削除
 	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
 
-	//ファイルの読み込み
-	if (sceneNo_ == SceneNo::Game) {
-		LoadEnemyPopData();
-	}
-	if (sceneNo_ == SceneNo::Operate) {
-		LoadEnemyPopData2();
-	}
+	
 	
 
 	switch (sceneNo_) {

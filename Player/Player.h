@@ -117,7 +117,7 @@ class Player {
 	
 	//飛んでいるか否か
 	float gravityVel = 0.0f;
-	bool isFly = 0;
+	bool isFly = false;
 
 
 	int playerHp = 15;

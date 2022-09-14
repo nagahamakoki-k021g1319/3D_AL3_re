@@ -667,7 +667,7 @@ void Player::Attack() {
 
 		//単発
 		/*PlayerBullet* newBullet = new PlayerBullet();*/
-		newBullet->Initialize(bulletModel, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);
+		/*newBullet->Initialize(bulletModel, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);*/
 
 
 			A_BVec *= kBulletSpeed;
