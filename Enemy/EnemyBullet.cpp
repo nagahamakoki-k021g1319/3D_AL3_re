@@ -23,7 +23,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 
 void EnemyBullet::Update() {
 
-	if (inductionTimer < 0) {
+	if (inductionTimer > 0) {
 		inductionTimer--;
 		//敵弾から自キャラへのベクトルを計算
 		Vector3 toPlayer =
@@ -36,7 +36,7 @@ void EnemyBullet::Update() {
 		toPlayer.normalize();
 		velocity_.normalize();
 		//球面線形補間により、今の速度と自キャラへのベクトルを内挿し、新たな速度とする
-		velocity_ = velocity_.SphereLinear(velocity_, velocity_, toPlayer, 1.0f);
+		velocity_ = velocity_.SphereLinear(velocity_, velocity_, toPlayer, 0.5f);
 		velocity_ = { velocity_.x * 0.1f,velocity_.y * 0.1f ,velocity_.z * 0.1f };
 	}
 		//進行方向に見た目の回転を合わせる

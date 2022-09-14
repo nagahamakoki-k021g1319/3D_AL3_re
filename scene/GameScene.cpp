@@ -123,7 +123,9 @@ void GameScene::Update() {
 	// position.y += 1.0f;
 
 	//デスフラグの立った弾の削除
-	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->InDead(); });
+	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
+	//デスフラグの立った弾の削除
+	playerBullets.remove_if([](std::unique_ptr<PlayerBullet>& playerbullet) { return playerbullet->IsDead(); });
 
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
@@ -255,6 +257,15 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
 			sceneNo_ = SceneNo::Title;
 		}
+
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->effectDead();
+		}
+		player_->ResetPlayer();
+		railCamera_->ResetRailCamera();
+		gameClear_->Update();
+		push_->Update();
+
 		break;
 	case SceneNo::Over: //オーバー
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
@@ -266,6 +277,16 @@ void GameScene::Update() {
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
 			sceneNo_ = SceneNo::Title;
 		}
+
+		for (std::unique_ptr<Effect>& effect : effects_) {
+			effect->effectDead();
+		}
+
+		player_->ResetPlayer();
+		railCamera_->ResetRailCamera();
+		gameOver_->Update();
+		push_->Update();
+
 		break;
 	}
 

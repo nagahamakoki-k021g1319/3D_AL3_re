@@ -35,6 +35,8 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
+	void effectDead() { isDead_ = true; }
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
