@@ -195,6 +195,7 @@ class GameScene {
 	Model* modelPlayer1_ = nullptr;
 	Model* modelPlayer2_ = nullptr;
 	Model* modelField1_ = nullptr;
+	Model* enemyBox_ = nullptr;
 
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;

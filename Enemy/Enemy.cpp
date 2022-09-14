@@ -23,6 +23,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, Vector3 vector3) {
 
 	//初期座標をセット
 	worldTransform_.translation_ = vector3;
+	worldTransform_.scale_  = {3,3,3};
 
 	/*Fire();*/
 	Approach();
@@ -62,7 +63,7 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {
-	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	model_->Draw(worldTransform_, viewProjection_);
 	
 }
 

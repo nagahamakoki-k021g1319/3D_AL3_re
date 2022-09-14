@@ -37,6 +37,7 @@ void GameScene::Initialize() {
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
+	enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
@@ -612,7 +613,7 @@ void GameScene::GenerEnemy(Vector3 EnemyPos, int ID) {
 	//敵キャラの生成
 	std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>();
 	//敵キャラの初期化
-	newEnemy->Initialize(model_, textureHandle2_, EnemyPos);
+	newEnemy->Initialize(enemyBox_, textureHandle2_, EnemyPos);
 
 	//敵キャラにアドレスを渡す
 	newEnemy->SetPlayer(player_);
