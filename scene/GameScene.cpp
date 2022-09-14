@@ -35,7 +35,6 @@ void GameScene::Initialize() {
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
-	enemyBox_ = Model::CreateFromOBJ("Jiki", true);
 	enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);
 
 	//レティクルのテクスチャ
@@ -187,6 +186,8 @@ void GameScene::Update() {
 				effect->effectDead();
 			}
 			enemyDefeat = 0;
+			player_->ResetPlayer();
+			railCamera_->ResetRailCamera();
 			audio_->PlayWave(bgmDecision, false, 0.4f);
 			sceneNo_ = SceneNo::Game;
 		}
