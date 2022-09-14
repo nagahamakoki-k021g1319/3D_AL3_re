@@ -533,7 +533,7 @@ void GameScene::Draw() {
 		spriteTitle->Draw();
 		break;
 	case SceneNo::Operate: //射撃
-		player_->DrawUI();
+		/*player_->DrawUI();*/
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}
