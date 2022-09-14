@@ -12,6 +12,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.Initialize();
 
 	//引数で受け取った初期座標をセット
+	worldTransform_.scale_ = { 4.0f,4.0f,2.0f };
 	worldTransform_.translation_ = position;
 
 	//引数で受け取った速度をメンバ変数に代入
@@ -37,7 +38,8 @@ void EnemyBullet::Update() {
 		velocity_.normalize();
 		//球面線形補間により、今の速度と自キャラへのベクトルを内挿し、新たな速度とする
 		velocity_ = velocity_.SphereLinear(velocity_, velocity_, toPlayer, 0.5f);
-		velocity_ = { velocity_.x * 0.1f,velocity_.y * 0.1f ,velocity_.z * 0.1f };
+		float kBulSpeed = 1.5f;
+		velocity_ = { velocity_.x * kBulSpeed,velocity_.y * kBulSpeed ,velocity_.z * kBulSpeed };
 	}
 		//進行方向に見た目の回転を合わせる
 		worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);

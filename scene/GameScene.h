@@ -163,14 +163,14 @@ class GameScene {
 
 	//自キャラ
 	Player* player_ = nullptr;
-	int playerRadius = 1;
+	int playerRadius = 14;
 	int playerBulletRadius = 1;
 	//自機のの撃破カウント
 	int playerTimer = 1000;
 	//敵キャラ
 	std::list<std::unique_ptr<Enemy>> enemys_;
 	int enemyRadius = 1;
-	int enemyBulletRadius = 1;
+	int enemyBulletRadius = 3;
 	//敵の撃破カウント
 	int enemyDefeat = 0;
 	//弾 複数

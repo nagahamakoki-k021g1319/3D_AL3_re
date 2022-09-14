@@ -263,8 +263,8 @@ void GameScene::Update() {
 		}
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
-		gameClear_->Update();
-		push_->Update();
+		/*gameClear_->Update();
+		push_->Update();*/
 
 		break;
 	case SceneNo::Over: //オーバー
@@ -284,8 +284,8 @@ void GameScene::Update() {
 
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
-		gameOver_->Update();
-		push_->Update();
+		/*gameOver_->Update();
+		push_->Update();*/
 
 		break;
 	}
