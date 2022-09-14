@@ -152,6 +152,8 @@ class GameScene {
 
 	//UI
 	std::unique_ptr<Sprite> spriteUI; 
+	std::unique_ptr<Sprite> spriteG;
+	std::unique_ptr<Sprite> spriteCot;
 
 	//敵2Dレティクル用スプライト
 	uint32_t textureHandleEnemyReticle_ = 0;

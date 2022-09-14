@@ -63,9 +63,6 @@ void Enemy::Update() {
 		shotTimer = kFireInterval;
 	}
 
-
-	debugText_->SetPos(10, 50);
-	debugText_->Printf("%d", enemyId);
 	if (enemyId <= 3 && enemyId >= 0) {
 		moveCount++;
 		if (moveCount >= 360 && moveMode == 0) {

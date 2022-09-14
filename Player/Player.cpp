@@ -580,31 +580,8 @@ void Player::Update(ViewProjection viewProjection_) {
 
 	/////////////////////////////////////////////////////////////
 
-
-	/*debugText_->SetPos(50, 150);
-	debugText_->Printf(
-	  "translation : %f,%f,%f", worldTransform_.translation_.x,
-	  worldTransform_.translation_.y,
-	  worldTransform_.translation_.z);
-	DebugText::GetInstance()->SetPos(20, 200);
-	DebugText::GetInstance()->Printf("Mouse ScreenPos:(%d,%d)", mousePosition.x, mousePosition.y);
-	DebugText::GetInstance()->SetPos(20, 220);
-	DebugText::GetInstance()->Printf("Near:(%f,%f,%f)", posNear.x, posNear.y, posNear.z);
-	DebugText::GetInstance()->SetPos(20, 240);
-	DebugText::GetInstance()->Printf("Far:(%f,%f,%f)", posFar.x, posFar.y, posFar.z);
-	DebugText::GetInstance()->SetPos(20, 260);
-	DebugText::GetInstance()->Printf(
-	  "MouseObject:(%f,%f,%f)", worldTransform3DReticle_.translation_.x,
-	  worldTransform3DReticle_.translation_.y, worldTransform3DReticle_.translation_.z);*/
-	  //デバッグ用表示
-	debugText_->SetPos(50, 150);
-	debugText_->Printf("Change:%d", isPlayerChange);
-
-	debugText_->SetPos(50, 170);
+	debugText_->SetPos(50, 620);
 	debugText_->Printf("PlayerHp:%d", playerHp);
-
-	debugText_->SetPos(50, 190);
-	debugText_->Printf("PlayerHp:%d", playerInvincible);
 }
 
 void Player::Draw(ViewProjection viewProjection_) {
@@ -620,18 +597,6 @@ void Player::Draw(ViewProjection viewProjection_) {
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection_);
 	}
-
-
-	////3Dレティクルを描画
-	//model_->Draw(worldTransform3DReticle_, viewProjection_,textureHandle_);
-
-
-
-
-	//単発
-	/*if (bullet_) {
-		bullet_->Draw(viewProjection_);
-	}*/
 }
 
 void Player::Attack() {
@@ -643,15 +608,6 @@ void Player::Attack() {
 
 			//速度ベクトルを自機の向きに合わせて回転させる
 			velocity = bVelocity(velocity, worldTransform_);
-
-			////自機から標準オブジェクトへのベクトル
-			//velocity = AffinTrans::GetWorldtransform(worldTransform3DReticle_.matWorld_) - AffinTrans::GetWorldtransform(worldTransform_.matWorld_);
-			//velocity = Vector3Normalize(velocity) * kBulletSpeed;
-
-			//	//弾の速度
-			//const float kBulletSpeed = 15.0f;
-
-			//Vector3 velocity(0, 0, kBulletSpeed);
 
 			//プレイヤーのワールド座標の取得
 			Vector3 playerPosition;
@@ -666,15 +622,7 @@ void Player::Attack() {
 			//ベクトルの長さを速さに合わせる
 			A_BVec = Vector3(A_BVec.x / nomalize, A_BVec.y / nomalize, A_BVec.z / nomalize);
 
-
-		//単発
-		/*PlayerBullet* newBullet = new PlayerBullet();*/
-		/*newBullet->Initialize(bulletModel, AffinTrans::GetWorldtransform(worldTransform_.matWorld_), velocity);*/
-
-
 			A_BVec *= kBulletSpeed;
-
-
 
 			//弾を生成し初期化
 			//複数
@@ -687,9 +635,6 @@ void Player::Attack() {
 			//弾の登録
 		   //複数
 			bullets_.push_back(std::move(newBullet));
-
-			//単発
-			/*bullet_.reset(newBullet);*/
 		}
 	}
 
@@ -697,7 +642,6 @@ void Player::Attack() {
 
 void Player::DrawUI() {
 	sprite2DReticle_->Draw();
-
 }
 
 Vector3 Player::bVelocity(Vector3& velocity, WorldTransform& worldTransform) {

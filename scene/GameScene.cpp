@@ -28,8 +28,6 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	textureHandle2_ = TextureManager::Load("enemy.jpg");
 	
-	
-
 	//レティクルのテクスチャ
 	TextureManager::Load("tage.png");
 
@@ -38,7 +36,7 @@ void GameScene::Initialize() {
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
 	modelField1_ = Model::CreateFromOBJ("field1", true);
 	enemyBox_ = Model::CreateFromOBJ("Jiki", true);
-	/*enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);*/
+	enemyBox_ = Model::CreateFromOBJ("EnemyBox", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
@@ -55,15 +53,24 @@ void GameScene::Initialize() {
 	spriteClear.reset(
 	  Sprite::Create(clear, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
-	//タイトルのテクスチャ
+	//オーバーのテクスチャ
 	uint32_t over = TextureManager::Load("over.png");
 	spriteOver.reset(
 	  Sprite::Create(over, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
+	//サレンダーのテクスチャ
+	uint32_t des = TextureManager::Load("zibaku.png");
+	spriteG.reset(
+	  Sprite::Create(des, Vector2(30, 30), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
 	//UI
 	uint32_t ui = TextureManager::Load("UI.png");
-	spriteUI.reset(Sprite::Create(ui, Vector2(1130, 570), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	spriteUI.reset(Sprite::Create(ui, Vector2(1130, 600), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 	
+	//操作説明
+	uint32_t cot = TextureManager::Load("cot.png");
+	spriteCot.reset(Sprite::Create(cot, Vector2(160, 500), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+
 	//GO
 	uint32_t goText1 = TextureManager::Load("GO1.png");
 	uint32_t goText2 = TextureManager::Load("GO2.png");
@@ -80,8 +87,6 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(modelPlayer2_, modelPlayer1_, textureHandle_);
 	player_->setparent(railCamera_->GetWorldPosition());
-
-	
 
 	//スカイドームの生成
 	skydome_ = new Skydome();
@@ -124,8 +129,6 @@ void GameScene::Initialize() {
 	bgmDecision = audio_->LoadWave("decision.wav");
 	bgmRock = audio_->LoadWave("rock.wav");
 
-
-
 	goTexPosX = 2.0f;
 	//ファイルの読み込み
 	if (sceneNo_ == SceneNo::Game) {
@@ -141,12 +144,7 @@ void GameScene::Update() {
 	
 	spriteGO1->SetPosition(Vector2(-goTexPosX + 600, 360.0f));
 	spriteGO2->SetPosition(Vector2(goTexPosX + 600, 360.0f));
-	//スプライトの今の座標を取得
-	// XMFLOAT2 position = sprite->GetPosition();
-	//座標を｛２，０｝移動
-	// position.x += 2.0f;
-	// position.y += 1.0f;
-
+	
 	//デスフラグの立った弾の削除
 	enemybullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) { return bullet->IsDead(); });
 	//デスフラグの立った弾の削除
@@ -155,12 +153,8 @@ void GameScene::Update() {
 	//デスフラグの立った敵の削除
 	enemys_.remove_if([](std::unique_ptr<Enemy>& enemy) { return enemy->IsDead(); });
 
-
 	//デスフラグの立ったエフェクトの削除
 	effects_.remove_if([](std::unique_ptr<Effect>& effect) { return effect->IsDead(); });
-
-	
-	
 
 	switch (sceneNo_) {
 	case SceneNo::Title: //タイトル
@@ -173,7 +167,6 @@ void GameScene::Update() {
 		playerTimer = 1000;
 		enemyDefeat = 0;
 		
-
 		break;
 	case SceneNo::Operate: //操作説明(チュートリアル)
 		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Operate) {
@@ -279,38 +272,13 @@ void GameScene::Update() {
 				EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
 				noEnemy++;
 			}
-			//else if (targetChange != enemy_->GetId() && goThrough >= 1) {
-			//	targetChange++;
-			//}
-
-
+			
 		}
 		if (noEnemy == 0) {
 			targetChange++;
 		}
 		debugText_->SetPos(50, 110);
 		debugText_->Printf("targetNum :%d", targetMax);
-
-		//	EnemyTarget(enemy_->GetWorldPosition(), player_->GetWorldPosition2(), 2);
-		//	
-
-
-		//	cameraFlag_ = 1;
-		//}
-
-		//if (cameraFlag_ == 0) {
-		//	Vector3 p = player_->GetWorldPosition2();
-		//	Vector3 e = lastEnemyPos;
-		//	Vector3 playerTarget = {e.x - p.x, e.y - p.y, e.z - p.z};
-
-		//	Vector3 PosNorm = MathUtility::Vector3Normalize(playerTarget);
-		//	float len = 50.0f;
-		//	Vector3 cameraPos = {
-		//	  p.x - PosNorm.x * len, (p.y - PosNorm.y * len) + 10.0f, p.z - PosNorm.z * len};
-
-		//	//カメラの位置制御
-		//	railCamera_->GetViewProjection().eye = cameraPos;
-		//}
 
 		//弾更新
 		//複数
@@ -332,14 +300,8 @@ void GameScene::Update() {
 			sceneNo_ = SceneNo::Over;
 		 }
 
-		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
-
 		//レールカメラの更新
 		railCamera_->Update();
-
-		//デバッグ用表示
-		/*debugText_->SetPos(50, 110);
-		debugText_->Printf("Time limit :%d", targetChange);*/
 
 		break;
 	case SceneNo::Clear: //クリア
@@ -365,11 +327,6 @@ void GameScene::Update() {
 		}
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
-
-		/*gameClear_->Update();
-		push_->Update();*/
-
-
 
 		break;
 	case SceneNo::Over: //オーバー
@@ -398,25 +355,8 @@ void GameScene::Update() {
 		player_->ResetPlayer();
 		railCamera_->ResetRailCamera();
 
-		/*gameOver_->Update();
-		push_->Update();*/
-
-
-
 		break;
 	}
-
-	if (!enemys_.empty())
-	{
-		debugText_->SetPos(10, 30);
-		debugText_->Printf("%f:%f:%f", enemys_.front().get()->GetWorldPosition().x, enemys_.front().get()->GetWorldPosition().y, enemys_.front().get()->GetWorldPosition().z);
-	}
-	debugText_->SetPos(10, 80);
-	debugText_->Printf("%d", targetMax);
-	//デバッグ用表示
-	debugText_->SetPos(50, 90);
-	debugText_->Printf(
-	  "up:(%b,%d,%f)", audio_->IsPlaying(bgmHandle), soundHandle == -1, viewProjection_.up.z);
 #pragma endregion
 }
 
@@ -485,8 +425,6 @@ void GameScene::Draw() {
 			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.5f);
 		}
 
-
-		//ground_->Draw(railCamera_->GetViewProjection());
 		fieldObj_->Draw(railCamera_->GetViewProjection());
 
 		player_->Draw(railCamera_->GetViewProjection());
@@ -503,12 +441,14 @@ void GameScene::Draw() {
 			effect->Draw(railCamera_->GetViewProjection());
 		}
 		break;
+
 	case SceneNo::Clear: //クリア
 		audio_->StopWave(soundHandle2);
 		if (audio_->IsPlaying(soundHandle3) == 0 || soundHandle3 == -1) {
 			soundHandle3 = audio_->PlayWave(bgmHandle3, true, 0.5f);
 		}
 		break;
+
 	case SceneNo::Over: //オーバー
 		audio_->StopWave(soundHandle2);
 		if (audio_->IsPlaying(soundHandle4) == 0 || soundHandle4 == -1) {
@@ -533,12 +473,14 @@ void GameScene::Draw() {
 	case SceneNo::Title: //タイトル
 		spriteTitle->Draw();
 		break;
-	case SceneNo::Operate: //射撃
+	case SceneNo::Operate: //チュートリアル
 		player_->DrawUI();
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}
 		spriteUI->Draw();
+		spriteG->Draw();
+		spriteCot->Draw();
 		break;
 	case SceneNo::Game: //射撃
 		/*player_->DrawUI();*/
@@ -551,6 +493,7 @@ void GameScene::Draw() {
 			spriteGO1->Draw();	//GO
 			spriteGO2->Draw();
 		}
+		spriteG->Draw();
 
 		break;
 	case SceneNo::Clear: //クリア
@@ -633,35 +576,6 @@ void GameScene::CheckAllCollisions() {
 			}
 		}
 	}
-
-#pragma endregion
-
-	//#pragma region 自弾と敵弾の当たり判定
-	////自キャラと敵弾すべての当たり判定
-	// for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-	//	for (const std::unique_ptr<EnemyBullet>& bullet2 : enemyBullets) {
-
-	//		//自弾の座標
-	//		posA = bullet.get()->GetWorldPosition();
-
-	//		//敵弾の座標
-	//		posB = bullet2.get()->GetWorldPosition();
-
-	//		float x = posB.x - posA.x;
-	//		float y = posB.y - posA.y;
-	//		float z = posB.z - posA.z;
-
-	//		float cd = sqrt(x * x + y * y + z * z);
-
-	//		if (cd <= playerBulletRadius + enemyBulletRadius) {
-	//			//自キャラの衝突時コールバックを呼び出す
-	//			bullet->OnCollision();
-	//			//敵弾の衝突時コールバックを呼び出す
-	//			bullet2->OnCollision();
-	//		}
-	//	}
-	//}
-	//#pragma endregion
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet>& enemyBullet) {
