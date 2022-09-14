@@ -46,21 +46,29 @@ void Player::Update(ViewProjection viewProjection_) {
 	// MSと変形機のチェンジ
 	oldPlayerChangeMode = isPlayerChange;	//前フレーム処理
 
-	if (input_->TriggerKey(DIK_SPACE)) {
-		if (isPlayerChange == 0) {
-			isPlayerChange = 1;
-			controlAngleX = 0.0f;
-			controlAngleY = 0.0f;
-
+	
+	if (keyCoolTimeModeChange <= 0) {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			if (isPlayerChange == 0) {
+				isPlayerChange = 1;
+				controlAngleX = 0.0f;
+				controlAngleY = 0.0f;
+				isModeChangeBoost = true;
+				keyCoolTimeModeChange = coolTime;
+			}
+			else {
+				isPlayerChange = 0;
+				controlAngleX = 0.0f;
+				controlAngleY = 0.0f;
+				isFly = 1;
+				isModeChangeBoost = true;
+				gravityVel = 0.0f;
+				keyCoolTimeModeChange = coolTime;
+			}
 		}
-		else {
-			isPlayerChange = 0;
-			controlAngleX = 0.0f;
-			controlAngleY = 0.0f;
-			isFly = 1;
-			isModeChangeBoost = true;
-			gravityVel = 0.0f;
-		}
+	}
+	else {
+		keyCoolTimeModeChange--;
 	}
 
 
@@ -121,36 +129,44 @@ void Player::Update(ViewProjection viewProjection_) {
 		isPushTrans = false;
 		float kControlSpeed = 0.03f;
 
-		/*
-			if (input_->PushKey(DIK_W) && input_->IsTriggerMouse(0)) {
+		if (keyCoolTimeNormal <= 0) {
+			if (input_->TriggerKey(DIK_W)) {
 				isPushTrans = true;
-				angleVelocity = 0.0f;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
-				speedUpParam = { 0,0,1.0f };
+				speedUpParam = { 0,0,4.0f };
+				gravityVel = 0.0f;
+				keyCoolTimeNormal = coolTime;
 			}
-			else if (input_->PushKey(DIK_S) && input_->IsTriggerMouse(0)) {
+			else if (input_->TriggerKey(DIK_S)) {
 				isPushTrans = true;
-				angleVelocity = 1.0f * PI;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
-				speedUpParam = { 0,0,1.0f };
+				speedUpParam = { 0,0,-4.0f };
+				gravityVel = 0.0f;
+				keyCoolTimeNormal = coolTime;
 			}
 
-			if (input_->PushKey(DIK_A) && input_->IsTriggerMouse(0)) {
+			if (input_->TriggerKey(DIK_A)) {
 				isPushTrans = true;
-				angleVelocity = -0.5f * PI;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
-				speedUpParam = { 0,0,1.0f };
+				speedUpParam = { -4.0f,0,0 };
+				gravityVel = 0.0f;
+				keyCoolTimeNormal = coolTime;
 			}
-			else if (input_->PushKey(DIK_D) && input_->IsTriggerMouse(0)) {
+			else if (input_->TriggerKey(DIK_D)) {
 				isPushTrans = true;
-				angleVelocity = 0.5f * PI;
 				isFly = true;
 				primaryAngle = atanAngle + angleVelocity;
-				speedUpParam = { 0,0,1.0f };
-			}*/
+				speedUpParam = { 4.0f,0,0 };
+				gravityVel = 0.0f;
+				keyCoolTimeNormal = coolTime;
+			}
+		}
+		else {
+			keyCoolTimeNormal--;
+		}
 
 
 
@@ -167,8 +183,8 @@ void Player::Update(ViewProjection viewProjection_) {
 
 		worldTransform_.rotation_ = v2;
 
-
-		Vector3 v3 = { speedUpParam.x + boostVelX,speedUpParam.y,speedUpParam.z };
+		normalVelocity_ = { speedUpParam.x + boostVelX,speedUpParam.y,speedUpParam.z + boostVelZ };
+		Vector3 v3 = normalVelocity_;
 
 		/*float kMinusSpeed = 0.1f;
 		if (speedUpParam.x > 0.0f) {
@@ -255,6 +271,7 @@ void Player::Update(ViewProjection viewProjection_) {
 			float kAdjustVel = 0.03f;
 			if (speedUpParam.x > 0) {
 				speedUpParam.x -= kAdjustVel;
+				
 			}
 			else if (speedUpParam.x < 0) {
 				speedUpParam.x += kAdjustVel;
@@ -282,21 +299,23 @@ void Player::Update(ViewProjection viewProjection_) {
 			//押した方向で移動ベクトルを変更
 			if (input_->PushKey(DIK_W)) {
 				angleVelocity = 0.0f;
+				isInitAngleMode = 1;
 			}
 			else if (input_->PushKey(DIK_S)) {
-
-
 				angleVelocity = 1.0f * PI;
+				isInitAngleMode = 2;
 			}
 			if (input_->PushKey(DIK_A)) {
 
 
 				angleVelocity = -0.5f * PI;
+				isInitAngleMode = 3;
 			}
 			else if (input_->PushKey(DIK_D)) {
 
 
 				angleVelocity = 0.5f * PI;
+				isInitAngleMode = 4;
 
 
 			}
@@ -340,6 +359,7 @@ void Player::Update(ViewProjection viewProjection_) {
 				controlAngleY += kControlSpeed;
 			}
 		}*/
+
 		Vector3 v2 = { controlAngleX,primaryAngle + controlAngleY,0 };
 
 		/*const float kCharacterRotateSpeed = 0.05f;
@@ -350,25 +370,84 @@ void Player::Update(ViewProjection viewProjection_) {
 			rotation = { 0, -kCharacterRotateSpeed, 0 };
 		}*/
 
+		
+
 		worldTransform_.rotation_ = v2;
 
-		Vector3 v3 = { 0,0.1f,1.5f };
+		
 
+		if (isModeChangeBoost == true) {
+			boostCount++;
+			if (boostCount <= 12) {
+				float kRotSpeed = 0.1f * PI;
+
+				if (isInitAngleMode == 1) {
+					
+					turnAngle += kRotSpeed;
+					worldTransform_.rotation_.x = -0.5f * PI;
+					//worldTransform_.rotation_.z += turnAngle;
+
+				}
+				//else if (isInitAngleMode == 2) {
+				//	speedUpParam.z = 10.0f;
+				//	turnAngle -= kRotSpeed;
+				//	worldTransform_.rotation_.x = -0.5f * PI;
+				//	//worldTransform_.rotation_.z += turnAngle;
+				//}
+				//else if (isInitAngleMode == 3) {
+				//	speedUpParam.z = 10.0f;
+
+				//	turnAngle -= kRotSpeed;
+				//	worldTransform_.rotation_.x = -0.5f * PI;
+				//	//worldTransform_.rotation_.z += turnAngle;
+				//}
+				//else if (isInitAngleMode == 4) {
+				//	speedUpParam.z = 10.0f;
+
+				//	turnAngle += kRotSpeed;
+				//	worldTransform_.rotation_.x = -0.5f * PI;
+				//	//worldTransform_.rotation_.z += turnAngle;
+				//}
+			}
+			else {
+				isModeChangeBoost = 0;
+				turnAngle = 0.0f;
+				worldTransform_.rotation_.x = 0;
+				worldTransform_.rotation_.z = 0;
+				boostCount = 0;
+				boostVelZ = 0.0f;
+				boostVelX = 0.0f;
+			}
+		}
+
+
+		Vector3 v3 = { 0,0.0f,1.5f };
+		
+
+		if (isModeChangeBoost == true) {
+			worldTransform_.rotation_.z = turnAngle;
+			v3.z = 5.0f;
+		}
 		v3 = bVelocity(v3, worldTransform_);
-
 		worldTransform_.translation_ += v3;
+		
+		
 	}
 
 	if (worldTransform_.matWorld_.m[3][1] < 0.0f) {	//地面に潜らない
 		worldTransform_.translation_.y = 0.0f;;
 	}
-	//worldTransform_.matWorld_ = AffinTrans::Rotation(v2, 2);
-	//Vector3 v3 = bVelocity(v2, worldTransform_) * 0.1f;
-	//move = { cos(atanAngle), 0, sin(atanAngle) };
-	//worldTransform_.translation_ += v3;
+	
 
 	//行列更新
-	AffinTrans::affin(worldTransform_);
+	//AffinTrans::affin(worldTransform_);
+	worldTransform_.matWorld_ = AffinTrans::Initialize();
+	worldTransform_.matWorld_ *= AffinTrans::Scale(worldTransform_.scale_);
+	worldTransform_.matWorld_ *= AffinTrans::Rotation(worldTransform_.rotation_, 3);
+	worldTransform_.matWorld_ *= AffinTrans::Rotation(worldTransform_.rotation_, 1);
+	worldTransform_.matWorld_ *= AffinTrans::Rotation(worldTransform_.rotation_, 2);
+	
+	worldTransform_.matWorld_ *= AffinTrans::Move(worldTransform_.translation_);
 
 	//worldTransform_.matWorld_ *= worldTransform_.parent_->matWorld_;
 

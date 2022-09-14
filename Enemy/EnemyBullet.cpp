@@ -38,7 +38,7 @@ void EnemyBullet::Update() {
 		velocity_.normalize();
 		//球面線形補間により、今の速度と自キャラへのベクトルを内挿し、新たな速度とする
 		velocity_ = velocity_.SphereLinear(velocity_, velocity_, toPlayer, 0.5f);
-		float kBulSpeed = 1.5f;
+		float kBulSpeed = 1.2f;
 		velocity_ = { velocity_.x * kBulSpeed,velocity_.y * kBulSpeed ,velocity_.z * kBulSpeed };
 	}
 		//進行方向に見た目の回転を合わせる

@@ -72,7 +72,7 @@ void Enemy::Fire() {
 
 
 	//弾の速度
-	const float kBulletSpeed = 15.0f;
+	const float kBulletSpeed = 11.0f;
 
 	Vector3 velocity(0, 0, kBulletSpeed);
 
