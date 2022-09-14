@@ -89,10 +89,13 @@ class Enemy {
 	//ゲームシーン
 	GameScene* gameScene_ = nullptr;
 
-
 	int enemyId = 0;
 
 	//方向転換のフラグ
 	int isChangeFlag = 0;
+
+	//フレームカウント用
+	int moveCount = 0;
+	int moveMode = 0;
 
 };

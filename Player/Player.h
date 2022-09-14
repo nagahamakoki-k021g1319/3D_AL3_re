@@ -74,7 +74,11 @@ class Player {
 	Input* input_ = nullptr;
 	DebugText* debugText_ = nullptr;
 
+
 	Vector3 enemyPos_ = { 0,0,0 };
+
+	Model* bulletModel = nullptr;
+
 
 	//弾
 	//複数 
@@ -94,9 +98,10 @@ class Player {
 	float turnAngle = 0.0f; //変形児の旋回
 	float boostVelX = 0.0f;
 	float boostVelZ = 0.0f;
-
 	bool isPushTrans = false;
-
+	//ヘンケイ状態に移行した際のアングル
+	float boostAngle = 0.0f;
+	Vector3 normalVelocity_ = { 0,0,0 };
 	//アングル用
 	float primaryAngle = 0.0f;
 	float controlAngleX = 0.0f;
@@ -112,11 +117,21 @@ class Player {
 	
 	//飛んでいるか否か
 	float gravityVel = 0.0f;
-	bool isFly = 0;
+	bool isFly = false;
+
 
 	int playerHp = 15;
 
 	int playerInvincible = 0;
 
 	bool isDead_ = false;
+
+	//クールタイム
+	int keyCoolTimeNormal = 0;
+	int keyCoolTimeExtend = 0;
+	int keyCoolTimeModeChange = 0;
+	const int coolTime = 20;
+
+
+
 };
