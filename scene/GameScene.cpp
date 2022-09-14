@@ -62,6 +62,14 @@ void GameScene::Initialize() {
 	//UI
 	uint32_t ui = TextureManager::Load("UI.png");
 	spriteUI.reset(Sprite::Create(ui, Vector2(1130, 570), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	
+	//GO
+	uint32_t goText1 = TextureManager::Load("GO1.png");
+	uint32_t goText2 = TextureManager::Load("GO2.png");
+	spriteGO1.reset(
+		Sprite::Create(goText1, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
+	spriteGO2.reset(
+		Sprite::Create(goText2, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -114,9 +122,15 @@ void GameScene::Initialize() {
 	bgmHandle3 = audio_->LoadWave("clear.wav");
 	bgmHandle4 = audio_->LoadWave("over.wav");
 
+
+	goTexPosX = 2.0f;
+
 }
 
 void GameScene::Update() {
+	
+	spriteGO1->SetPosition(Vector2(-goTexPosX + 600, 360.0f));
+	spriteGO2->SetPosition(Vector2(goTexPosX + 600, 360.0f));
 	//スプライトの今の座標を取得
 	// XMFLOAT2 position = sprite->GetPosition();
 	//座標を｛２，０｝移動
@@ -404,6 +418,12 @@ void GameScene::Draw() {
 			spriterock->Draw();
 		}
 		spriteUI->Draw();
+		goTexPosX *= 1.2;
+		if (goTexPosX < 800) {
+			spriteGO1->Draw();	//GO
+			spriteGO2->Draw();
+		}
+
 		break;
 	case SceneNo::Clear: //クリア
 		spriteClear->Draw();

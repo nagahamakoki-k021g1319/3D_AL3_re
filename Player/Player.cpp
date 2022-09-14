@@ -254,7 +254,7 @@ void Player::Update(ViewProjection viewProjection_) {
 		}*/
 #pragma region 重力
 		if (isFly == 1) {
-			if (gravityVel >= -4.0f) {
+			if (gravityVel >= -8.0f) {
 				float kGlavityVel = 0.03f;
 				gravityVel -= kGlavityVel;
 			}

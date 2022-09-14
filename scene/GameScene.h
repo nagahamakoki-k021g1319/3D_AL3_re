@@ -148,6 +148,9 @@ class GameScene {
 	std::unique_ptr<Sprite> enemy2DReticle_;
 	// 赤ロック
 	std::unique_ptr<Sprite> spriterock;
+	//Go
+	std::unique_ptr<Sprite> spriteGO1;
+	std::unique_ptr<Sprite> spriteGO2;
 
 
 	// 3Dモデル
@@ -230,5 +233,5 @@ class GameScene {
 	
 	int noEnemy = 0;
 
-
+	float goTexPosX = -40.0f;	//textureGo
 };
