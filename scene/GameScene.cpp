@@ -181,6 +181,8 @@ void GameScene::Update() {
 			    enemy_->OnCollision();
 			}
 			enemyDefeat = 0;
+			player_->ResetPlayer();
+			railCamera_->ResetRailCamera();
 			audio_->PlayWave(bgmDecision, false, 0.4f);
 			sceneNo_ = SceneNo::Game;
 		}

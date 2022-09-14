@@ -756,6 +756,12 @@ void Player::ResetPlayer()
 	playerHp = 10;
 	isDead_ = false;
 	playerInvincible = 0;
+	worldTransform_.translation_ = { 0,0,0 };
+	worldTransform_.rotation_ = { 0,0,0 };
+	//行列更新
+	AffinTrans::affin(worldTransform3DReticle_);
+	worldTransform3DReticle_.TransferMatrix();
+
 }
 
 
