@@ -482,7 +482,7 @@ void Player::Update(ViewProjection viewProjection_) {
 	//弾更新
 	//複数
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Update();
+		bullet->Update(viewProjection_);
 	}
 
 	//単発

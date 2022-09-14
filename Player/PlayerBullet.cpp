@@ -21,9 +21,10 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 
 }
 
-void PlayerBullet::Update() {
+void PlayerBullet::Update(const ViewProjection& viewProjection) {
 	//座標を移動
 	worldTransform_.translation_ += velocity_;
+	
 
 	//行列更新
 	AffinTrans::affin(worldTransform_);

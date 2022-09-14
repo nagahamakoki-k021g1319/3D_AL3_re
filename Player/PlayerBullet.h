@@ -17,7 +17,7 @@ class PlayerBullet {
 	///< summary>
 	///‰Šú‰»
 	///</summary>
-	void Update();
+	void Update(const ViewProjection& viewProjection);
 
 	///< summary>
 	///‰Šú‰»
