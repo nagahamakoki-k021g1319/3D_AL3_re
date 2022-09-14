@@ -233,10 +233,10 @@ void GameScene::Update() {
 			sceneNo_ = SceneNo::Clear;
 		}
 
-		////ゲームオーバーに突入
-		// if (playerTimer <= 0) {
-		//	sceneNo_ = SceneNo::Over;
-		// }
+		//ゲームオーバーに突入
+		 if (player_->ReturnDead()){
+			sceneNo_ = SceneNo::Over;
+		 }
 
 		/*railCamera_->GetViewProjection().target = { player_->GetWorldPosition2() };*/
 

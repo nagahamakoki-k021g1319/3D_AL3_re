@@ -58,6 +58,8 @@ class Player {
 
 	void setEnemyPos(Vector3 enemyPos) { enemyPos_ = enemyPos; }
 
+	bool ReturnDead() { return isDead_; }
+
   private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -111,4 +113,10 @@ class Player {
 	//飛んでいるか否か
 	float gravityVel = 0.0f;
 	bool isFly = 0;
+
+	int playerHp = 15;
+
+	int playerInvincible = 0;
+
+	bool isDead_ = false;
 };
