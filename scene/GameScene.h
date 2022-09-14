@@ -17,6 +17,13 @@
 #include "RailCamera.h"
 #include "EnemyBullet.h"
 #include <sstream>
+#include "Title.h"
+#include "push.h"
+#include "GameClear.h"
+#include "GameOver.h"
+#include "FieldObj.h"
+
+
 #include "Effect.h"
 
 #include "Ground.h"
@@ -178,12 +185,14 @@ class GameScene {
 	Model* modelSkydome_ = nullptr;
 
 	//地面
+	FieldObj* fieldObj_ = nullptr;
 	Ground* ground_ = nullptr;
 	Model* modelGround_ = nullptr;
 
 
 	Model* modelPlayer1_ = nullptr;
 	Model* modelPlayer2_ = nullptr;
+	Model* modelField1_ = nullptr;
 
 	//レールカメラ
 	RailCamera* railCamera_ = nullptr;

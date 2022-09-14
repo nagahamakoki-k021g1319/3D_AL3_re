@@ -36,6 +36,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 	modelPlayer1_ = Model::CreateFromOBJ("JikiHenkei2", true);
 	modelPlayer2_ = Model::CreateFromOBJ("Jiki", true);
+	modelField1_ = Model::CreateFromOBJ("field1", true);
 
 	//レティクルのテクスチャ
 	uint32_t texture = TextureManager::Load("RedReticle3.png");
@@ -79,6 +80,10 @@ void GameScene::Initialize() {
 	
 	//スカイドームの初期化
 	skydome_->Initialize(modelSkydome_);
+
+	//フィールド生成
+	fieldObj_ = new FieldObj();
+	fieldObj_->Initialize(modelField1_);
 
 	//地面の生成
 	ground_ = new Ground();
@@ -138,6 +143,7 @@ void GameScene::Update() {
 		EnemyReset();
 		playerTimer = 1000;
 		enemyDefeat = 0;
+		
 
 		break;
 	case SceneNo::Game: //射撃
@@ -317,10 +323,15 @@ void GameScene::Draw() {
 		break;
 	case SceneNo::Game: //射撃
 		audio_->StopWave(soundHandle);
+
 		if (audio_->IsPlaying(soundHandle2) == 0 || soundHandle2 == -1) {
 			soundHandle2 = audio_->PlayWave(bgmHandle2, true, 0.5f);
 		}
-		ground_->Draw(railCamera_->GetViewProjection());
+
+
+		//ground_->Draw(railCamera_->GetViewProjection());
+		fieldObj_->Draw(railCamera_->GetViewProjection());
+
 		player_->Draw(railCamera_->GetViewProjection());
 
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
