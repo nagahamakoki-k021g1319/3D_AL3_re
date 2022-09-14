@@ -244,25 +244,27 @@ void GameScene::Update() {
 
 		break;
 	case SceneNo::Clear: //クリア
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
+			audio_->PlayWave(bgmDecision, false, 0.4f);
+			sceneNo_ = SceneNo::Title;
+		}
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->OnCollision();
 		}
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->OnCollision();
-		}
-		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Clear) {
-			sceneNo_ = SceneNo::Title;
 		}
 		break;
 	case SceneNo::Over: //オーバー
+		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
+			audio_->PlayWave(bgmDecision, false, 0.4f);
+			sceneNo_ = SceneNo::Title;
+		}
 		for (std::unique_ptr<Enemy>& enemy_ : enemys_) {
 			enemy_->OnCollision();
 		}
 		for (std::unique_ptr<EnemyBullet>& bullet : enemybullets_) {
 			bullet->OnCollision();
-		}
-		if (input_->IsTriggerMouse(1) && sceneNo_ == SceneNo::Over) {
-			sceneNo_ = SceneNo::Title;
 		}
 		break;
 	}
@@ -513,6 +515,8 @@ void GameScene::LoadEnemyPopData() {
 	file.close();
 }
 
+void GameScene::LoadEnemyPopData2() {}
+
 void GameScene::UpdataEnemyPopCommands() {
 
 	//待機処理
@@ -579,6 +583,8 @@ void GameScene::UpdataEnemyPopCommands() {
 		}
 	}
 }
+
+void GameScene::UpdataEnemyPopCommands2() {}
 
 void GameScene::GenerEnemy(Vector3 EnemyPos, int ID) {
 	//敵キャラの生成

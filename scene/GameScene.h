@@ -71,11 +71,15 @@ class GameScene {
 	/// 敵発生データの読み込み
 	/// </summary>
 	void LoadEnemyPopData();
+	void LoadEnemyPopData2();
+
 
 	/// <summary>
 	/// 敵発生コマンドの更新
 	/// </summary>
 	void UpdataEnemyPopCommands();
+	void UpdataEnemyPopCommands2();
+
 
 	/// <summary>
 	/// 敵の発生
