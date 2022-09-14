@@ -586,6 +586,7 @@ void Player::Attack() {
 			A_BVec *= kBulletSpeed;
 
 
+
 			//弾を生成し初期化
 			//複数
 			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
