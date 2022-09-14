@@ -57,6 +57,9 @@ void GameScene::Initialize() {
 	spriteOver.reset(
 	  Sprite::Create(over, Vector2(640, 360), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
+	//UI
+	uint32_t ui = TextureManager::Load("UI.png");
+	spriteUI.reset(Sprite::Create(ui, Vector2(1130, 570), Vector4(1, 1, 1, 1), Vector2(0.5, 0.5)));
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -367,6 +370,7 @@ void GameScene::Draw() {
 		if (enemys_.size() >= 1) {
 			spriterock->Draw();
 		}
+		spriteUI->Draw();
 		break;
 	case SceneNo::Clear: //クリア
 		spriteClear->Draw();

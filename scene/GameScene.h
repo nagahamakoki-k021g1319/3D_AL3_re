@@ -134,6 +134,9 @@ class GameScene {
 	//ゲームオーバー
 	std::unique_ptr<Sprite> spriteOver; 
 
+	//UI
+	std::unique_ptr<Sprite> spriteUI; 
+
 	//敵2Dレティクル用スプライト
 	uint32_t textureHandleEnemyReticle_ = 0;
 	std::unique_ptr<Sprite> enemy2DReticle_;
